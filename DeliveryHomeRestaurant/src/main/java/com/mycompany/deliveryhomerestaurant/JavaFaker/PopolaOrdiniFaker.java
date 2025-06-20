@@ -6,8 +6,10 @@ package com.mycompany.deliveryhomerestaurant.JavaFaker;
 
 
 import com.github.javafaker.Faker;
+import com.mycompany.deliveryhomerestaurant.Model.ECartaCredito;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.ECliente;
+import com.mycompany.deliveryhomerestaurant.Model.EIndirizzo;
 import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
 
 import jakarta.persistence.EntityManager;
@@ -52,20 +54,53 @@ public class PopolaOrdiniFaker {
         for (int i = 0; i < 20; i++) {
             EOrdine ordine = new EOrdine();
 
-            ordine.setCliente(clienti.get(random.nextInt(clienti.size())));
+            ECliente cliente = clienti.get(random.nextInt(clienti.size()));
+            ordine.setCliente(cliente);
 
             // Note casuali (o null)
             if (random.nextBoolean()) {
                 ordine.setNote(faker.lorem().sentence(3, 5));
             }
 
-            // Date casuali: data esecuzione tra 10 giorni fa e oggi, data ricezione >= data esecuzione
-            LocalDateTime dataEsecuzione = LocalDateTime.now().minusDays(random.nextInt(10)).withHour(faker.number().numberBetween(10, 22)).withMinute(faker.number().numberBetween(0, 59));
+            // Date casuali
+            LocalDateTime dataEsecuzione = LocalDateTime.now().minusDays(random.nextInt(10))
+                    .withHour(faker.number().numberBetween(10, 22))
+                    .withMinute(faker.number().numberBetween(0, 59));
             ordine.setDataEsecuzione(dataEsecuzione);
-            // Data ricezione da 0 a 3 ore dopo esecuzione
-            ordine.setDataRicezione(dataEsecuzione.plusHours(random.nextInt(4)));
 
-            // Prodotti casuali (tra 1 e 5 prodotti)
+            ordine.setDataRicezione(dataEsecuzione.plusHours(random.nextInt(4)));
+            
+            // ---- Assegna indirizzo del cliente (ManyToMany) ----
+            List<EIndirizzo> indirizzi = em.createQuery(
+                    "SELECT i FROM EIndirizzo i JOIN i.clienti c WHERE c.id = :id", EIndirizzo.class)
+                    .setParameter("id", cliente.getId())
+                    .getResultList();
+                if (indirizzi.isEmpty()) {
+                    // Salta l’ordine se il cliente non ha indirizzi associati
+                    continue;
+                }
+
+            EIndirizzo indirizzo = indirizzi.get(random.nextInt(indirizzi.size()));
+            ordine.setIndirizzoConsegna(indirizzo);
+
+
+            List<ECartaCredito> carte = em.createQuery("SELECT c FROM ECartaCredito c WHERE c.cliente.id = :id", ECartaCredito.class)
+                .setParameter("id", cliente.getId())
+                .getResultList();
+            if (carte.isEmpty()) {
+                System.out.println("Cliente " + cliente.getEmail() + " non ha carte di credito. Ordine saltato.");
+                continue;
+            }
+
+        ECartaCredito carta = carte.get(random.nextInt(carte.size()));
+        ordine.setCartaPagamento(carta);
+            // ---- Data di consegna scelta dall'utente: tra 1 e 3 giorni dopo l'esecuzione ----
+            LocalDateTime dataConsegna = dataEsecuzione.plusDays(faker.number().numberBetween(1, 4))
+                    .withHour(faker.number().numberBetween(11, 21))
+                    .withMinute(faker.number().numberBetween(0, 59));
+            ordine.setDataConsegna(dataConsegna);
+
+            // ---- Prodotti ----
             int numProdotti = faker.number().numberBetween(1, 6);
             Set<EProdotto> prodottiOrdine = new HashSet<>();
             for (int j = 0; j < numProdotti; j++) {
@@ -73,13 +108,13 @@ public class PopolaOrdiniFaker {
             }
             ordine.setProdotti(prodottiOrdine);
 
-            // Calcolo costo sommando i prezzi prodotti (ipotizzando EProdotto abbia metodo getPrezzo())
+            // ---- Costo ----
             BigDecimal costoTotale = prodottiOrdine.stream()
                     .map(p -> p.getCosto() != null ? p.getCosto() : BigDecimal.ZERO)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             ordine.setCosto(costoTotale);
 
-            // Stato casuale
+            // ---- Stato casuale ----
             ordine.setStato(statiPossibili[random.nextInt(statiPossibili.length)]);
 
             em.persist(ordine);

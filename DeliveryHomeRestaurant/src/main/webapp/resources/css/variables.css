@@ -1,0 +1,67 @@
+/*  TEMA CHIARO (default)  */
+:root {
+  /* Colori principali */
+  --colore-primario: #046C6D;
+  --colore-primario-hover: #035A5A;
+  --colore-secondario: #023535;
+  --colore-title: #046C6D;
+
+  /* Colori di sfondo e testo */
+  --colore-bianco: #ffffff;
+  --colore-nero: #000000;
+  --colore-testo: #333333;
+  --colore-testo-secondario: #555555;
+  --colore-testo-chiaro: #eeeeee;
+
+  /* Ombre e bordi */
+  --colore-ombra-leggera: rgba(0, 0, 0, 0.05);
+  --colore-ombra-media: rgba(0, 0, 0, 0.1);
+  --colore-ombra-intensa: rgba(0, 0, 0, 0.25);
+  --colore-ombra-interna: rgba(0, 0, 0, 0.1);
+  --colore-bordo: #dddddd;
+  --colore-bordo-chiaro: #f0f0f0;
+  --colore-input-bordo: #cccccc;
+
+  /* Componenti UI */
+  --colore-navigazione: #ffffff;
+  --colore-stelle-piene: #FFD700;
+  --colore-stelle-vuote: #dddddd;
+  --colore-cart-badge: red;
+  --colore-modal-bg: rgba(0, 0, 0, 0.7);
+}
+
+/*  TEMA SCURO   */
+body[data-theme="dark"] {
+
+  /* Colori principali */
+  --colore-primario: #038f8f;  
+  --colore-primario-hover: #027575; 
+  --colore-secondario: #012b2b; 
+  --colore-title: #04b4b4; 
+
+  /* Colori di sfondo e testo */
+  --colore-bianco: #121212; 
+  --colore-nero: #f0f0f0;
+  --colore-testo: #e0e0e0; 
+  --colore-testo-secondario: #a0a0a0; 
+  --colore-testo-chiaro: #cccccc; 
+
+  /* Ombre */
+  --colore-ombra-leggera: rgba(255, 255, 255, 0.03);
+  --colore-ombra-media: rgba(255, 255, 255, 0.08);
+  --colore-ombra-intensa: rgba(255, 255, 255, 0.15);
+  --colore-ombra-interna: rgba(255, 255, 255, 0.05);
+  
+  /* Bordi */
+  --colore-bordo: #3a3a3a; 
+  --colore-bordo-chiaro: #2a2a2a; 
+  --colore-input-bordo: #4a4a4a; 
+
+  /* Componenti UI  */
+  --colore-navigazione: #1a1a1a; 
+  --colore-modal-bg: rgba(10, 10, 10, 0.9);
+  
+  --colore-stelle-piene: #FFD700;
+  --colore-stelle-vuote: #444444;
+  --colore-cart-badge: #ff4d4d;
+}

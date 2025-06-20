@@ -6,6 +6,7 @@ package com.mycompany.deliveryhomerestaurant.Model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  *
@@ -35,6 +36,9 @@ public class ECartaCredito {
     @ManyToOne
     @JoinColumn(name = "utente_id", nullable = false)
     private ECliente cliente;
+    
+    @OneToMany(mappedBy = "cartaPagamento")
+    private Set<EOrdine> ordini;
 
 
     public ECartaCredito() {

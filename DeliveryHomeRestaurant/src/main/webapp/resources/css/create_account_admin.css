@@ -1,0 +1,289 @@
+.admin-container {
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.admin-header h1 {
+    color: var(--colore-primario);
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
+
+.admin-subtitle {
+    color: var(--colore-testo-secondario);
+    font-size: 1.1rem;
+}
+
+.back-button {
+    position: absolute;
+    left: 0;
+    background: none;
+    border: none;
+    color: #046C6D;
+    font-size: 1.2rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    transition: color 0.3s, background-color 0.3s;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    margin-left: 20px;
+}
+
+.back-button:hover {
+    color: white;
+    background-color: #046C6D;
+    border-color: #046C6D;
+}
+
+/* Form Card */
+.form-container {
+    margin-top: 30px;
+}
+
+.form-card {
+    background-color: var(--colore-bianco);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px var(--colore-ombra-media);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--colore-testo-secondario);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.form-group label i {
+    margin-right: 8px;
+    color: var(--colore-primario);
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--colore-bordo);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--colore-primario);
+    box-shadow: 0 0 0 2px var(--colore-ombra-leggera);
+}
+
+/* Password Input */
+.password-input {
+    position: relative;
+}
+
+.password-input input {
+    padding-right: 40px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--colore-testo-secondario);
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* Bottoni */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: var(--colore-primario);
+    color: var(--colore-bianco);
+}
+
+.btn-primary:hover {
+    background-color: var(--colore-primario-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--colore-ombra-media);
+}
+
+/* Select Styling */
+select {
+    appearance: none;
+    background-position: right 10px center;
+    background-size: 1em;
+}
+
+/* Tema scuro */
+body[data-theme="dark"] .form-card {
+    background-color: var(--colore-ombra-interna);
+    border: 1px solid var(--colore-bordo);
+}
+
+body[data-theme="dark"] .form-group input,
+body[data-theme="dark"] .form-group select {
+    background-color: var(--colore-ombra-interna);
+    border-color: var(--colore-bordo);
+    color: var(--colore-testo);
+}
+
+body[data-theme="dark"] .role-section,
+body[data-theme="dark"] .modal-content {
+    background-color: var(--colore-ombra-interna);
+    border: 1px solid var(--colore-bordo);
+}
+
+body[data-theme="dark"] .collaborators-table tr:hover {
+    background-color: var(--colore-bordo);
+}
+
+body[data-theme="dark"] .btn-edit {
+    background-color: var(--colore-bordo);
+}
+
+/* Stili per la lista collaboratori */
+.collaborators-list {
+    margin-top: 40px;
+}
+
+.role-section {
+    background-color: var(--colore-bianco);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px var(--colore-ombra-leggera);
+    margin-bottom: 30px;
+}
+
+.role-section h2 {
+    color: var(--colore-primario);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.collaborators-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.collaborators-table th,
+.collaborators-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--colore-bordo-chiaro);
+}
+
+.collaborators-table th {
+    background-color: var(--colore-primario);
+    color: var(--colore-bianco);
+    font-weight: 600;
+}
+
+.collaborators-table tr:hover {
+    background-color: var(--colore-ombra-leggera);
+}
+
+.collaborators-table .actions {
+    display: flex;
+    gap: 10px;
+}
+
+.no-collaborators {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background-color: var(--colore-ombra-leggera);
+    border-radius: 8px;
+    color: var(--colore-testo-secondario);
+}
+
+.no-collaborators i {
+    color: var(--colore-primario);
+}
+
+.inline-form {
+    display: inline;
+}
+
+.btn-edit {
+    background-color: var(--colore-ombra-leggera);
+    color: var(--colore-primario);
+}
+
+.btn-edit:hover {
+    background-color: var(--colore-primario);
+    color: var(--colore-bianco);
+}
+
+.btn-delete {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.btn-delete:hover {
+    background-color: #f1b0b7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-header h1 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-card {
+        padding: 20px;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}

@@ -35,8 +35,12 @@ import com.mycompany.deliveryhomerestaurant.DAO.impl.ECuocoDAOImpl;
 import com.mycompany.deliveryhomerestaurant.Model.ECuoco;
 import com.mycompany.deliveryhomerestaurant.Model.ERider;
 import com.mycompany.deliveryhomerestaurant.DAO.ESegnalazioneDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ESegnalazioneDAOImpl;
 import com.mycompany.deliveryhomerestaurant.Model.ESegnalazione;
+import com.mycompany.deliveryhomerestaurant.Model.EUtente;
+import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
+import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
 import java.math.BigDecimal;
 
 
@@ -57,6 +61,8 @@ public class Main {
         ECuocoDAO cuocoDAO = new ECuocoDAOImpl(em);
         ERiderDAO riderDAO = new ERiderDAOImpl(em);
         ESegnalazioneDAO segnalazioneDAO = new ESegnalazioneDAOImpl(em);
+        EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
+        ProfiloService profileService = new ProfiloServiceImpl(utenteDAO);
 
 
         /*
@@ -313,20 +319,47 @@ public class Main {
 //                System.out.println("------");
 //            }
 
-            // Tutte le segnalazioni
-            System.out.println("=== TUTTE LE SEGNALAZIONI ===");
-            for (ESegnalazione s : segnalazioneDAO.getAllWarnings()) {
-                System.out.println("Segnalazione ID: " + s.getId());
-                System.out.println("Descrizione: " + s.getDescrizione());
-                System.out.println("------");
-            }
+//            // Tutte le segnalazioni
+//            System.out.println("=== TUTTE LE SEGNALAZIONI ===");
+//            for (ESegnalazione s : segnalazioneDAO.getAllWarnings()) {
+//                System.out.println("Segnalazione ID: " + s.getId());
+//                System.out.println("Descrizione: " + s.getDescrizione());
+//                System.out.println("------");
+//            }
+//
+//            // Segnalazioni per cliente specifico (ad esempio id = 1)
+//            System.out.println("=== SEGNALAZIONI PER CLIENTE 1 ===");
+//            for (ESegnalazione s : segnalazioneDAO.getWarningsByClientId(1)) {
+//                System.out.println("Segnalazione ID: " + s.getId());
+//                System.out.println("Descrizione: " + s.getDescrizione());
+//                System.out.println("------");
+//            }
 
-            // Segnalazioni per cliente specifico (ad esempio id = 1)
-            System.out.println("=== SEGNALAZIONI PER CLIENTE 1 ===");
-            for (ESegnalazione s : segnalazioneDAO.getWarningsByClientId(1)) {
-                System.out.println("Segnalazione ID: " + s.getId());
-                System.out.println("Descrizione: " + s.getDescrizione());
-                System.out.println("------");
+
+//            // === TEST REGISTRAZIONE UTENTE ===
+//            ECliente nuovoCliente = new ECliente();
+//            nuovoCliente.setNome("Mario");
+//            nuovoCliente.setCognome("Rossi");
+//            nuovoCliente.setEmail("mario.rossi@example.com");
+//            nuovoCliente.setPassword("password123"); // Assicurati che la password venga gestita in modo sicuro nel DAO!
+//
+//            try {
+//                profileService.Register(nuovoCliente);
+//                System.out.println("Registrazione effettuata con successo per: " + nuovoCliente.getEmail());
+//            } catch (Exception e) {
+//                System.out.println("Errore nella registrazione: " + e.getMessage());
+//            }
+
+            // === TEST LOGIN UTENTE ===
+            String emailLogin = "francesco.totti@gmail.com";
+            String passwordLogin = "password123";
+
+            boolean loginUser = profileService.login(emailLogin, passwordLogin);
+
+            if (loginUser) {
+                System.out.println("Login effettuato con successo per: " + emailLogin);
+            } else {
+                System.out.println("Login fallito per: " + emailLogin);
             }
 
 

@@ -34,6 +34,9 @@ public class EIndirizzo {
 
     @ManyToMany(mappedBy = "indirizziConsegna")
     private Set<ECliente> clienti = new HashSet<>();
+    
+    @OneToMany(mappedBy = "indirizzoConsegna")
+    private Set<EOrdine> ordini; 
 
     public EIndirizzo() {
     }

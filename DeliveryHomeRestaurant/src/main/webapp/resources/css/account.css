@@ -1,0 +1,129 @@
+/* account.css - Versione con variabili CSS */
+.account-page {
+    padding: 40px 20px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.account-container {
+    background-color: var(--colore-bianco);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 10px var(--colore-ombra-leggera);
+    border: 1px solid var(--colore-bordo);
+}
+
+.account-container h2 {
+    text-align: center;
+    color: var(--colore-primario);
+    margin-bottom: 30px;
+}
+
+.password-section h3 {
+    color: var(--colore-primario);
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--colore-testo);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--colore-input-bordo);
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: var(--colore-bianco);
+    color: var(--colore-testo);
+}
+
+.btn-submit {
+    background-color: var(--colore-primario);
+    color: var(--colore-bianco);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+    background-color: var(--colore-primario-hover);
+}
+
+.orders-link {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.btn-link {
+    color: var(--colore-primario);
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+
+.btn-link:hover {
+    color: var(--colore-primario-hover);
+}
+
+.btn-link i {
+    margin-right: 8px;
+}
+
+.logout-section {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.btn-logout {
+    background-color: var(--colore-cart-badge);
+    color: var(--colore-bianco);
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: #c9302c; 
+}
+
+
+
+@media (max-width: 768px) {
+    .account-page {
+        padding: 20px 10px;
+    }
+
+    .form-group input {
+        font-size: 0.95rem;
+    }
+
+    .btn-submit, .btn-link, .btn-logout {
+        font-size: 0.95rem;
+        padding: 10px;
+    }
+
+    .btn-link, .btn-logout {
+        width: 100%;
+        display: block;
+        margin-bottom: 10px;
+    }
+}

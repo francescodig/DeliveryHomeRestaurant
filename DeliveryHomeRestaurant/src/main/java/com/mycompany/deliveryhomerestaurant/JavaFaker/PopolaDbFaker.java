@@ -27,11 +27,13 @@ public class PopolaDbFaker {
             PopolaElencoProdottiFaker.popola();
             PopolaCategorieFaker.popola();
             PopolaProdottiFaker.popola();
+            PopolaCarteCreditoFaker.popola();
+            PopolaIndirizziFaker.popola(); 
             PopolaOrdiniFaker.popola();
             PopolaRecensioniFaker.popola();
             PopolaSegnalazioniFaker.popola();
-            PopolaCarteCreditoFaker.popola();
-            PopolaIndirizziFaker.popola(); 
+            
+           
             
             
             

@@ -1,0 +1,140 @@
+/* Main Content */
+main {
+    max-width: auto;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Consegne section */
+.deliveries-container {
+    background-color: var(--colore-bianco);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px var(--colore-ombra-media);
+    border: 1px solid var(--colore-bordo);
+}
+
+.delivery-card {
+    border: 1px solid var(--colore-primario);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    position: relative;
+    background-color: var(--colore-ombra-leggera);
+    transition: all 0.3s ease;
+}
+
+.delivery-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--colore-ombra-media);
+}
+
+/* Stati ordine */
+.order-status {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.order-status.in-preparazione {
+    background-color: rgba(255, 204, 92, 0.2);
+    color: #ffcc5c;
+    border: 1px solid #ffcc5c;
+}
+
+.order-status.pronto {
+    background-color: rgba(136, 201, 161, 0.2);
+    color: #88c9a1;
+    border: 1px solid #88c9a1;
+}
+
+.order-status.errore {
+    background-color: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+    border: 1px solid #ff6b6b;
+}
+
+.order-status.da-preparare {
+    background-color: rgba(92, 140, 255, 0.2);
+    color: #5c8cff;
+    border: 1px solid #5c8cff;
+}
+
+.delivery-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.delivery-header h3 {
+    font-size: 18px;
+    color: var(--colore-primario);
+    margin: 0;
+}
+
+.delivery-info {
+    margin-bottom: 15px;
+}
+
+.delivery-info p {
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: var(--colore-testo-secondario);
+}
+
+.delivery-info strong {
+    color: var(--colore-testo);
+}
+
+.status-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.status-actions label {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--colore-testo);
+}
+
+.status-select {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--colore-input-bordo);
+    font-size: 14px;
+    background-color: var(--colore-bianco);
+    color: var(--colore-testo);
+    min-width: 150px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .deliveries-container {
+        padding: 15px;
+    }
+    
+    .delivery-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .status-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .status-select {
+        width: 100%;
+    }
+    
+    .delivery-info p {
+        font-size: 13px;
+    }
+}

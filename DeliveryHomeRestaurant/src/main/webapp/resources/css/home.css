@@ -1,0 +1,347 @@
+/* Tabs */
+.tabs {
+    display: flex;
+    background-color: var(--colore-primario);
+    border-radius: 30px;
+    padding: 5px;
+    margin-bottom: 30px;
+    box-shadow: inset 0 1px 3px var(--colore-ombra-interna);
+    border: 1px solid var(--colore-bordo);
+    position: relative;
+}
+
+.tabs a {
+    text-decoration: none;
+    color: var(--colore-navigazione);
+    padding: 10px 20px;
+    text-align: center;
+    flex: 1;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
+}
+
+section[id] {
+    scroll-margin-top: 80px;
+}
+
+/* Story Sections */
+.story-section {
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: var(--colore-bianco);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px var(--colore-ombra-leggera);
+}
+
+.storia-container {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.storia-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.storia-text p {
+    font-size: 1.4rem;
+    color: var(--colore-testo);
+}
+
+.storia-image {
+    flex: 1;
+    min-width: 0;
+    height: auto;
+    max-width: 400px;
+}
+
+.storia-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--colore-ombra-interna);
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.story-section h2 {
+    color: var(--colore-primario);
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+/* Position Section */
+.position-section {
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: var(--colore-primario);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px var(--colore-ombra-leggera);
+}
+
+.position-container {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.position-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.position-text p {
+    font-size: 1.4rem;
+    color: var(--colore-testo-chiaro);
+}
+
+.position-image {
+    flex: 1;
+    min-width: 0;
+    height: auto;
+    max-width: 500px;
+}
+
+.position-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px var(--colore-ombra-interna);
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.position-section h2 {
+    color: var(--colore-bianco);
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+/* Reviews Section */
+.reviews {
+    padding: 40px 0;
+}
+
+.reviews h2 {
+    text-align: center;
+    color: var(--colore-primario);
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+.review-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.review-card {
+    background: var(--colore-bianco);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 5px 15px var(--colore-ombra-leggera);
+    transition: transform 0.3s;
+}
+
+.review-card:hover {
+    transform: translateY(-5px);
+}
+
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    border: 2px solid var(--colore-primario);
+}
+
+.reviewer-details h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--colore-testo);
+}
+
+.stars {
+    color: var(--colore-stelle-piene);
+    margin-top: 5px;
+}
+
+.stars .far {
+    color: var(--colore-stelle-vuote);
+}
+
+.review-text {
+    font-style: italic;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.review-date {
+    display: block;
+    text-align: right;
+    font-size: 0.8rem;
+    color: #777;
+}
+
+/* Contacts Section */
+.contacts {
+    background-color: var(--colore-primario);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px var(--colore-ombra-leggera);
+    margin-bottom: 40px;
+}
+
+.contacts h2 {
+    color: var(--colore-bianco);
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.contacts ul {
+    list-style: none;
+}
+
+.contacts li {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.contacts i {
+    margin-right: 10px;
+    color: var(--colore-bianco);
+    width: 20px;
+    text-align: center;
+}
+
+.orari-apertura {
+    margin-top: 20px;
+    background-color: var(--colore-primario);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid var(--colore-bianco);
+}
+
+.orari-apertura h3 {
+    color: var(--colore-bianco);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.orari-apertura table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orari-apertura td {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.orari-apertura td:first-child {
+    font-weight: 500;
+    width: 40%;
+}
+
+.orari-apertura .note {
+    font-size: 0.9em;
+    color: var(--colore-bianco);
+    margin-top: 10px;
+    font-style: italic;
+}
+
+/* Tema scuro specifico */
+body[data-theme="dark"] .story-section {
+    background-color: rgba(111, 110, 110, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-links {
+        position: fixed;
+        top: 70px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 70px);
+        background-color: var(--colore-bianco);
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 30px;
+        gap: 30px;
+        box-shadow: 0 5px 10px var(--colore-ombra-interna);
+        transition: all 0.3s ease;
+        z-index: 1000;
+    }
+
+    .nav-links.show {
+        left: 0;
+    }
+
+    .hamburger {
+        display: block;
+        position: relative;
+        z-index: 1100;
+    }
+
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .hero-content h2 {
+        font-size: 1.2rem;
+    }
+
+    .tabs {
+        border-radius: 20px;
+    }
+
+    .tabs a {
+        padding: 10px 15px;
+        font-size: 0.8rem;
+    }
+
+    .storia-container,
+    .position-container {
+        flex-direction: column;
+    }
+
+    .storia-image,
+    .position-image {
+        width: 100%;
+        height: 250px;
+    }
+
+    .storia-image img,
+    .position-image img {
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .storia-text p,
+    .position-text p {
+        font-size: 1rem;
+    }
+}
+
+
+
+

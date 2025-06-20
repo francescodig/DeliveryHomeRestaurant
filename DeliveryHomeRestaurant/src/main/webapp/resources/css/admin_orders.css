@@ -1,0 +1,242 @@
+.admin-container {
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.admin-header h1 {
+    color: var(--colore-primario);
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
+
+.admin-subtitle {
+    color: var(--colore-testo-secondario);
+    font-size: 1.1rem;
+}
+.back-button {
+    position: absolute;
+    left: 0;
+    background: none;
+    border: none;
+    color: #046C6D;
+    font-size: 1.2rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    transition: color 0.3s, background-color 0.3s;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    margin-left: 20px;
+}
+
+.back-button:hover {
+    color: white;
+    background-color: #046C6D;
+    border-color: #046C6D;
+}
+
+/* Sezione Filtri */
+.filters-section {
+    background-color: var(--colore-bianco);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px var(--colore-ombra-leggera);
+    margin-bottom: 30px;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    align-items: center;
+}
+
+.search-box {
+    position: relative;
+}
+
+.search-box i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--colore-testo-secondario);
+}
+
+.search-box input,
+.filter-group select {
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border: 1px solid var(--colore-bordo);
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-group label {
+    color: var(--colore-testo-secondario);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+/* Tabella Ordini */
+.orders-list {
+    margin-bottom: 40px;
+}
+
+.orders-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.orders-header h2 {
+    color: var(--colore-primario);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--colore-bianco);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px var(--colore-ombra-leggera);
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--colore-bordo-chiaro);
+}
+
+.orders-table th {
+    background-color: var(--colore-primario);
+    color: var(--colore-bianco);
+    font-weight: 600;
+}
+
+.orders-table tr:hover {
+    background-color: var(--colore-ombra-leggera);
+}
+
+/* Badge Stato */
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-badge.in_attesa {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.in_preparazione {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.status-badge.pronto {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-badge.consegnato {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.status-badge.annullato {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Bottoni */
+.btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+
+/* Nessun ordine */
+.no-orders {
+    text-align: center;
+    padding: 40px;
+    background-color: var(--colore-bianco);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px var(--colore-ombra-leggera);
+}
+
+.no-orders i {
+    font-size: 3rem;
+    color: var(--colore-testo-secondario);
+    margin-bottom: 15px;
+}
+
+.no-orders p {
+    color: var(--colore-testo-secondario);
+    font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .orders-table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .orders-table .actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Tema scuro */
+body[data-theme="dark"] {
+    .orders-table,
+    .filters-section {
+        background-color: var(--colore-ombra-interna);
+    }
+    
+    .btn-details {
+        background-color: var(--colore-bordo);
+    }
+}

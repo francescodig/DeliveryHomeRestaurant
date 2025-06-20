@@ -32,6 +32,9 @@ public class EOrdine {
 
     @Column(name = "data_ricezione")
     private LocalDateTime dataRicezione;
+    
+    @Column(name = "data_consegna")
+    private LocalDateTime dataConsegna;
 
     @Column(precision = 10, scale = 2)
     private BigDecimal costo;
@@ -42,6 +45,14 @@ public class EOrdine {
 
     @OneToOne(mappedBy = "ordine")
     private ESegnalazione segnalazione;
+    
+    @ManyToOne
+    @JoinColumn(name = "indirizzo_id" , nullable = false)
+    private EIndirizzo indirizzoConsegna; 
+    
+    @ManyToOne
+    @JoinColumn(name = "carta_id" , nullable = false)
+    private ECartaCredito cartaPagamento;
 
     @ManyToMany
     @JoinTable(name = "ordini_prodotti",
@@ -84,6 +95,14 @@ public class EOrdine {
     public void setDataRicezione(LocalDateTime dataRicezione) {
         this.dataRicezione = dataRicezione;
     }
+    
+    public LocalDateTime getDataConsegna(){
+        return dataConsegna;
+    }
+    
+    public void setDataConsegna(LocalDateTime dataConsegna){
+        this.dataConsegna = dataConsegna;
+    }
 
     public BigDecimal getCosto() {
         return costo;
@@ -123,5 +142,21 @@ public class EOrdine {
 
     public void setStato(String stato) {
         this.stato = stato;
+    }
+    
+    public EIndirizzo getIndirizzoConsegna(){
+        return indirizzoConsegna;
+    }
+    
+    public void setIndirizzoConsegna(EIndirizzo indirizzo){
+        this.indirizzoConsegna = indirizzo;
+    }
+    
+    public ECartaCredito getCartaPagamento(){
+        return cartaPagamento;
+    }
+    
+    public void setCartaPagamento(ECartaCredito carta){
+        this.cartaPagamento = carta;
     }
 }
