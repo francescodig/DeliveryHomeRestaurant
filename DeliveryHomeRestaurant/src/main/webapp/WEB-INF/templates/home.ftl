@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Restaurant - Nome Ristorante</title>
-    <link rel="stylesheet" href="/resources/css/home.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="/resources/css/layout.css">
+    <link rel="stylesheet" href="${contextPath}/resources/css/home.css">
+    <link rel="stylesheet" href="${contextPath}/resources/css/layout.css">
+
+
 </head>
 <body>
 
@@ -46,7 +48,7 @@
                     </p>
                 </div>
                 <div class="storia-image">
-                    <img src="/resources/Immagini/story.jpeg" alt="Storia del ristorante">
+                    <img src="${contextPath}/resources/Immagini/story.jpeg" alt="Storia del ristorante">
                 </div>
             </div>
         </section>
@@ -55,7 +57,7 @@
         <section id="posizione" class="position-section">
             <div class="position-container">
                 <div class="position-image">
-                    <img src="/resources/Immagini/position.png" alt="Storia del ristorante">
+                    <img src="${contextPath}/resources/Immagini/position.png" alt="Storia del ristorante">
                 </div>
                 <div class="position-text">
                     <h2>Dove siamo?</h2>
@@ -83,7 +85,12 @@
                         </div>
                         <p class="review-text">"${review.descrizione?html}"</p>
                         <span class="review-date">
-                            ${review.data?string("dd/MM/yyyy")} ${review.orario}
+                            <#if review.data?is_date>
+                                ${review.data?date?string("dd/MM/yyyy")}
+                            <#else>
+                                ${review.data!""}
+                            </#if>
+                            ${review.orario!""}
                         </span>
                     </div>
                 </#list>
@@ -128,8 +135,7 @@
     <!-- Footer -->
     <#include "footer.ftl" />
 
-    <script src="/resources/js/hamburger.js"></script>
-    <script src="/resources/js/theme.js" defer></script>
+    <script src="${contextPath}/resources/Js/hamburger.js"></script>
+    <script src="${contextPath}/resources/Js/theme.js" defer></script>
 </body>
 </html>
-

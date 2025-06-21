@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Recensioni | Home Restaurant</title>
-    <link rel="stylesheet" href="/resources/css/layout.css">
-    <link rel="stylesheet" href="/resources/css/recensioni.css">
+    <link rel="stylesheet" href="${contextPath}/resources/css/layout.css">
+    <link rel="stylesheet" href="${contextPath}/resources/css/recensioni.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
@@ -98,8 +98,8 @@
     <!-- Footer -->
     <#include "footer.ftl">
 
-    <script src="/resources/js/hamburger.js"></script>
-    <script src="/resources/js/theme.js" defer></script>
+    <script src="${contextPath}/resources/Js/hamburger.js"></script>
+    <script src="${contextPath}/resources/Js/theme.js" defer></script>
 </body>
 </html>
 

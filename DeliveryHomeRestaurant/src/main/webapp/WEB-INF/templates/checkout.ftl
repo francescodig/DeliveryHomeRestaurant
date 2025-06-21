@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Home Restaurant - Nome Ristorante</title>
-    <link rel="stylesheet" href="../css/checkout.css" />
+    <link rel="stylesheet" href="${contextPath}/css/checkout.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <link rel="stylesheet" href="../css/layout.css" />
-    <script src="../Js/cart.js"></script>
+    <link rel="stylesheet" href="${contextPath}/css/layout.css" />
+    <script src="${contextPath}/Js/cart.js"></script>
 </head>
 <body>
     <#-- Include header -->
@@ -165,11 +165,11 @@
     <#-- Include footer -->
     <#include "footer.ftl" />
 
-    <script src="/resources/js/hamburger.js"></script>
-    <script src="/resources/js/theme.js" defer></script>
+    <script src="${contextPath}/resources/Js/hamburger.js"></script>
+    <script src="${contextPath}/resources/Js/theme.js" defer></script>
 </body>
 
-<script src="../Js/checkout.js" defer></script>
+<script src="${contextPath}/resourcers/Js/checkout.js" defer></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     let cart = localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [];

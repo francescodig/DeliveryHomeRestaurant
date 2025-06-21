@@ -8,4 +8,18 @@
             30
         </session-timeout>
     </session-config>
+    
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>FrontController</servlet-name>
+        <servlet-class>com.mycompany.deliveryhomerestaurant.Controller.FrontController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FrontController</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
 </web-app>

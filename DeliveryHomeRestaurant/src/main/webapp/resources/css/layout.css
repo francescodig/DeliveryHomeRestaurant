@@ -1,5 +1,4 @@
-@import url('/resources/css/variables.css');
-
+@import url('/DeliveryHomeRestaurant/resources/css/variables.css');
 html {
     scroll-behavior: smooth;
 }
@@ -116,7 +115,7 @@ header {
 
 /*  Hero  */
 .hero {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/resources/Immagini/hero.jpeg');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/DeliveryHomeRestaurant/resources/Immagini/hero.jpeg');
     background-size: cover;
     background-position: center;
     height: 500px;

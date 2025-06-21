@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Order - Nome Ristorante</title>
-    <link rel="stylesheet" href="/resources/css/order.css" />
+    <link rel="stylesheet" href="${contextPath}/resources/css/order.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <link rel="stylesheet" href="/resources/css/layout.css" />
+    <link rel="stylesheet" href="${contextPath}/resources/css/layout.css" />
 </head>
 <body>
     <#include "header.ftl">
@@ -69,12 +69,12 @@
 
     <#include "footer.ftl">
 
-    <script src="/resources/js/hamburger.js"></script>
-    <script src="/resources/js/theme.js" defer></script>
+    <script src="${contextPath}/resources/Js/hamburger.js"></script>
+    <script src="${contextPath}/resources/Js/theme.js" defer></script>
 
 </body>
 
-<script src="/resources/Js/cart.js" defer></script>
+<script src="${contextPath}/resources/Js/cart.js" defer></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         cart = localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [];
