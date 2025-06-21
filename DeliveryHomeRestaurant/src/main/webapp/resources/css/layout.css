@@ -33,6 +33,7 @@ header {
     align-items: center;
     padding: 15px 20px;
     margin: 0 auto;
+    position: relative;
 }
 
 .logo {
@@ -56,6 +57,7 @@ header {
 .nav-links {
     display: flex;
     gap: 20px;
+    flex-grow: 1;
 }
 
 .nav-links a {
@@ -83,6 +85,7 @@ header {
 
 
 .user-actions {
+    margin-left: auto;
     display: flex;
     gap: 15px;
     align-items: center;
