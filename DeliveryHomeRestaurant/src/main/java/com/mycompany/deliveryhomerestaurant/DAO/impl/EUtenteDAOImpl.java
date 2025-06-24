@@ -39,4 +39,16 @@ public class EUtenteDAOImpl implements EUtenteDAO {
             throw e;
         }
     }
+    
+    @Override
+    public EUtente findById(int id){
+         try {
+            return em.createQuery("FROM EUtente u WHERE u.id = :id", EUtente.class)
+                     .setParameter("id", id)
+                     .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+        
+    }
 }

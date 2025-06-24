@@ -28,7 +28,7 @@
             <!-- Modifica Profilo -->
             <div class="password-section">
                 <h3>Modifica Profilo</h3>
-                <form action="/Delivery/User/modifyProfile" method="POST">
+                <form action="/DeliveryHomeRestaurant/User/modifyProfile" method="POST">
                     <div class="form-group">
                         <label for="newName">Nuovo Nome</label>
                         <input id="newName" name="newName" value="${utente.nome}" required>
@@ -46,7 +46,7 @@
             <!-- Cambia Password -->
             <div class="password-section">
                 <h3>Cambia Password</h3>
-                <form action="/Delivery/User/changePassword" method="POST">
+                <form action="/DeliveryHomeRestaurant/User/changePassword" method="POST">
                     <div class="form-group">
                         <label for="oldPassword">Vecchia Password</label>
                         <input type="password" id="oldPassword" name="oldPassword" required>
@@ -63,14 +63,14 @@
 
             <!-- Link ai miei ordini -->
             <div class="orders-link">
-                <a href="/Delivery/User/showMyOrders/" class="btn-link">
+                <a href="/DeliveryHomeRestaurant/User/showMyOrders/" class="btn-link">
                     <i class="fas fa-box-open"></i> I miei ordini
                 </a>
             </div>
 
             <!-- Logout -->
             <div class="logout-section">
-                <a href="/Delivery/User/logoutUser/" class="btn-logout">
+                <a href="/DeliveryHomeRestaurant/User/logoutUser/" class="btn-logout">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </div>

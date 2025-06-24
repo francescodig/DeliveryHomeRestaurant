@@ -5,6 +5,7 @@
 package com.mycompany.deliveryhomerestaurant.Service;
 
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
+import jakarta.servlet.http.HttpSession;
 
 /**
  *
@@ -14,6 +15,6 @@ public interface ProfiloService {
     
     
     boolean Register(EUtente user);
-    boolean login(String username, String password);
+    EUtente login(String username, String password, HttpSession session);
 }
 

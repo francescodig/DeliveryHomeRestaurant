@@ -16,6 +16,8 @@ public interface EUtenteDAO {
     //find the user by the username
     EUtente findByUsername(String username);
     
+    EUtente findById(int id);
+    
     // save the user
     void save(EUtente user);
 

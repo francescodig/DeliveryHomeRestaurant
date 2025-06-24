@@ -41,6 +41,7 @@ import com.mycompany.deliveryhomerestaurant.Model.ESegnalazione;
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
 import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
 import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import java.math.BigDecimal;
 
 
@@ -350,17 +351,6 @@ public class Main {
 //                System.out.println("Errore nella registrazione: " + e.getMessage());
 //            }
 
-            // === TEST LOGIN UTENTE ===
-            String emailLogin = "francesco.totti@gmail.com";
-            String passwordLogin = "password123";
-
-            boolean loginUser = profileService.login(emailLogin, passwordLogin);
-
-            if (loginUser) {
-                System.out.println("Login effettuato con successo per: " + emailLogin);
-            } else {
-                System.out.println("Login fallito per: " + emailLogin);
-            }
 
 
         

@@ -31,7 +31,7 @@
                         <div class="error-message">${error}</div>
                     </#if>
 
-                    <form action="/Delivery/User/registerUser" method="POST">
+                    <form action="/DeliveryHomeRestaurant/User/registerUser" method="POST">
                         <div class="form-group">
                             <label for="nome">Nome</label>
                             <input 
@@ -88,7 +88,7 @@
                             <button type="submit" class="btn">Registrati</button>
                         </div>
                         <div class="form-group">
-                            <p>Sei già registrato? <a href="/Delivery/User/showLoginForm">Accedi</a></p>
+                            <p>Sei già registrato? <a href="/DeliveryHomeRestaurant/User/showLoginForm">Accedi</a></p>
                         </div>
                     </form>
                 </div>

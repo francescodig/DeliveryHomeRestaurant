@@ -14,10 +14,7 @@
             <a href="/DeliveryHomeRestaurant/User/order/">Ordina</a>
             <#if logged?? && logged>
             <!-- Contenuto quando l'utente è loggato -->
-                <a href="/DeliveryHomeRestaurant/User/showMyOrders/">I Miei Ordini</a>
-            <#else>
-            <!-- Contenuto quando l'utente non è loggato -->
-                <a href="/DeliveryHomeRestaurant/User/showMyOrders/">I Miei Ordini</a>
+                <a href="/DeliveryHomeRestaurant/User/showMyOrders/">I Miei Ordini</a>  
             </#if>
 
         <div class="user-actions">
