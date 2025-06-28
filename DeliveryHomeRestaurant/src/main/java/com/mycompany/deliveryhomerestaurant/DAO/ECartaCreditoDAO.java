@@ -16,5 +16,6 @@ import java.util.List;
 public interface ECartaCreditoDAO {
     List<ECartaCredito> getAllCreditCards();
     ECartaCredito getCreditCardByUserId(int userId);
+    ECartaCredito getCreditCardByCardNumber(String cardNumber);
 }
 

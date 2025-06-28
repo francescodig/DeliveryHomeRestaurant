@@ -12,16 +12,16 @@ import java.math.BigDecimal;
  */
 
 @Entity
-@Table(name = "item_carrello")
-public class EItemCarrello {
+@Table(name = "item_ordine")
+public class EItemOrdine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "carrello_id", nullable = false)
-    private ECarrello carrello;
+    @JoinColumn(name = "ordine_id", nullable = false)
+    private EOrdine ordine;
 
     @ManyToOne
     @JoinColumn(name = "prodotto_id", nullable = false)
@@ -33,7 +33,7 @@ public class EItemCarrello {
     @Column(name = "prezzo_unitario", precision = 10, scale = 2, nullable = false)
     private BigDecimal prezzoUnitario;
 
-    public EItemCarrello() {
+    public EItemOrdine() {
     }
 
     // Getters
@@ -41,8 +41,8 @@ public class EItemCarrello {
         return id;
     }
 
-    public ECarrello getCarrello() {
-        return carrello;
+    public EOrdine getOrdine() {
+        return ordine;
     }
 
     public EProdotto getProdotto() {
@@ -62,8 +62,8 @@ public class EItemCarrello {
     }
 
     // Setters
-    public void setCarrello(ECarrello carrello) {
-        this.carrello = carrello;
+    public void setOrdine(EOrdine ordine) {
+        this.ordine = ordine;
     }
 
     public void setProdotto(EProdotto prodotto) {

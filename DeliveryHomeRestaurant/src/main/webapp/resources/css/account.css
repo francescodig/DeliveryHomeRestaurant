@@ -1,4 +1,3 @@
-/* account.css - Versione con variabili CSS */
 .account-page {
     padding: 40px 20px;
     max-width: 700px;
@@ -105,7 +104,113 @@
     background-color: #c9302c; 
 }
 
+/* Bottone modale */
 
+.btn-link-modal {
+    background-color: var(--colore-bianco);
+    color: var(--colore-primario);
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+    border: none;
+}
+
+.btn-link-modal:hover {
+    color: var(--colore-primario-hover);
+}
+
+.btn-link-modal i {
+    margin-right: 8px;
+}
+
+/* Modale base */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 40px 20px;
+}
+
+.modal-content {
+  background: var(--colore-bianco);
+  max-width: 600px;
+  margin: auto;
+  border-radius: 12px;
+  padding: 40px 30px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.4s ease;
+  border: 1px solid var(--colore-bordo);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  text-align: center;
+  font-size: 1.6rem;
+  color: var(--colore-primario);
+  margin-bottom: 30px;
+}
+
+.close-button {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--colore-testo);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-button:hover {
+  color: var(--colore-primario-hover);
+}
+
+.modal-content .form-group input {
+  padding: 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--colore-input-bordo);
+  background: var(--colore-bianco);
+  color: var(--colore-testo);
+  width: 100%;
+}
+
+.modal-content button[type="submit"] {
+  background: var(--colore-primario);
+  color: var(--colore-bianco);
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background 0.3s ease;
+}
+
+.modal-content button[type="submit"]:hover {
+  background: var(--colore-primario-hover);
+}
+
+/* Animazione apertura modale */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 @media (max-width: 768px) {
     .account-page {
@@ -125,5 +230,14 @@
         width: 100%;
         display: block;
         margin-bottom: 10px;
+    }
+
+    .modal-content {
+        padding: 25px 20px;
+    }
+
+    .close-button{
+        top: 15px;
+        right: 15px;
     }
 }

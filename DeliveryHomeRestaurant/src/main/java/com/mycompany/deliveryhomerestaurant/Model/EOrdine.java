@@ -9,6 +9,8 @@ package com.mycompany.deliveryhomerestaurant.Model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 /**
  *
@@ -53,6 +55,9 @@ public class EOrdine {
     @ManyToOne
     @JoinColumn(name = "carta_id" , nullable = false)
     private ECartaCredito cartaPagamento;
+    
+    @OneToMany(mappedBy = "ordine", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<EItemOrdine> itemOrdini = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "ordini_prodotti",
@@ -158,5 +163,9 @@ public class EOrdine {
     
     public void setCartaPagamento(ECartaCredito carta){
         this.cartaPagamento = carta;
+    }
+    
+    public void addItemOrdine(EItemOrdine itemOrdine){
+        this.itemOrdini.add(itemOrdine);
     }
 }

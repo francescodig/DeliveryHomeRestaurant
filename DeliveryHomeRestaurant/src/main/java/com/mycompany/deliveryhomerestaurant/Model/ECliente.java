@@ -34,8 +34,7 @@ public class ECliente extends EUtente {
     @OneToMany(mappedBy = "cliente", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<ERecensione> recensioni = new ArrayList<>();
 
-    @OneToMany(mappedBy = "cliente", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    private List<ECarrello> carrelli = new ArrayList<>();
+
 
     public ECliente() {
         super();
@@ -87,12 +86,7 @@ public class ECliente extends EUtente {
         this.recensioni = recensioni;
     }
 
-    public List<ECarrello> getCarrelli() {
-        return carrelli;
-    }
 
-    public void setCarrelli(List<ECarrello> carrelli) {
-        this.carrelli = carrelli;
-    }
+
 
 }

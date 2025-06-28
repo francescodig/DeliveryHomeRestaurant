@@ -1,13 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.deliveryhomerestaurant.util;
-
-/**
- *
- * @author franc
- */
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -21,7 +12,7 @@ public class UtilSession {
 
     // Ottiene la sessione esistente, oppure null se non attiva
     public static HttpSession getSession(HttpServletRequest request) {
-        return request.getSession(false);
+        return request.getSession(false); // NON crea se non esiste
     }
 
     // Controlla se la sessione è attiva
@@ -63,4 +54,3 @@ public class UtilSession {
         }
     }
 }
-

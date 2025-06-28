@@ -41,4 +41,18 @@ public class ECartaCreditoDAOImpl implements ECartaCreditoDAO {
             return null;
         }
     }
+    
+    @Override
+    public ECartaCredito getCreditCardByCardNumber(String cardNumber){
+        try {
+            return em.createQuery(
+                "SELECT c FROM ECartaCredito c WHERE c.numeroCarta = :cardNumber", ECartaCredito.class)
+                .setParameter("cardNumber", cardNumber)
+                .getSingleResult();
+            
+            
+        } catch(NoResultException e){
+            return null;
+        }
+    }
 }

@@ -38,7 +38,7 @@
                                     <h3>${piatto.nome?html}</h3>
                                     <p>${piatto.descrizione?html}</p>
                                 </div>
-                                <div class="item-price">€${piatto.costo?html}</div>
+                                <div class="item-price">€${piatto.costo?string("0.00")}</div>
                                 <button class="add-button" data-id="${piatto.id}">+</button>
                             </div>
                         </#list>
@@ -57,7 +57,10 @@
         <h2>Il tuo ordine</h2>
         <ul id="cart-items"></ul>
         <p id="cart-total">Totale: €0.00</p>
-        <a href="checkout.html"><button>Prosegui</button></a>
+        <form id="cartForm" method="POST" action="/DeliveryHomeRestaurant/Ordine/showConfirmOrder">
+            <input type="hidden" name="cart_data" id="cartDataInput">
+            <button type="submit">Prosegui Ordine</button>
+        </form>
     </div>
 
     <div id="product-modal" class="modal hidden">
@@ -71,13 +74,16 @@
 
     <script src="${contextPath}/resources/Js/hamburger.js"></script>
     <script src="${contextPath}/resources/Js/theme.js" defer></script>
-
 </body>
 
 <script src="${contextPath}/resources/Js/cart.js" defer></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         cart = localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [];
+        cartForm.addEventListener("submit", function(event) {
+            const currentCart = localStorage.getItem("cart");
+            document.getElementById("cartDataInput").value = currentCart;
+        });
         renderCart();
         showCartIcon();
     });

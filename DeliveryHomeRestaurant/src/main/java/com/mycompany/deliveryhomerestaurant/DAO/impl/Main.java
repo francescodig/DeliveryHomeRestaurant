@@ -24,10 +24,7 @@ import com.mycompany.deliveryhomerestaurant.Model.ECartaCredito;
 import com.mycompany.deliveryhomerestaurant.Model.EIndirizzo;
 import java.util.List;
 import java.util.Map;
-import com.mycompany.deliveryhomerestaurant.DAO.ECarrelloDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.ECarrelloDAOImpl;
-import com.mycompany.deliveryhomerestaurant.Model.ECarrello;
-import com.mycompany.deliveryhomerestaurant.Model.EItemCarrello;
+import com.mycompany.deliveryhomerestaurant.Model.EItemOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
 import com.mycompany.deliveryhomerestaurant.DAO.ECuocoDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.ERiderDAO;
@@ -58,7 +55,6 @@ public class Main {
         EProdottoDAO prodottoDAO = new EProdottoDAOImpl(em);
         ECartaCreditoDAO cartaDAO = new ECartaCreditoDAOImpl(em);
         EIndirizzoDAO indirizzoDAO = new EIndirizzoDAOImpl(em);
-        ECarrelloDAO carrelloDAO = new ECarrelloDAOImpl(em);
         ECuocoDAO cuocoDAO = new ECuocoDAOImpl(em);
         ERiderDAO riderDAO = new ERiderDAOImpl(em);
         ESegnalazioneDAO segnalazioneDAO = new ESegnalazioneDAOImpl(em);
@@ -273,7 +269,7 @@ public class Main {
 //        // Assumiamo che esista già un prodotto con ID 1
 //        EProdotto prodotto = prodottoDAO.getProductById(1);
 //        if (prodotto != null && carrello != null) {
-//            EItemCarrello nuovoItem = new EItemCarrello();
+//            EItemOrdine nuovoItem = new EItemOrdine();
 //            nuovoItem.setProdotto(prodotto);
 //            nuovoItem.setQuantita(10);
 //            nuovoItem.setCarrello(carrello);
@@ -288,7 +284,7 @@ public class Main {
 //        // === TEST removeOrUpdateItemFromCart ===
 //        // Rimuove 1 quantità del prodotto con ID 1
 //        if (prodotto != null && carrello != null) {
-//            EItemCarrello itemToRemove = new EItemCarrello();
+//            EItemOrdine itemToRemove = new EItemOrdine();
 //            itemToRemove.setProdotto(prodotto);
 //            itemToRemove.setQuantita(5);  // quantità da rimuovere
 //

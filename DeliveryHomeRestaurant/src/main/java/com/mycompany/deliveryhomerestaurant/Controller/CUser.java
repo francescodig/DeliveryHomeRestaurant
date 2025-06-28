@@ -1,40 +1,52 @@
 package com.mycompany.deliveryhomerestaurant.Controller;
 
+import com.mycompany.deliveryhomerestaurant.DAO.ECartaCreditoDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EClienteDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EIndirizzoDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EMenuDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
 import com.mycompany.deliveryhomerestaurant.DAO.ERecensioneDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.ECartaCreditoDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EClienteDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EIndirizzoDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EMenuDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EOrdineDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ERecensioneDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
+import com.mycompany.deliveryhomerestaurant.Model.ECartaCredito;
 import com.mycompany.deliveryhomerestaurant.Model.ECliente;
+import com.mycompany.deliveryhomerestaurant.Model.EIndirizzo;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
 import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
 import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
+import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.mindrot.jbcrypt.BCrypt;
 
-public class CUser {
+public class CUser{
 
 
     public void home(HttpServletRequest request, HttpServletResponse response, String[] params)
@@ -57,8 +69,8 @@ public class CUser {
             Map<String, Object> data = new HashMap<>();
             data.put("contextPath", request.getContextPath());
             data.put("reviews", reviews);
-
-            HttpSession session = request.getSession(false);
+            
+            HttpSession session = UtilSession.getSession(request);
             boolean logged = false;
             if (session != null && session.getAttribute("utente") != null) {
                 logged = true;
@@ -114,7 +126,7 @@ public class CUser {
             data.put("contextPath", request.getContextPath());
             data.put("menu", menu);
 
-            HttpSession session = request.getSession(false);
+            HttpSession session = UtilSession.getSession(request);
             boolean logged = false;
             if (session != null && session.getAttribute("utente") != null) {
                 logged = true;
@@ -137,7 +149,7 @@ public class CUser {
         
         
         try {
-            HttpSession session = request.getSession(false);
+            HttpSession session = UtilSession.getSession(request);
             ECliente utente = null;
             boolean logged = false;
             if (session != null) {
@@ -145,7 +157,7 @@ public class CUser {
                 logged = true;
             }
             if (utente == null) {
-                response.sendRedirect(request.getContextPath() + "/login");
+                response.sendRedirect(request.getContextPath() + "/showProfile");
                 return;
             }
 
@@ -176,18 +188,22 @@ public class CUser {
         
         try {
 
-            HttpSession session = request.getSession(false);
+            HttpSession session = UtilSession.getSession(request);
             ECliente utente = null;
             EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
             boolean logged = false;
 
             if (session != null) {
                 utente =  (ECliente) session.getAttribute("utente");
+                ECliente attachedClient = (ECliente) utenteDAO.findById(utente.getId());
                 logged = true;
+               
 
                 Template template = cfg.getTemplate("account.ftl");
                 Map<String, Object> data = new HashMap<>();
                 data.put("contextPath", request.getContextPath());
+                data.put("indirizzi", attachedClient.getIndirizziConsegna() );
+                data.put("carte_credito", attachedClient.getMetodiPagamento());
                 data.put("utente", utente);
                 data.put("logged", logged);
 
@@ -213,7 +229,7 @@ public class CUser {
         
         EntityManager em = (EntityManager) request.getAttribute("em");
         try {
-            HttpSession session = request.getSession(true);
+            HttpSession session = UtilSession.startSession(request);
 
 
             // se l'utente è gia in sessione 
@@ -291,7 +307,7 @@ public class CUser {
         
         boolean register = service.Register(utente);
         if(register){
-            HttpSession session = request.getSession(true);
+            HttpSession session = UtilSession.startSession(request);
             EUtente utenteOnDb = utenteDAO.findByUsername(email);
             session.setAttribute("utente", utenteOnDb);
             response.sendRedirect(request.getContextPath() + "/User/home/");    
@@ -307,7 +323,7 @@ public class CUser {
         
             try {
            // 1. Ottieni la sessione corrente (senza crearne una nuova se non esiste)
-           HttpSession session = request.getSession(false);
+           HttpSession session = UtilSession.getSession(request);
 
            // 2. Se la sessione esiste, invalidalà
            if (session != null) {
@@ -331,7 +347,7 @@ public class CUser {
     EntityManager em = (EntityManager) request.getAttribute("em");
     EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
 
-    HttpSession session = request.getSession(false);
+    HttpSession session = UtilSession.getSession(request);
     String newName = request.getParameter("newName");
     String newSurname = request.getParameter("newSurname");
 
@@ -352,9 +368,7 @@ public class CUser {
 
         
         response.sendRedirect(request.getContextPath() + "/User/showProfile");
-    } else {
-        response.sendRedirect(request.getContextPath() + "/User/login");
-    }
+    } 
 }
  
  public void changePassword(HttpServletRequest request, HttpServletResponse response, String[] params)
@@ -362,7 +376,7 @@ public class CUser {
      
      EntityManager em = (EntityManager) request.getAttribute("em");
      EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
-     HttpSession sessione = request.getSession(false);
+     HttpSession sessione = UtilSession.getSession(request);
      
      try{
          String oldPassword = request.getParameter("oldPassword");
@@ -383,12 +397,118 @@ public class CUser {
      } catch(Exception e){
          
      }
-     
-     
-     
-     
-     
-     
  }
+     
+/* Differenza tra Attached e Detached entity */  
+public void addAddress(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException, TemplateException {
+
+    EntityManager em = (EntityManager) request.getAttribute("em");
+
+    try {
+        String via = request.getParameter("via");
+        String cap = request.getParameter("cap");
+        String civico = request.getParameter("civico");
+        String citta = request.getParameter("citta");
+
+        // Recupera l'utente dalla sessione solo per prenderne l'ID
+        ECliente clienteSession = (ECliente) UtilSession.getSession(request).getAttribute("utente");
+
+        // Ricarica il cliente dal DB con l'EntityManager
+        ECliente cliente = em.find(ECliente.class, clienteSession.getId());
+
+        // Crea l'indirizzo
+        EIndirizzo indirizzo = new EIndirizzo();
+        indirizzo.setVia(via);
+        indirizzo.setCitta(citta);
+        indirizzo.setCivico(civico);
+        indirizzo.setCap(cap);
+
+        em.getTransaction().begin();
+
+        // Salva l'indirizzo
+        em.persist(indirizzo);
+
+        // Collega indirizzo al cliente
+        cliente.getIndirizziConsegna().add(indirizzo);
+
+        // Il cliente è managed, quindi non serve merge
+        
+
+        em.getTransaction().commit();
+
+        response.sendRedirect(request.getContextPath() + "/User/showProfile");
+
+    } catch (Exception e) {
+        em.getTransaction().rollback();
+        response.sendRedirect(request.getContextPath() + "/User/showProfile");
+        e.printStackTrace();
+    }
+}
+
+public void addCreditCard(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws IOException, ServletException, TemplateException {
+
+    EntityManager em = (EntityManager) request.getAttribute("em");
+    ECliente cliente = (ECliente) UtilSession.getSession(request).getAttribute("utente");
+
+    try {
+        // Validazione e parsing dei parametri
+        String numeroCarta = request.getParameter("numero_carta");
+        String nomeCarta = request.getParameter("nome_carta");
+        String dataScadenzaStr = request.getParameter("data_scadenza"); // formato atteso: "MM/yy"
+        String cvv = request.getParameter("cvv");
+        String nomeIntestatario = request.getParameter("nome_intestatario");
+
+        // Validazione base
+        if (numeroCarta == null || numeroCarta.length() != 16 || !numeroCarta.matches("\\d{16}")) {
+            throw new IllegalArgumentException("Numero carta non valido.");
+        }
+        if (cvv == null || !cvv.matches("\\d{3,4}")) {
+            throw new IllegalArgumentException("CVV non valido.");
+        }
+
+        // Parsing data scadenza in formato "MM/yy"
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
+        YearMonth yearMonth = YearMonth.parse(dataScadenzaStr, formatter);
+        LocalDate dataScadenza = yearMonth.atEndOfMonth(); // ultimo giorno del mese
+        LocalDateTime dataScadenzaCompleta = dataScadenza.atTime(23, 59, 59);
+
+        // Costruzione oggetto carta
+        ECartaCredito cartaCredito = new ECartaCredito();
+        cartaCredito.setNumeroCarta(numeroCarta);
+        cartaCredito.setNomeCarta(nomeCarta);
+        cartaCredito.setDataScadenza(dataScadenzaCompleta);
+        cartaCredito.setCvv(cvv);
+        cartaCredito.setNomeIntestatario(nomeIntestatario);
+        cartaCredito.setCliente(cliente);
+
+        // Persistenza
+        em.getTransaction().begin();
+        em.persist(cartaCredito);
+        em.getTransaction().commit();
+
+        // Reindirizzamento al profilo utente
+        response.sendRedirect(request.getContextPath() + "/User/showProfile");
+
+    } catch (IllegalArgumentException e) {
+        em.getTransaction().rollback();
+        // puoi gestire il messaggio con una setResponse o logging
+        e.printStackTrace();
+    } catch (PersistenceException e) {
+        em.getTransaction().rollback();
+        e.printStackTrace();
+    } catch (Exception e) {
+        em.getTransaction().rollback();
+        e.printStackTrace();
+    }
+}
+
+     
+     
+     
+     
+     
+ 
     
 }

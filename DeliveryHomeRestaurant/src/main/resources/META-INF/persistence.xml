@@ -7,14 +7,13 @@
   <persistence-unit name="myPersistenceUnit" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-    <class>Entity.ECarrello</class>
     <class>Entity.ECartaCredito</class>
     <class>Entity.ECategoria</class>
     <class>Entity.ECliente</class>
     <class>Entity.ECuoco</class>
     <class>Entity.EElencoProdotti</class>
     <class>Entity.EIndirizzo</class>
-    <class>Entity.EItemCarrello</class>
+    <class>Entity.EItemOrdine</class>
     <class>Entity.EOrdine</class>
     <class>Entity.EProdotto</class>
     <class>Entity.ERecensione</class>

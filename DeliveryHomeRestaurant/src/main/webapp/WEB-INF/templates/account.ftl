@@ -9,12 +9,11 @@
     <link rel="stylesheet" href="${contextPath}/resources/css/layout.css">
 </head>
 <body>
-    <!-- Header -->
     <#include "header.ftl">
+    <#assign indirizzi = indirizzi![]>
+    <#assign carte_credito = carte_credito![]>
 
-    <!-- Main Content -->
     <main>
-        <!-- Hero Section -->
         <section class="hero">
             <div class="hero-content">
                 <h1>HOME RESTAURANT</h1>
@@ -33,12 +32,10 @@
                         <label for="newName">Nuovo Nome</label>
                         <input id="newName" name="newName" value="${utente.nome}" required>
                     </div>
-
                     <div class="form-group">
                         <label for="newSurname">Nuovo Cognome</label>
                         <input id="newSurname" name="newSurname" value="${utente.cognome}" required>
                     </div>
-
                     <button type="submit" class="btn-submit">Aggiorna Profilo</button>
                 </form>
             </div>
@@ -51,14 +48,66 @@
                         <label for="oldPassword">Vecchia Password</label>
                         <input type="password" id="oldPassword" name="oldPassword" required>
                     </div>
-
                     <div class="form-group">
                         <label for="newPassword">Nuova Password</label>
                         <input type="password" id="newPassword" name="newPassword" required>
                     </div>
-
                     <button type="submit" class="btn-submit">Aggiorna Password</button>
                 </form>
+            </div>
+
+            <!-- Sezione Indirizzi -->
+            <div class="address-section">
+                <h3>I miei indirizzi</h3>
+                <#if indirizzi?has_content>
+                    <ul class="address-list">
+                        <#list indirizzi as indirizzo>
+                            <li class="address-item">
+                                <span>
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    ${indirizzo.via}, ${indirizzo.civico}, ${indirizzo.cap} ${indirizzo.citta}
+                                </span>
+                            </li>
+                        </#list>
+                    </ul>
+                <#else>
+                    <p>Nessun indirizzo registrato.</p>
+                </#if>
+                <button type="button" data-modal-target="addressModal" class="btn-link-modal">
+                    <i class="fas fa-plus"></i> <#-- Icona font-awesome -->
+                    <#-- Testo del pulsante -->
+                    <#-- Puoi anche internazionalizzare con una variabile o un messaggio se usi i18n -->
+                    Aggiungi indirizzo
+                </button>
+            </div>
+
+            <!-- Sezione Carte di Credito -->
+            <div class="credit-cards-section">
+                <h3>Le mie carte di credito</h3>
+                <#if carte_credito?has_content>
+                    <ul class="cards-list">
+                        <#list carte_credito as carta>
+                            <li class="card-item">
+                                <span>
+                                    <i class="far fa-credit-card"></i>
+                                    ${carta.nomeCarta}
+                                </span>
+                                <form action="/DeliveryHomeRestaurant/User/removeCreditCard" method="POST" class="remove-card-form">
+                                    <input type="hidden" name="numero_carta" value="${carta.numeroCarta}">
+                                    <button type="submit" class="remove-card-btn" title="Rimuovi Metodo di Pagamento">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </li>
+                        </#list>
+                    </ul>
+                <#else>
+                    <p>Nessuna carta di credito registrata.</p>
+                </#if>
+                <!-- Bottone per aprire il modal Aggiungi Carta -->
+                <button type="button" data-modal-target="cardModal" class="btn-link-modal">
+                    <i class="fas fa-plus"></i> Aggiungi carta di credito
+                </button>
             </div>
 
             <!-- Link ai miei ordini -->
@@ -73,14 +122,91 @@
                 <a href="/DeliveryHomeRestaurant/User/logoutUser/" class="btn-logout">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
+                <a href="/DeliveryHomeRestaurant/User/deleteAccount/" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Delete Account
+                </a>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
     <#include "footer.ftl">
+
+    <!-- Modal Aggiungi Indirizzo -->
+    <div id="addressModal" class="modal" style="display:none">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+
+            <h2>Aggiungi un nuovo indirizzo</h2>
+
+            <form method="POST" action="${contextPath}/User/addAddress" class="form">
+                <div class="form-group">
+                    <label for="via">Via</label>
+                    <input type="text" id="via" name="via" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="civico">Civico</label>
+                    <input type="text" id="civico" name="civico" pattern="^[0-9]+[a-zA-Z]?$" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="citta">Città</label>
+                    <input type="text" id="citta" name="citta" pattern="^[a-zA-ZÀ-ÿ' ]{2,50}$" title="Solo lettere ammesse" autocapitalize="on" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cap">CAP</label>
+                    <input type="text" id="cap" name="cap" pattern="\d{5}" inputmode="numeric" maxlength="5" title="Inserisci un CAP valido (5 cifre)" required>
+                </div>
+
+                <button type="submit">Salva Indirizzo</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Aggiungi Carta -->
+    <div id="cardModal" class="modal" style="display:none">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+
+            <h2>Aggiungi un nuovo metodo di pagamento</h2>
+
+            <form method="POST" action="${contextPath}/User/addCreditCard" class="form">
+                <div class="form-group">
+                    <label for="nome_carta">Nominativo Carta</label>
+                    <input type="text" id="nome_carta" name="nome_carta" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="numero_carta">Numero Carta</label>
+                    <input type="text" id="numero_carta" name="numero_carta" pattern="\d{16}" inputmode="numeric" maxlength="16" title="Inserisci 16 cifre numeriche" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cvv">CVV</label>
+                    <input type="text" id="cvv" name="cvv" pattern="\d{3,4}" inputmode="numeric" maxlength="4" title="Inserisci un CVV di 3 o 4 cifre" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nome_intestatario">Nome Intestatario</label>
+                    <input type="text" id="nome_intestatario" name="nome_intestatario" pattern="^[a-zA-ZÀ-ÿ' ]{2,50}$" title="Inserisci un nome valido (solo lettere e spazi)" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="data_scadenza">Data Scadenza</label>
+                    <input type="text" id="data_scadenza" name="data_scadenza" pattern="^(0[1-9]|1[0-2])/\d{2}$" inputmode="numeric" placeholder="MM/AA" required>
+                </div>
+
+                <button type="submit">Salva Metodo di Pagamento</button>
+            </form>
+        </div>
+    </div>
+
+
+
 
     <script src="${contextPath}/resources/Js/hamburger.js"></script>
     <script src="${contextPath}/resources/Js/theme.js" defer></script>
+    <script src="${contextPath}/resources/Js/modal.js" defer></script>
 </body>
 </html>

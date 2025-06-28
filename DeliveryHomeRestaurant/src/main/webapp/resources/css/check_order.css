@@ -1,0 +1,128 @@
+body {
+    background-color: var(--colore-bianco);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--colore-testo);
+    margin: 0;
+    padding: 0;
+}
+
+.cart-section {
+    padding: 30px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.cart-container {
+    max-width: 800px;
+    width: 100%;
+    background-color: var(--colore-bianco);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 0 12px var(--colore-ombra-media);
+    border: 1px solid var(--colore-bordo);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.order-header h2 {
+    font-size: 24px;
+    color: var(--colore-title);
+    margin: 0;
+}
+
+.order-items ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin: 10px 0 20px;
+}
+
+.total-amount {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--colore-testo);
+    margin-top: 10px;
+}
+
+input[type="text"],
+input[type="datetime-local"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid var(--colore-input-bordo);
+    box-sizing: border-box;
+    background-color: var(--colore-bianco);
+    color: var(--colore-testo);
+}
+
+.address-section,
+.credit-cards-section,
+.delivery-time-options {
+    margin-top: 30px;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--colore-testo-secondario);
+}
+
+.radio-label i {
+    color: var(--colore-primario);
+}
+
+.add-new-btn {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--colore-primario);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.add-new-btn:hover {
+    text-decoration: underline;
+    color: var(--colore-primario-hover);
+}
+
+.checkout-button {
+    margin-top: 30px;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: var(--colore-primario);
+    color: var(--colore-bianco);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.checkout-button:hover {
+    background-color: var(--colore-primario-hover);
+}
+
+.checkout-button.disabled {
+    background-color: var(--colore-bordo);
+    cursor: not-allowed;
+    color: var(--colore-testo-secondario);
+}
