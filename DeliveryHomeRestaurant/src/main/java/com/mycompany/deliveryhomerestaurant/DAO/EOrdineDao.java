@@ -15,6 +15,7 @@ import java.util.List;
  */
 public interface EOrdineDao {
     
+    EOrdine getOrdineById(String id);
     List<EOrdine> getAllOrders();
     List<EOrdine> getOrdersByClient(ECliente cliente);
     List<EOrdine> getOrdersByState(String state);

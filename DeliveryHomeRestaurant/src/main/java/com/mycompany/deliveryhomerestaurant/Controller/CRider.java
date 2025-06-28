@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,5 +79,45 @@ public class CRider {
         response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Errore durante il recupero degli ordini.");
     }
 }
+    
+    public void cambiaStatoOrdine(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws IOException, TemplateException, ServletException{
+        
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
+        
+        String ordineId = request.getParameter("ordineId");
+        String nuovoStato = request.getParameter("stato");
+        
+        EOrdine ordine = ordineDAO.getOrdineById(ordineId);
+        
+        try{
+            
+
+            
+            em.getTransaction().begin();
+            ordine.setStato(nuovoStato);
+            if(nuovoStato.equals("consegnato")){
+                ordine.setDataConsegna(LocalDateTime.now());
+            }
+            em.flush();
+            em.getTransaction().commit();
+            
+            response.sendRedirect(request.getContextPath() + "/Rider/showOrders");
+            
+            
+            
+            
+            
+            
+        } catch(Exception e){
+            
+          em.getTransaction().rollback(); // meglio fare rollback in caso di errore
+          throw new ServletException("Errore nel cambio stato ordine", e);
+            
+        }
+        
+        
+    }
 
 }

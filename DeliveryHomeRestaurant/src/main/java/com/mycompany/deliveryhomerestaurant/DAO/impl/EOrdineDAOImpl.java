@@ -23,6 +23,18 @@ public class EOrdineDAOImpl implements EOrdineDao {
     }
 
     @Override
+    public EOrdine getOrdineById(String id){
+        
+        try {
+            return em.find(EOrdine.class, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    
+    @Override
     public List<EOrdine> getAllOrders() {
         TypedQuery<EOrdine> query = em.createQuery("SELECT o FROM EOrdine o", EOrdine.class);
         return query.getResultList();
