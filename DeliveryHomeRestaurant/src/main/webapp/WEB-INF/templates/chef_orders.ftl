@@ -18,27 +18,21 @@
                     <div class="delivery-header">
                         <h3>Ordine #${order.id}</h3>
 
-                        <#-- Calcolo della classe stato -->
+                        <#-- Calcolo della classe in base allo stato -->
                         <#assign statoClasse = "">
-                        <#switch order.stato>
-                            <#case "annullato">
-                                <#assign statoClasse = "annullato">
-                            <#break>
-                            <#case "consegnato">
-                                <#assign statoClasse = "consegnato">
-                            <#break>
-                            <#case "pronto">
-                                <#assign statoClasse = "pronto">
-                            <#break>
-                            <#case "in_preparazione">
-                                <#assign statoClasse = "in_preparazione">
-                            <#break>
-                            <#case "in_attesa">
-                                <#assign statoClasse = "errore">
-                            <#break>
-                            <#default>
-                                <#assign statoClasse = "">
-                        </#switch>
+                        <#if order.stato == "annullato">
+                            <#assign statoClasse = "annullato">
+                        <#elseif order.stato == "consegnato">
+                            <#assign statoClasse = "consegnato">
+                        <#elseif order.stato == "pronto">
+                            <#assign statoClasse = "pronto">
+                        <#elseif order.stato == "in_preparazione">
+                            <#assign statoClasse = "in_preparazione">
+                        <#elseif order.stato == "in_attesa">
+                            <#assign statoClasse = "errore">
+                        <#else>
+                            <#assign statoClasse = "sconosciuto">
+                        </#if>
 
                         <span class="order-status ${statoClasse?html}">
                             ${order.stato?replace("_", " ")?cap_first}
@@ -46,9 +40,14 @@
                     </div>
 
                     <div class="delivery-info">
-                        <p><strong>Note:</strong> ${order.note?html}</p>
-                        <p><strong>Data esecuzione:</strong> ${order.dataEsecuzione?string("dd/MM/yyyy HH:mm:ss")}</p>
-                        <p><strong>Data ricezione:</strong> ${order.dataRicezione?string("dd/MM/yyyy HH:mm:ss")}</p>
+                        <p><strong><strong>Note:</strong> 
+                            <#if order.note??>
+                                ${order.note?html}
+                            <#else>
+                                <i>Nessuna nota</i>
+                            </#if></p>
+                        <p><strong>Data esecuzione:</strong> ${order.dataEsecuzione}</p>
+                        <p><strong>Data ricezione:</strong> ${order.dataRicezione}</p>
                         <p><strong>Costo totale:</strong> €${order.costo}</p>
                         <p><strong>Prodotti:</strong></p>
                         <ul>
@@ -58,10 +57,10 @@
                         </ul>
                     </div>
 
-                    <form method="POST" action="/Delivery/Chef/cambiaStatoOrdine" class="status-form">
+                    <form method="POST" action="${contextPath}/Chef/cambiaStatoOrdine" class="status-form">
                         <input type="hidden" name="ordineId" value="${order.id}">
                         <label for="status${order.id}">Modifica stato:</label>
-                        <select name="stato" id="status${order.id}" class="status-select">
+                        <select name="stato" id="status${order.id}" class="status-select" onchange="this.form.submit()">
                             <option value="">-- Seleziona stato --</option>
                             <option value="annullato" <#if statoClasse == "annullato">selected</#if>>Annullato</option>
                             <option value="consegnato" <#if statoClasse == "consegnato">selected</#if>>Consegnato</option>
@@ -76,17 +75,6 @@
     </main>
 
     <#include "footer.ftl">
-
-    <!-- Modale per conferma -->
-    <div id="confirmModal" class="modal">
-        <div class="modal-content">
-            <p>Sei sicuro di voler aggiornare lo stato in <strong><span id="modalStatus"></span></strong>?</p>
-            <button id="confirmBtn">Conferma</button>
-            <button onclick="closeModal()">Annulla</button>
-        </div>
-    </div>
-
-    <script src="${contextPath}/resources/Js/orders.js"></script>
     <script src="${contextPath}/resources/Js/hamburger.js"></script>
     <script src="${contextPath}/resources/Js/theme.js" defer></script>
 

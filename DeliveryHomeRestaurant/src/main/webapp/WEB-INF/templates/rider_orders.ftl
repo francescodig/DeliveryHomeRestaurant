@@ -78,6 +78,9 @@
 
     <#include "footer.ftl">
 
+    <script src="${contextPath}/resources/Js/hamburger.js"></script>
+    <script src="${contextPath}/resources/Js/theme.js" defer></script>
+
 </body>
 
 
