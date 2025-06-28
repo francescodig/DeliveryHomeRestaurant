@@ -2,7 +2,7 @@
     <div class="header-container">
 
         <!-- Hamburger visibile solo su mobile -->
-        <button type='button' class="hamburger" id="hamburger">&#9776;</button>
+        <button type="button" class="hamburger" id="hamburger">&#9776;</button>
 
         <a href="/DeliveryHomeRestaurant/User/home/" class="logo">
             <img src="${contextPath}/resources/Immagini/logo.png" alt="Logo">
@@ -11,11 +11,23 @@
         <div class="nav-links" id="nav-menu">
             <a href="/DeliveryHomeRestaurant/User/home/">Home</a>
             <a href="/DeliveryHomeRestaurant/User/mostraMenu/">Menù</a>
-            <a href="/DeliveryHomeRestaurant/User/order/">Ordina</a>
-            <#if logged?? && logged>
-            <!-- Contenuto quando l'utente è loggato -->
-                <a href="/DeliveryHomeRestaurant/User/showMyOrders/">I Miei Ordini</a>  
+
+            <#if role?? && (role == "cliente" || role == "")>
+                <a href="/DeliveryHomeRestaurant/User/order/">Ordina</a>
             </#if>
+
+            <#if role?? && role == "rider">
+                <a href="/DeliveryHomeRestaurant/Rider/showOrders/">Ordini Consegna</a>
+            </#if>
+
+            <#if role?? && role == "cuoco">
+                <a href="/DeliveryHomeRestaurant/Chef/showOrders/">Ordini In Cucina</a>
+            </#if>
+
+            <#if logged?? && (logged && role == "cliente")>
+                <a href="/DeliveryHomeRestaurant/User/showMyOrders/">I Miei Ordini</a>
+            </#if>
+        </div>
 
         <div class="user-actions">
             <a href="admin_panel.html" title="Notifiche">

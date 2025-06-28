@@ -67,14 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Funzione per aggiornare l'orario di consegna
     const aggiornaOrarioConsegna = (indirizzoId) => {
-        fetch('/Delivery/Ordine/getEstimatedTime', {
+        fetch('/DeliveryHomeRestaurant/Ordine/getEstimatedTime', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: new URLSearchParams({
                 'cart_data': JSON.stringify(cart),
-                'indirizzo_id': indirizzoId,
+                'indirizzo_id': indirizzoId
             })
         })
         .then(response => {

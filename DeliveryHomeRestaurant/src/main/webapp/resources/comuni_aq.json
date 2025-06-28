@@ -1,0 +1,434 @@
+[
+  {
+    "nome": "Acciano",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Aielli",
+    "cap": ["67041"]
+  },
+  {
+    "nome": "Alfedena",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Anversa degli Abruzzi",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Ateleta",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Avezzano",
+    "cap": ["67051"]
+  },
+  {
+    "nome": "Balsorano",
+    "cap": ["67052"]
+  },
+  {
+    "nome": "Barete",
+    "cap": ["67010"]
+  },
+  {
+    "nome": "Barisciano",
+    "cap": ["67021"]
+  },
+  {
+    "nome": "Barrea",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Bisegna",
+    "cap": ["67050"]
+  },
+  {
+    "nome": "Bugnara",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Cagnano Amiterno",
+    "cap": ["67012"]
+  },
+  {
+    "nome": "Calascio",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Campo di Giove",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Campotosto",
+    "cap": ["67013"]
+  },
+  {
+    "nome": "Canistro",
+    "cap": ["67050"]
+  },
+  {
+    "nome": "Cansano",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Capestrano",
+    "cap": ["67022"]
+  },
+  {
+    "nome": "Capistrello",
+    "cap": ["67053"]
+  },
+  {
+    "nome": "Capitignano",
+    "cap": ["67014"]
+  },
+  {
+    "nome": "Caporciano",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Cappadocia",
+    "cap": ["67060"]
+  },
+  {
+    "nome": "Carapelle Calvisio",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Carsoli",
+    "cap": ["67061"]
+  },
+  {
+    "nome": "Castel del Monte",
+    "cap": ["67023"]
+  },
+  {
+    "nome": "Castel di Ieri",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Castel di Sangro",
+    "cap": ["67031"]
+  },
+  {
+    "nome": "Castellafiume",
+    "cap": ["67050"]
+  },
+  {
+    "nome": "Castelvecchio Calvisio",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Castelvecchio Subequo",
+    "cap": ["67024"]
+  },
+  {
+    "nome": "Celano",
+    "cap": ["67043"]
+  },
+  {
+    "nome": "Cerchio",
+    "cap": ["67044"]
+  },
+  {
+    "nome": "Civita d'Antino",
+    "cap": ["67050"]
+  },
+  {
+    "nome": "Civitella Alfedena",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Civitella Roveto",
+    "cap": ["67054"]
+  },
+  {
+    "nome": "Cocullo",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Collarmele",
+    "cap": ["67040"]
+  },
+  {
+    "nome": "Collelongo",
+    "cap": ["67050"]
+  },
+  {
+    "nome": "Collepietro",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Corfinio",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Fagnano Alto",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Fontecchio",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Fossa",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Gagliano Aterno",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Gioia dei Marsi",
+    "cap": ["67055"]
+  },
+  {
+    "nome": "Goriano Sicoli",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Introdacqua",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "L'Aquila",
+    "cap": ["67100"]
+  },
+  {
+    "nome": "Lecce nei Marsi",
+    "cap": ["67050"]
+  },
+  {
+    "nome": "Luco dei Marsi",
+    "cap": ["67056"]
+  },
+  {
+    "nome": "Lucoli",
+    "cap": ["67045"]
+  },
+  {
+    "nome": "Magliano de' Marsi",
+    "cap": ["67062"]
+  },
+  {
+    "nome": "Massa d'Albe",
+    "cap": ["67050"]
+  },
+  {
+    "nome": "Molina Aterno",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Montereale",
+    "cap": ["67015"]
+  },
+  {
+    "nome": "Morino",
+    "cap": ["67050"]
+  },
+  {
+    "nome": "Navelli",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Ocre",
+    "cap": ["67040"]
+  },
+  {
+    "nome": "Ofena",
+    "cap": ["67025"]
+  },
+  {
+    "nome": "Opi",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Oricola",
+    "cap": ["67063"]
+  },
+  {
+    "nome": "Ortona dei Marsi",
+    "cap": ["67050"]
+  },
+  {
+    "nome": "Ortucchio",
+    "cap": ["67050"]
+  },
+  {
+    "nome": "Ovindoli",
+    "cap": ["67046"]
+  },
+  {
+    "nome": "Pacentro",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Pereto",
+    "cap": ["67064"]
+  },
+  {
+    "nome": "Pescasseroli",
+    "cap": ["67032"]
+  },
+  {
+    "nome": "Pescina",
+    "cap": ["67057"]
+  },
+  {
+    "nome": "Pescocostanzo",
+    "cap": ["67033"]
+  },
+  {
+    "nome": "Pettorano sul Gizio",
+    "cap": ["67034"]
+  },
+  {
+    "nome": "Pizzoli",
+    "cap": ["67017"]
+  },
+  {
+    "nome": "Poggio Picenze",
+    "cap": ["67026"]
+  },
+  {
+    "nome": "Prata d'Ansidonia",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Pratola Peligna",
+    "cap": ["67035"]
+  },
+  {
+    "nome": "Prezza",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Raiano",
+    "cap": ["67027"]
+  },
+  {
+    "nome": "Rivisondoli",
+    "cap": ["67036"]
+  },
+  {
+    "nome": "Rocca di Botte",
+    "cap": ["67066"]
+  },
+  {
+    "nome": "Rocca di Cambio",
+    "cap": ["67047"]
+  },
+  {
+    "nome": "Rocca di Mezzo",
+    "cap": ["67048"]
+  },
+  {
+    "nome": "Rocca Pia",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Roccacasale",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Roccaraso",
+    "cap": ["67037"]
+  },
+  {
+    "nome": "San Benedetto dei Marsi",
+    "cap": ["67058"]
+  },
+  {
+    "nome": "San Benedetto in Perillis",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "San Demetrio ne' Vestini",
+    "cap": ["67028"]
+  },
+  {
+    "nome": "San Pio delle Camere",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "San Vincenzo Valle Roveto",
+    "cap": ["67050"]
+  },
+  {
+    "nome": "Sant'Eusanio Forconese",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Sante Marie",
+    "cap": ["67067"]
+  },
+  {
+    "nome": "Santo Stefano di Sessanio",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Scanno",
+    "cap": ["67038"]
+  },
+  {
+    "nome": "Scontrone",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Scoppito",
+    "cap": ["67019"]
+  },
+  {
+    "nome": "Scurcola Marsicana",
+    "cap": ["67068"]
+  },
+  {
+    "nome": "Secinaro",
+    "cap": ["67029"]
+  },
+  {
+    "nome": "Sulmona",
+    "cap": ["67039"]
+  },
+  {
+    "nome": "Tagliacozzo",
+    "cap": ["67069"]
+  },
+  {
+    "nome": "Tione degli Abruzzi",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Tornimparte",
+    "cap": ["67049"]
+  },
+  {
+    "nome": "Trasacco",
+    "cap": ["67059"]
+  },
+  {
+    "nome": "Villalago",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Villa Santa Lucia degli Abruzzi",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Villa Sant'Angelo",
+    "cap": ["67020"]
+  },
+  {
+    "nome": "Villavallelonga",
+    "cap": ["67050"]
+  },
+  {
+    "nome": "Villetta Barrea",
+    "cap": ["67030"]
+  },
+  {
+    "nome": "Vittorito",
+    "cap": ["67030"]
+  }
+]

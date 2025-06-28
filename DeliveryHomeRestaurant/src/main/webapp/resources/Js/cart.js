@@ -95,7 +95,7 @@
     }
 
     function sendOrderToServer() {
-        fetch('/DeliveryHomeRestaurant/Ordine/confirmOrder', {
+        fetch('/Delivery/Ordine/confirmOrder', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -109,7 +109,7 @@
             if (data.success) {
                 alert('Ordine confermato!');
                 localStorage.removeItem('cart'); //Pulizia carrello in locale
-                window.location.href = '/DeliveryHomeRestaurant/Ordine/showConfirmOrder';
+                window.location.href = '/Delivery/Ordine/showConfirmOrder';
             } else {
                 alert('Errore: ' + data.message);
             }

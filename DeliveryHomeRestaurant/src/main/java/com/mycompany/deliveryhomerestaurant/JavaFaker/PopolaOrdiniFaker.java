@@ -112,6 +112,7 @@ public class PopolaOrdiniFaker {
             BigDecimal costoTotale = prodottiOrdine.stream()
                     .map(p -> p.getCosto() != null ? p.getCosto() : BigDecimal.ZERO)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
+
             ordine.setCosto(costoTotale);
 
             // ---- Stato casuale ----

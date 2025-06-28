@@ -43,6 +43,7 @@ public class CRider {
     HttpSession session = UtilSession.getSession(request);
     EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
     EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
+    String role = "";
 
     try {
         EUtente utente = (EUtente) session.getAttribute("utente");
@@ -60,6 +61,8 @@ public class CRider {
         ERider riderAttached = (ERider) utenteDAO.findById(utente.getId());
 
         if (riderAttached != null) {
+            
+            role = riderAttached.getRuolo();
             List<EOrdine> ordiniRider = ordineDAO.getOrdersByState("pronto");
 
             Template template = cfg.getTemplate("rider_orders.ftl");
@@ -67,6 +70,7 @@ public class CRider {
             Map<String, Object> data = new HashMap<>();
             data.put("contextPath", request.getContextPath());
             data.put("orders", ordiniRider);
+            data.put("role", role);
 
             response.setContentType("text/html;charset=UTF-8");
             template.process(data, response.getWriter());

@@ -44,6 +44,7 @@ public class CChef {
 
     try {
         EUtente utente = (EUtente) session.getAttribute("utente");
+        String role = "";
         
         if (session == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Sessione non trovata.");
@@ -59,12 +60,14 @@ public class CChef {
 
         if (chefAttached != null) {
             List<EOrdine> ordiniChef = ordineDAO.getOrdersByState("in_preparazione");
+            role = chefAttached.getRuolo();
 
             Template template = cfg.getTemplate("chef_orders.ftl");
 
             Map<String, Object> data = new HashMap<>();
             data.put("contextPath", request.getContextPath());
             data.put("orders", ordiniChef);
+            data.put("role", role);
 
             response.setContentType("text/html;charset=UTF-8");
             template.process(data, response.getWriter());

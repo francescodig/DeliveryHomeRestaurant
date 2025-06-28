@@ -3,12 +3,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.deliveryhomerestaurant.Controller;
+import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
 import com.mycompany.deliveryhomerestaurant.DAO.ECartaCreditoDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EIndirizzoDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
 import com.mycompany.deliveryhomerestaurant.DAO.EProdottoDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ECartaCreditoDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EIndirizzoDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EOrdineDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EProdottoDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
@@ -19,6 +22,7 @@ import com.mycompany.deliveryhomerestaurant.Model.EItemOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
+import com.mycompany.deliveryhomerestaurant.util.OrderTimeCalculator;
 import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import com.mycompany.deliveryhomerestaurant.util.UtilityJSON;
 import freemarker.template.Configuration;
@@ -26,11 +30,13 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -122,12 +128,16 @@ public class COrdine {
         EIndirizzoDAO indirizzoDAO = new EIndirizzoDAOImpl(em);
         ECartaCreditoDAO cartaCreditoDAO = new ECartaCreditoDAOImpl(em);
         EProdottoDAO prodottoDAO = new EProdottoDAOImpl(em);
+        EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
         EntityTransaction transaction = null;
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+        double totalPrice = 0.0;
+
         
         try{
             
             EUtente utente = (EUtente) session.getAttribute("utente");
+            ECliente cliente = (ECliente) utenteDAO.findById(utente.getId());
             String cartJson = request.getParameter("cart_data");
             String note = request.getParameter("note");
             JSONArray cartArray = new JSONArray(cartJson);
@@ -136,7 +146,7 @@ public class COrdine {
             }
             
             String dataConsegnaStr = request.getParameter("dataConsegna");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
             LocalDateTime dataConsegna = LocalDateTime.parse(dataConsegnaStr, formatter);
             
             int indirizzoId = Integer.parseInt(request.getParameter("indirizzo_id"));
@@ -147,13 +157,14 @@ public class COrdine {
             
             EOrdine ordine = new EOrdine();
             List<EItemOrdine> itemOrdineList = new ArrayList<>();
-            double totalPrice = 0.0;
+
 
             for (int i = 0; i < cartArray.length(); i++) {
                 JSONObject item = cartArray.getJSONObject(i);
 
-                int qty = item.getInt("qty");
+                
                 int prodottoId = item.getInt("id");
+                int qty = item.getInt("qty");
                 EProdotto prodotto = prodottoDAO.getProductById(prodottoId);
                 if (prodotto == null) {
                     throw new IllegalArgumentException("Prodotto " + item.getString("name") + " non trovato.");
@@ -166,10 +177,19 @@ public class COrdine {
                 itemOrdine.setPrezzoUnitario(item.getBigDecimal("price"));
 
                 ordine.addItemOrdine(itemOrdine);
-                itemOrdineList.add(itemOrdine);
+                itemOrdineList.add(itemOrdine); 
 
                 totalPrice += item.getDouble("price") * item.getInt("qty");
             }
+            
+            ordine.setDataEsecuzione(LocalDateTime.now());
+            ordine.setDataRicezione(LocalDateTime.now());
+            ordine.setCosto(BigDecimal.valueOf(totalPrice));
+            ordine.setCliente(cliente);
+            ordine.setStato("in_attesa");
+            ordine.setNote(note);
+            ordine.setIndirizzoConsegna(indirizzoConsegna);
+            ordine.setCartaPagamento(metodoPagamento);
             
                     // Inizio Transazione
         transaction = em.getTransaction();
@@ -218,5 +238,78 @@ public class COrdine {
 
     }
     
+    public void getEstimatedTime(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws IOException, ServletException {
+
+    EntityManager em = (EntityManager) request.getAttribute("em");
+    EIndirizzoDAO indirizzoDAO = new EIndirizzoDAOImpl(em);
+    EProdottoDAO prodottoDAO = new EProdottoDAOImpl(em);
+    EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
+
+    try {
+        int indirizzoId = Integer.parseInt(request.getParameter("indirizzo_id"));
+        EIndirizzo indirizzo = indirizzoDAO.getAddressById(indirizzoId);
+        String indirizzoCliente = indirizzo.getVia() + " " + indirizzo.getCivico() + ", " + indirizzo.getCitta();
+
+        String cartJson = request.getParameter("cart_data");
+        JSONArray cartArray = new JSONArray(cartJson);
+
+        if (cartArray.length() == 0) {
+            throw new IllegalArgumentException("Carrello non valido");
+        }
+
+        List<EItemOrdine> itemOrderList = new ArrayList<>();
+        EOrdine ordine = new EOrdine();
+
+        for (int i = 0; i < cartArray.length(); i++) {
+            JSONObject item = cartArray.getJSONObject(i);
+            int id = item.getInt("id");
+            int qty = item.getInt("qty");
+            BigDecimal price = item.getBigDecimal("price");
+
+            EProdotto prodotto = prodottoDAO.getProductById(id);
+            if (prodotto == null) {
+                throw new IllegalArgumentException("Prodotto con ID " + id + " non trovato");
+            }
+
+            EItemOrdine itemOrder = new EItemOrdine();
+            itemOrder.setOrdine(ordine);
+            itemOrder.setProdotto(prodotto);
+            itemOrder.setQuantita(qty);
+            itemOrder.setPrezzoUnitario(price);
+            itemOrderList.add(itemOrder);
+        }
+
+        int numeroOrdini;
+        try {
+            List<EOrdine> ordiniAttivi = ordineDAO.getOrdersByState("in_preparazione");
+            numeroOrdini = ordiniAttivi != null ? ordiniAttivi.size() : 10;
+        } catch (Exception e) {
+            numeroOrdini = 10;
+        }
+
+        OrderTimeCalculator orderTime = new OrderTimeCalculator();
+        LocalDateTime estimatedTime = orderTime.orarioConsegnaCalculator(itemOrderList, numeroOrdini, indirizzoCliente);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        String formattedTime = estimatedTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        String json = String.format("{\"estimated_time\": \"%s\"}", formattedTime);
+
+        response.getWriter().write(json);
+
+    } catch (Exception e) {
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        String errorJson = String.format("{\"error\": \"%s\"}", e.getMessage().replace("\"", "\\\""));
+        response.getWriter().write(errorJson);
+    }
+}
+
+    
+   
     
 }

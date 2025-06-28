@@ -54,6 +54,7 @@ public class CUser{
         
         EntityManager em = (EntityManager) request.getAttribute("em");
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+        String role = "";
         
         try {
            
@@ -74,8 +75,11 @@ public class CUser{
             boolean logged = false;
             if (session != null && session.getAttribute("utente") != null) {
                 logged = true;
+                EUtente utente = (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
             }
             data.put("logged", logged);
+            data.put("role", role);
 
             response.setContentType("text/html;charset=UTF-8");
             template.process(data, response.getWriter());
@@ -90,16 +94,31 @@ public class CUser{
         
         EntityManager em = (EntityManager) request.getAttribute("em");
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+        HttpSession session = UtilSession.getSession(request);
+        String role = "";
+        boolean logged = false;
         
         try {
             Template template = cfg.getTemplate("menu.ftl");
 
             EMenuDAO menuDAO = new EMenuDAOImpl(em);
             List<Map<String, Object>> menu = menuDAO.getMenu();
+            
+            if(session != null && session.getAttribute("utente")!=null){
+                
+                EUtente utente = (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+                logged = true;
+                
+            }
+            
+            
 
             Map<String, Object> data = new HashMap<>();
             data.put("contextPath", request.getContextPath());
             data.put("menu", menu);
+            data.put("role", role);
+            data.put("logged", logged);
 
             response.setContentType("text/html;charset=UTF-8");
             template.process(data, response.getWriter());
@@ -114,6 +133,7 @@ public class CUser{
         
          EntityManager em = (EntityManager) request.getAttribute("em");
          Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+         String role = "";
          
         try {
 
@@ -130,8 +150,11 @@ public class CUser{
             boolean logged = false;
             if (session != null && session.getAttribute("utente") != null) {
                 logged = true;
+                EUtente utente = (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
             }
             data.put("logged", logged);
+            data.put("role", role);
 
             response.setContentType("text/html;charset=UTF-8");
             template.process(data, response.getWriter());
@@ -146,15 +169,17 @@ public class CUser{
         
         EntityManager em = (EntityManager) request.getAttribute("em");
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+        HttpSession session = UtilSession.getSession(request);
+        String role = "";
         
         
         try {
-            HttpSession session = UtilSession.getSession(request);
             ECliente utente = null;
             boolean logged = false;
-            if (session != null) {
+            if (session != null && session.getAttribute("utente")!=null) {
                 utente = (ECliente) session.getAttribute("utente");
                 logged = true;
+                role = utente.getRuolo();
             }
             if (utente == null) {
                 response.sendRedirect(request.getContextPath() + "/showProfile");
@@ -171,6 +196,7 @@ public class CUser{
             data.put("contextPath", request.getContextPath());
             data.put("orders", mieiOrdini);
             data.put("logged", logged);
+            data.put("role",role);
 
             response.setContentType("text/html;charset=UTF-8");
             template.process(data, response.getWriter());
@@ -185,27 +211,39 @@ public class CUser{
         
         EntityManager em = (EntityManager) request.getAttribute("em");
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+        HttpSession session = UtilSession.getSession(request);
+        String role = "";
         
         try {
 
-            HttpSession session = UtilSession.getSession(request);
-            ECliente utente = null;
+            
+            EUtente utente = null;
             EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
             boolean logged = false;
 
-            if (session != null) {
-                utente =  (ECliente) session.getAttribute("utente");
-                ECliente attachedClient = (ECliente) utenteDAO.findById(utente.getId());
+            if (session != null && session.getAttribute("utente")!=null) {
+                utente =  (EUtente) session.getAttribute("utente");
+                EUtente attachedUser = utenteDAO.findById(utente.getId());
                 logged = true;
+                role = utente.getRuolo();
+
                
 
                 Template template = cfg.getTemplate("account.ftl");
                 Map<String, Object> data = new HashMap<>();
                 data.put("contextPath", request.getContextPath());
-                data.put("indirizzi", attachedClient.getIndirizziConsegna() );
-                data.put("carte_credito", attachedClient.getMetodiPagamento());
+                                
+                if(role == "cliente"){
+                    ECliente cliente = (ECliente) attachedUser; 
+                    data.put("indirizzi", cliente.getIndirizziConsegna() );
+                    data.put("carte_credito", cliente.getMetodiPagamento());
+                    
+                }
+               
+                data.put("role", utente.getRuolo());
                 data.put("utente", utente);
                 data.put("logged", logged);
+                data.put("role", role);
 
                 response.setContentType("text/html;charset=UTF-8");
                 template.process(data, response.getWriter());
@@ -215,6 +253,7 @@ public class CUser{
                 response.setContentType("text/html;charset=UTF-8");
                 Map<String, Object> data = new HashMap<>();
                 data.put("contextPath", request.getContextPath());
+                data.put("role",role);
 
                 template.process(data, response.getWriter());
             }
@@ -228,8 +267,9 @@ public class CUser{
         throws ServletException, IOException, TemplateException {
         
         EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.startSession(request);
         try {
-            HttpSession session = UtilSession.startSession(request);
+            
 
 
             // se l'utente è gia in sessione 
@@ -268,12 +308,14 @@ public class CUser{
         
         EntityManager em = (EntityManager) request.getAttribute("em");
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+        String role = "";
 
         
         try{
             Template template = cfg.getTemplate("register.ftl");
             Map<String, Object> data = new HashMap<>();
             data.put("contextPath", request.getContextPath());
+            data.put("role",role);
             template.process(data, response.getWriter());
             
             

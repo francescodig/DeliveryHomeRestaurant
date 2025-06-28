@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="${contextPath}/resources/css/layout.css">
     <link rel="stylesheet" href="${contextPath}/resources/css/confirm.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="${contextPath}/resources/Js/loadComponents.js" defer></script>
+
 </head>
 <body>
 

@@ -1,0 +1,55 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+main {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+
+main section {
+  max-width: 600px;
+  margin: 100px auto;
+  padding: 2rem;
+  background-color: #fff5f5;
+  border: 1px solid #ffcccc;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(21, 255, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+main section h1 {
+  color: #00cc00;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+main section p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+main section .button {
+  display: inline-block;
+  background-color: #00cc00;
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+main section .button:hover {
+  background-color: #00cc00;
+}
