@@ -1,3 +1,4 @@
 /mavenproject1/target/
 /DeliveryHomeRestaurant/target/
-DeliveryHomeRestaurant\src\main\java\com\mycompany\deliveryhomerestaurant\util\Constants.java
+/DeliveryHomeRestaurant/src/main/java/com/mycompany/deliveryhomerestaurant/resources/config.properties
+/DeliveryHomeRestaurant/src/main/resources/config.properties
