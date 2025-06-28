@@ -75,5 +75,10 @@
             </#list>
         </div>
     </main>
+
+    <#include "footer.ftl">
+
 </body>
+
+
 </html>

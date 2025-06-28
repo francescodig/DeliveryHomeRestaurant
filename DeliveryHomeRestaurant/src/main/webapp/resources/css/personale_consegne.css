@@ -3,6 +3,7 @@ main {
     max-width: auto;
     margin: 0 auto;
     padding: 20px;
+    flex: 1;
 }
 
 /* Consegne section */
@@ -12,6 +13,9 @@ main {
     padding: 20px;
     box-shadow: 0 2px 10px var(--colore-ombra-media);
     border: 1px solid var(--colore-bordo);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .delivery-card {
