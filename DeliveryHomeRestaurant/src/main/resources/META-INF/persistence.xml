@@ -20,6 +20,7 @@
     <class>Entity.ERider</class> 
     <class>Entity.ESegnalazione</class>
     <class>Entity.EUtente</class>
+    <class>Entity.EProprietario</class>
 
     <properties>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>

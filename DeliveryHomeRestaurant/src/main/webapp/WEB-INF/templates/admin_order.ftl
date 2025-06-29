@@ -15,7 +15,7 @@
     <!-- Main Content -->
     <main class="admin-container">
         <div class="admin-header">
-            <a href="/Delivery/Proprietario/showPanel" class="back-button">
+            <a href="${contextPath}/Proprietario/showPanel" class="back-button">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <h1><i class="fas fa-shopping-bag"></i> Gestione Ordini</h1>
@@ -24,14 +24,15 @@
         
         <!-- Filtri e Ricerca -->
         <section class="filters-section">
+            <form method="GET" action="${contextPath}/Proprietario/showOrders" id="filterForm">
             <div class="filters-grid">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchOrders" placeholder="Cerca ordini...">
+                    <input type="text" name="search" id="search" placeholder="Cerca ordini..." value="${search?html}" >
                 </div>
                 <div class="filter-group">
                     <label for="filterStatus"><i class="fas fa-filter"></i> Filtra per stato:</label>
-                    <select id="filterStatus">
+                    <select name="status" id="filterStatus" onchange="document.getElementById('filterForm').submit()">
                         <option value="all">Tutti gli stati</option>
                         <option value="in_attesa">In attesa</option>
                         <option value="in_preparazione">In preparazione</option>
@@ -42,7 +43,7 @@
                 </div>
                 <div class="filter-group">
                     <label for="filterDate"><i class="far fa-calendar-alt"></i> Ordina per:</label>
-                    <select id="filterDate">
+                    <select name="sort" id="filterDate" onchange="document.getElementById('filterForm').submit()">
                         <option value="newest">Più recenti</option>
                         <option value="oldest">Più vecchi</option>
                     </select>
@@ -56,7 +57,7 @@
                 <h2><i class="fas fa-list"></i> Tutti gli Ordini</h2>
             </div>
             
-            <#if orders?size > 0>
+            <#if (orders??) && (orders?size > 0)>
                 <table class="orders-table">
                     <thead>
                         <tr>
@@ -72,7 +73,7 @@
                             <tr data-id="${order.id}">
                                 <td>#${order.id}</td>
                                 <td>${order.cliente.nome} ${order.cliente.cognome}</td>
-                                <td>${order.dataEsecuzione?string("dd/MM/yyyy HH:mm")}</td>
+                                <td>${order.dataEsecuzione?substring(8,10)}/${order.dataEsecuzione?substring(5,7)}/${order.dataEsecuzione?substring(0,4)} ${order.dataEsecuzione?substring(11,16)}</td>
                                 <td>€${order.costo}</td>
                                 <td>
                                     <span class="status-badge ${order.stato}">

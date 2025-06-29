@@ -59,24 +59,23 @@
 
 .search-box {
     position: relative;
-    display: flex;
-    align-items: center;
 }
 
 .search-box i {
     position: absolute;
     left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--colore-testo-secondario);
 }
 
-.search-box input {
+.search-box input,
+.filter-group select {
     width: 100%;
     padding: 10px 15px 10px 40px;
     border: 1px solid var(--colore-bordo);
     border-radius: 8px;
     font-size: 0.9rem;
-    background-color: var(--colore-ombra-leggera);
-    color: var(--colore-testo);
 }
 
 .filter-group {
@@ -89,16 +88,6 @@
     color: var(--colore-testo-secondario);
     font-size: 0.9rem;
     white-space: nowrap;
-}
-
-.filter-group select {
-    padding: 8px 12px;
-    border: 1px solid var(--colore-bordo);
-    border-radius: 8px;
-    background-color: var(--colore-ombra-leggera);
-    color: var(--colore-testo);
-    font-size: 0.9rem;
-    cursor: pointer;
 }
 
 /* Header Lista Recensioni */

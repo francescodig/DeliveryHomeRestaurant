@@ -27,7 +27,7 @@ public class EClienteDAOImpl implements EClienteDAO {
 
     @Override
     public boolean verify(String field, Object value) {
-        String jpql = "SELECT COUNT(u) FROM EUser u WHERE u." + field + " = :value";
+        String jpql = "SELECT COUNT(u) FROM ECliente u WHERE u." + field + " = :value";
         Long count = em.createQuery(jpql, Long.class)
                        .setParameter("value", value)
                        .getSingleResult();
@@ -36,7 +36,7 @@ public class EClienteDAOImpl implements EClienteDAO {
 
     @Override
     public List<ECliente> getAllClients() {
-        TypedQuery<ECliente> query = em.createQuery("SELECT u FROM EUser u", ECliente.class);
+        TypedQuery<ECliente> query = em.createQuery("SELECT u FROM ECliente u", ECliente.class);
         return query.getResultList();
     }
 

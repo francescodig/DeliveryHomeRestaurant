@@ -19,7 +19,7 @@
         
         <!-- Sezioni di Accesso Rapido -->
         <section class="admin-sections-grid">
-            <a href="/Delivery/Proprietario/showDashboard" class="admin-section-card">
+            <a href="${contextPath}/Proprietario/showDashboard" class="admin-section-card">
                 <div class="section-icon"><i class="fas fa-tachometer-alt"></i></div>
                 <div class="section-content">
                     <h2>Dashboard</h2>
@@ -35,7 +35,7 @@
                 </div>
                 <div class="section-arrow"><i class="fas fa-chevron-right"></i></div>
             </a>
-            <a href="/Delivery/Proprietario/showOrders" class="admin-section-card">
+            <a href="${contextPath}/Proprietario/showOrders/" class="admin-section-card">
                 <div class="section-icon"><i class="fas fa-shopping-bag"></i></div>
                 <div class="section-content">
                     <h2>Gestione Ordini</h2>
@@ -43,11 +43,19 @@
                 </div>
                 <div class="section-arrow"><i class="fas fa-chevron-right"></i></div>
             </a>
-            <a href="/Delivery/Proprietario/showReviews" class="admin-section-card">
+            <a href="${contextPath}/Proprietario/showReviews/" class="admin-section-card">
                 <div class="section-icon"><i class="fas fa-star"></i></div>
                 <div class="section-content">
                     <h2>Recensioni</h2>
                     <p>Leggi le recensioni dei clienti</p>
+                </div>
+                <div class="section-arrow"><i class="fas fa-chevron-right"></i></div>
+            </a>
+            <a href="${contextPath}/Proprietario/showSegnalazioni" class="admin-section-card">
+                <div class="section-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="section-content">
+                    <h2>Segnalazioni</h2>
+                    <p>Leggi le segnalazioni degli ordini</p>
                 </div>
                 <div class="section-arrow"><i class="fas fa-chevron-right"></i></div>
             </a>

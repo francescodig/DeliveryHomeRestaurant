@@ -15,7 +15,7 @@
 
     <!-- Main Content -->
     <div class="dashboard-header">
-        <a href="/Delivery/Proprietario/showPanel" class="back-button">
+        <a href="${contextPath}/Proprietario/showPanel" class="back-button">
             <i class="fas fa-arrow-left"></i>
         </a>
         <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
@@ -29,7 +29,7 @@
             </div>
             <div class="stat-info">
                 <h3>Fatturato Oggi</h3>
-                <p>€1,245.50</p>
+                <p>€${totaleOggi?string["#,##0.00"]}</p>
             </div>
         </div>
         <div class="stat-card">
@@ -38,7 +38,7 @@
             </div>
             <div class="stat-info">
                 <h3>Ordini Oggi</h3>
-                <p>42</p>
+                <p>${ordiniOggi}</p>
             </div>
         </div>
         <div class="stat-card">
@@ -47,7 +47,7 @@
             </div>
             <div class="stat-info">
                 <h3>Nuovi Clienti</h3>
-                <p>8</p>
+                <p>${numeroClienti}</p>
             </div>
         </div>
         <div class="stat-card">
@@ -56,7 +56,7 @@
             </div>
             <div class="stat-info">
                 <h3>Valutazione Media</h3>
-                <p>4.7/5</p>
+                <p>${mediaValutazioni?string["0.0"]}/5</p>
             </div>
         </div>
     </section>
@@ -87,7 +87,7 @@
                 </tr>
             </thead>
             <tbody>
-                <#list ordini as ordine>
+                <#list orders as ordine>
                     <tr>
                         <td>#${ordine.getId()}</td>
                         <td>${ordine.getCliente().getNome()} ${ordine.getCliente().getCognome()}</td>
@@ -117,7 +117,7 @@
                 labels: ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],
                 datasets: [{
                     label: 'Fatturato (€)',
-                    data: [850, 920, 1100, 1245, 1500, 1800, 2100],
+                    data: [<#list fatturatoSettimana as valore>${valore}<#if valore?has_next>, </#if></#list>],
                     backgroundColor: '#046C6D',
                     borderColor: '#035050',
                     borderWidth: 1
@@ -136,10 +136,10 @@
         new Chart(dishesCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Margherita', 'Diavola', 'Capricciosa', 'Quattro Stagioni', 'Patatine'],
+                labels: [<#list nomiTopPiatti as nome>"${nome}"<#if nome?has_next>, </#if></#list>],
                 datasets: [{
-                    data: [65, 40, 30, 25, 20],
-                    backgroundColor: ['#046C6D', '#035050', '#03A6A6', '#04B2B2', '#05C0C0']
+                    data: [<#list quantitaTopPiatti as qta>${qta}<#if qta?has_next>, </#if></#list>],
+                    backgroundColor: ['#046C6D', '#035050', '#03A6A6', '#04B2B2', '#05C0C0', '#027373', '#059A9A', '#02B8B8', '#04CCCC', '#01A1A1']
                 }]
             },
             options: {

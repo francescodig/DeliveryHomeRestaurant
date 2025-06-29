@@ -27,6 +27,10 @@
             <#if logged?? && (logged && role == "cliente")>
                 <a href="/DeliveryHomeRestaurant/User/showMyOrders/">I Miei Ordini</a>
             </#if>
+
+            <#if logged?? && (logged && role == "proprietario")>
+                <a href="/DeliveryHomeRestaurant/Proprietario/showPanel/">Pannello di Controllo</a>
+            </#if>
         </div>
 
         <div class="user-actions">
