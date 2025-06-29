@@ -1,0 +1,138 @@
+@import url("variables.css");
+
+.form-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--colore-bianco);
+  color: var(--colore-testo);
+  border: 1px solid var(--colore-bordo);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--colore-ombra-media);
+  min-height: 100vh;
+  display: flex;
+  flex-direction:column;
+  justify-content: center;
+}
+
+.form-container h1 {
+  color: var(--colore-title);
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.form label {
+  display: block;
+  font-weight: bold;
+  margin-top: 1rem;
+  margin-bottom: 0.3rem;
+  color: var(--colore-testo-secondario);
+}
+
+.form input[type="text"] {
+  width: 100%;
+  font-size: 1rem;
+  padding: 0.6rem;
+  border: 1px solid var(--colore-input-bordo);
+  border-radius: 6px;
+  background-color: var(--colore-bianco);
+  color: var(--colore-testo);
+  transition: border-color 0.2s;
+}
+
+.form input[type="text"]:focus {
+  border-color: var(--colore-primario);
+  outline: none;
+  box-shadow: 0 0 5px var(--colore-ombra-media);
+}
+
+.form button[type="submit"] {
+  margin-top: 2rem;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--colore-primario);
+  color: var(--colore-bianco);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.form button[type="submit"]:hover {
+  background-color: var(--colore-primario-hover);
+}
+
+.address-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--colore-bordo);
+}
+
+.remove-address-form {
+    margin: 0;
+}
+
+.remove-address-btn {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+    padding: 0;
+}
+
+.remove-address-btn:hover {
+    color: darkred;
+}
+
+.card-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--colore-bordo);
+}
+
+.remove-card-form {
+    margin: 0;
+}
+
+.remove-card-btn {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+    padding: 0;
+}
+
+.remove-card-btn:hover {
+    color: darkred;
+}
+
+.star-rating {
+  direction: rtl;
+  font-size: 2rem;
+  unicode-bidi: bidi-override;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.star-rating label {
+  cursor: pointer;
+  color: var(--colore-stelle-vuote, #ddd);
+  transition: color 0.2s;
+}
+
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color: var(--colore-stelle-piene, #FFD700);
+}
+

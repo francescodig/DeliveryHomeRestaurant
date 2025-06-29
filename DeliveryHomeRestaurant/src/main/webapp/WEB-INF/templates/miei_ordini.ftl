@@ -52,6 +52,12 @@
                 <p>Non hai ancora effettuato ordini.</p>
             </#if>
 
+        <#if orders?has_content>
+            <div class="review-conteiner">
+                <a href="/DeliveryHomeRestaurant/User/showReviewForm/" class="btn">Scrivi recensione!</a>
+            </div>
+        </#if>
+
         </section>
     </main>
 

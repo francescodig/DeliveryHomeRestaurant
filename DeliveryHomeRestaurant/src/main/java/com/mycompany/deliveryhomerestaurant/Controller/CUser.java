@@ -546,6 +546,35 @@ public void addCreditCard(HttpServletRequest request, HttpServletResponse respon
     }
 }
 
+public void showReviewForm(HttpServletRequest request, HttpServletResponse response, String[] params) throws IOException{
+    
+    EntityManager em = (EntityManager) request.getAttribute("em");
+    HttpSession session = UtilSession.getSession(request);
+    String role = "";
+    Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+    
+    try{
+        
+        if(session != null && session.getAttribute("utente") != null){
+            EUtente utente = (EUtente) session.getAttribute("utente");
+            role = utente.getRuolo();
+        }
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("contextPath", request.getContextPath());
+        data.put("role", role);
+        Template template = cfg.getTemplate("review_form.ftl");
+        
+        response.setContentType("text/html;charset=UTF-8");
+        template.process(data , response.getWriter() );
+        
+        
+    }catch(Exception e){
+        
+    }
+    
+    
+}
      
      
      
