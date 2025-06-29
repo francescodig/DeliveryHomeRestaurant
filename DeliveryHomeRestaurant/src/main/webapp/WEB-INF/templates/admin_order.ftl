@@ -47,6 +47,8 @@
                         <option value="newest">Più recenti</option>
                         <option value="oldest">Più vecchi</option>
                     </select>
+<button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                
                 </div>
             </div>
         </section>

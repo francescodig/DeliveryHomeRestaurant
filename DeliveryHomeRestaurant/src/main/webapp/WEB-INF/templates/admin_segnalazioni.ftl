@@ -33,10 +33,11 @@
                     </div>
                     <div class="filter-group">
                         <label for="sort"><i class="far fa-calendar-alt"></i> Ordina per:</label>
-                        <select name="sort" id="sort" onchange="document.getElementById('filterForm').submit()"">
+                        <select name="sort" id="sort" onchange="document.getElementById('filterForm').submit()">
                             <option value="newest" <#if sort == "newest">selected</#if>>Più recenti</option>
                             <option value="oldest" <#if sort == "oldest">selected</#if>>Più vecchie</option>
                         </select>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
             </form>

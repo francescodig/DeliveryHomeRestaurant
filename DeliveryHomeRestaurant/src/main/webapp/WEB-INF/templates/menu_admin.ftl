@@ -10,12 +10,12 @@
 </head>
 <body>
     <!-- Header -->
-    {include file="header.tpl"}
+    <#include "header.ftl">
 
     <!-- Main Content -->
     <main class="admin-container">
         <div class="admin-header">
-        <a href="/Delivery/Proprietario/showPanel" class="back-button">
+        <a href="${contextPath}/Proprietario/showPanel" class="back-button">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <h1><i class="fas fa-utensils"></i> Gestione Menu</h1>
@@ -24,23 +24,27 @@
         
         <!-- Filtri e Ricerca -->
         <section class="filters-section">
+        <form method="get" action="${contextPath}/Proprietario/showMenu" id="filterForm">
             <div class="filters-grid">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchProducts" placeholder="Cerca prodotti...">
+                    <input type="text" name="search" value="${search?if_exists?html}" placeholder="Cerca prodotti...">
                 </div>
                 <div class="filter-group">
                     <label for="filterCategory"><i class="fas fa-filter"></i> Filtra per categoria:</label>
-                    <select id="filterCategory">
-                        <option value="all">Tutte le categorie</option> 
-                        <option value="antipasti">Antipasti</option> 
-                        <option value="primi">Primi</option>
-                        <option value="secondi">Secondi</option>
-                        <option value="dolci">Dolci</option>
-                        <option value="bevande">Bevande</option>
+                    <select id="filterCategory" name="category" onchange="document.getElementById('filterForm').submit()">
+                        <option value="all" <#if category == "all">selected</#if>>Tutte le categorie</option>
+                        <#list categorie as categoria>
+                            <option value="${categoria.nome?html}" 
+                                <#if category?? && category == categoria.nome>selected</#if>>
+                                ${categoria.nome?cap_first}
+                            </option>
+                        </#list>
                     </select>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
                 </div>
             </div>
+            </form>
         </section>
 
         <!-- Lista Prodotti -->
@@ -49,7 +53,7 @@
                 <h2><i class="fas fa-list"></i> Tutti i Prodotti</h2>
             </div>
             
-            {if $products|@count > 0}
+            <#if (prodotti?size > 0)>
                 <table class="products-table">
                     <thead>
                         <tr>
@@ -62,102 +66,102 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {foreach from=$products item=product}
-                            <tr data-id="{$product->getId()}">
-                                <td>{$product->getId()}</td>
-                                <td>{$product->getNome()}</td>
-                                <td>{$product->getDescrizione()}</td>
-                                <td>{$product->getCategoria()->getNome()}</td>
-                                <td>€{$product->getCosto()|number_format:2}</td>
+                        <#list prodotti as product>
+                            <tr data-id="${product.id}">
+                                <td data-label="ID">${product.id}</td>
+                                <td data-label="Nome">${product.nome?html}</td>
+                                <td data-label="Descrizione">${product.descrizione?html}</td>
+                                <td data-label="Categoria">${product.categoria.nome?html}</td>
+                                <td data-label="Prezzo">€${product.costo?string["0.00"]}</td>
                                 <td class="actions">
-                                    <button class="btn btn-edit" data-id="{$product->getId()}">
+                                    <button class="btn btn-edit" data-id="${product.id}">
                                         <i class="fas fa-edit"></i> Modifica
                                     </button>
-                                    <form action="/Delivery/Proprietario/METODOELIMINAPRODOTTO" method="post" class="inline-delete-form">
-                                        <input type="hidden" name="product_id" value="{$product->getId()}">
+                                    <form action="${contextPath}/Proprietario/deleteProduct" method="post" class="inline-delete-form">
+                                        <input type="hidden" name="product_id" value="${product.id}">
                                         <button type="submit" class="btn btn-delete">
                                             <i class="fas fa-trash-alt"></i> Elimina
                                         </button>
                                     </form>
                                 </td>
                             </tr>
-                        {/foreach}
+                        </#list>
                     </tbody>
                 </table>
-            {else}
+            <#else>
                 <div class="no-products">
                     <i class="far fa-frown"></i>
                     <p>Nessun prodotto trovato</p>
                 </div>
-            {/if}
+            </#if>
         </section>
 
         <!-- Form Aggiungi Prodotto -->
-        <section class="product-form-section">
-            <h2><i class="fas fa-plus-circle"></i> Aggiungi Prodotto</h2>
-            
-            <form id="productForm" action="/Delivery/Proprietario/NOMEDELMETODOPERAGGIUNGEREUNPRODOTTO" method="post">
-                {if $editMode}
-                    <input type="hidden" name="product_id" value="{$editingProduct->getId()}">
-                {/if}
-                
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="productName">Nome:</label>
-                        <input type="text" id="productName" name="nome" value="{if $editMode}{$editingProduct->getNome()}{/if}" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="productCategory">Categoria:</label>
-                        <select id="productCategory" name="categoria_id" required>
-                            {foreach from=$categories item=category}
-                                <option value="{$category->getId()}" {if $editMode && $editingProduct->getCategoria()->getId() == $category->getId()}selected{/if}>
-                                    {$category->getNome()}
-                                </option>
-                            {/foreach}
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="productPrice">Prezzo (€):</label>
-                        <input type="number" id="productPrice" name="costo" step="0.01" min="0" value="{if $editMode}{$editingProduct->getCosto()}{/if}" required>
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label for="productDescription">Descrizione:</label>
-                        <textarea id="productDescription" name="descrizione" rows="3" required>{if $editMode}{$editingProduct->getDescrizione()}{/if}</textarea>
-                    </div>
-                    
-                    <div class="form-group full-width actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> {if $editMode}Salva Modifiche{else}Aggiungi Prodotto{/if}
-                        </button>
-                        
-                        {if $editMode}
-                            <a href="/Delivery/Proprietario/gestioneMenu" class="btn btn-cancel">
-                                <i class="fas fa-times"></i> Annulla
-                            </a>
-                        {/if}
-                    </div>
-                </div>
-            </form>
-        </section>
+       <section class="product-form-section">
+        <h2><i class="fas fa-plus-circle"></i> Aggiungi Prodotto</h2>
+
+        <form id="productForm" action="${contextPath}/Proprietario/saveProduct" method="post">
+        
+        <#if (editMode!false) == true && (editingProduct??)>
+            <input type="hidden" name="product_id" value="${editingProduct.id!}">
+        </#if>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="productName">Nome:</label>
+                <input type="text" id="productName" name="nome" 
+                       value="<#if (editMode!false) == true && (editingProduct??)>${editingProduct.nome!?html}</#if>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="productCategory">Categoria:</label>
+                <select id="productCategory" name="categoria_id" required>
+                    <#if categories??>
+                        <#list categories as category>
+                            <option value="${category.id!}"
+                                <#if (editMode!false) == true && (editingProduct??) && (editingProduct.categoria??) && (editingProduct.categoria.id == category.id)>
+                                    selected
+                                </#if>>
+                                ${category.nome!?html}
+                            </option>
+                        </#list>
+                    <#else>
+                        <option value="">Nessuna categoria disponibile</option>
+                    </#if>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="productPrice">Prezzo (€):</label>
+                <input type="number" id="productPrice" name="costo" step="0.01" min="0"
+                       value="<#if (editMode!false) == true && (editingProduct??)>${editingProduct.costo!?string['0.##']}</#if>" required>
+            </div>
+
+            <div class="form-group full-width">
+                <label for="productDescription">Descrizione:</label>
+                <textarea id="productDescription" name="descrizione" rows="3" required><#if (editMode!false) == true && (editingProduct??)>${editingProduct.descrizione!?html}</#if></textarea>
+            </div>
+
+            <div class="form-group full-width actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> <#if (editMode!false) == true>Salva Modifiche<#else>Aggiungi Prodotto</#if>
+                </button>
+
+                <#if (editMode!false) == true>
+                    <a href="${contextPath}/Proprietario/gestioneMenu" class="btn btn-cancel">
+                        <i class="fas fa-times"></i> Annulla
+                    </a>
+                </#if>
+            </div>
+        </div>
+    </form>
+
+    </section>
+
     </main>
 
     <!-- Footer -->
-    {include file="footer.tpl"}
-
-    <!-- Modal Conferma Eliminazione -->
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <h2><i class="fas fa-exclamation-triangle"></i> Conferma Eliminazione</h2>
-            <p>Sei sicuro di voler eliminare questo prodotto?</p>
-            <div class="modal-actions">
-                <button id="confirmDelete" class="btn btn-danger">Elimina</button>
-                <button id="cancelDelete" class="btn btn-secondary">Annulla</button>
-            </div>
-        </div>
-    </div>
+    <#include "footer.ftl">
 
     <script src="${contextPath}/resources/Js/hamburger.js"></script>
     <script src="${contextPath}/resources/Js/theme.js"></script>

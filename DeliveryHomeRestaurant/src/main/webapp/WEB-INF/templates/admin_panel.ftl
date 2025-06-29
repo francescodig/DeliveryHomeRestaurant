@@ -27,7 +27,7 @@
                 </div>
                 <div class="section-arrow"><i class="fas fa-chevron-right"></i></div>
             </a>
-            <a href="/Delivery/Proprietario/showMenu" class="admin-section-card">
+            <a href="${contextPath}/Proprietario/showMenu" class="admin-section-card">
                 <div class="section-icon"><i class="fas fa-utensils"></i></div>
                 <div class="section-content">
                     <h2>Gestione Menu</h2>

@@ -47,6 +47,7 @@
                             <option value="newest" <#if sort == 'newest'>selected</#if>>Più recenti</option>
                             <option value="oldest" <#if sort == 'oldest'>selected</#if>>Più vecchie</option>
                         </select>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
             </form>

@@ -5,17 +5,20 @@
 package com.mycompany.deliveryhomerestaurant.Controller;
 
 
+import com.mycompany.deliveryhomerestaurant.DAO.ECategoriaDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EClienteDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
 import com.mycompany.deliveryhomerestaurant.DAO.ERecensioneDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.ESegnalazioneDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EProdottoDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.ECategoriaDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EClienteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EOrdineDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ERecensioneDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ESegnalazioneDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EProdottoDAOImpl;
 import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
+import com.mycompany.deliveryhomerestaurant.Model.ECategoria;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
 import com.mycompany.deliveryhomerestaurant.Model.EProprietario;
@@ -503,8 +506,70 @@ public class CProprietario {
             throw new ServletException("Errore nella visualizzazione della dashboard", e);
         }
     }
-
-
-
     
+    public void showMenu(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException, TemplateException {
+
+        Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.getSession(request);
+
+        try {
+            boolean logged = false;
+            String role = "";
+            EProprietario proprietario = null;
+
+            if (session != null && session.getAttribute("utente") instanceof EProprietario) {
+                proprietario = (EProprietario) session.getAttribute("utente");
+                logged = true;
+                role = proprietario.getRuolo();
+            }
+
+            if (proprietario == null) {
+                response.sendRedirect(request.getContextPath() + "/showLogin");
+                return;
+            }
+
+            EProdottoDAO prodottoDao = new EProdottoDAOImpl(em);
+            List<EProdotto> prodotti = prodottoDao.getAllProducts();
+            
+            ECategoriaDAO categoriaDao = new ECategoriaDAOImpl(em);
+            List<ECategoria> categorie = categoriaDao.getAllCategories();
+
+            String search = request.getParameter("search") != null ? request.getParameter("search") : "";
+            String categoryFilter = request.getParameter("category") != null ? request.getParameter("category") : "all";
+
+            if (!"all".equalsIgnoreCase(categoryFilter)) {
+                prodotti = prodotti.stream()
+                    .filter(p -> p.getCategoria() != null
+                              && categoryFilter.equalsIgnoreCase(p.getCategoria().getNome()))
+                    .collect(Collectors.toList());
+            }
+
+            if (!search.isEmpty()) {
+                String searchLower = search.toLowerCase();
+                prodotti = prodotti.stream()
+                    .filter(p -> (p.getNome() != null && p.getNome().toLowerCase().contains(searchLower))
+                              || (p.getDescrizione() != null && p.getDescrizione().toLowerCase().contains(searchLower)))
+                    .collect(Collectors.toList());
+            }
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("contextPath", request.getContextPath());
+            data.put("prodotti", prodotti);
+            data.put("logged", logged);
+            data.put("role", role);
+            data.put("search", search);
+            data.put("category", categoryFilter);
+            data.put("categorie", categorie);
+
+            Template template = cfg.getTemplate("menu_admin.ftl");
+            response.setContentType("text/html;charset=UTF-8");
+            template.process(data, response.getWriter());
+
+        } catch (Exception e) {
+            throw new ServletException("Errore nella visualizzazione del menu", e);
+        }
+    }
+
 }

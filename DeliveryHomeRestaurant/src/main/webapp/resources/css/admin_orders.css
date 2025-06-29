@@ -59,23 +59,24 @@
 
 .search-box {
     position: relative;
+    display: flex;
+    align-items: center;
 }
 
 .search-box i {
     position: absolute;
     left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
     color: var(--colore-testo-secondario);
 }
 
-.search-box input,
-.filter-group select {
+.search-box input {
     width: 100%;
     padding: 10px 15px 10px 40px;
     border: 1px solid var(--colore-bordo);
     border-radius: 8px;
     font-size: 0.9rem;
+    background-color: var(--colore-ombra-leggera);
+    color: var(--colore-testo);
 }
 
 .filter-group {
@@ -89,6 +90,32 @@
     font-size: 0.9rem;
     white-space: nowrap;
 }
+
+.filter-group select {
+    padding: 8px 12px;
+    border: 1px solid var(--colore-bordo);
+    border-radius: 8px;
+    background-color: var(--colore-ombra-leggera);
+    color: var(--colore-testo);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.btn-apply-filters {
+    background-color: var(--colore-primario);
+    color: var(--colore-bianco);
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}   
+
+.btn-apply-filters:hover {
+    scale: 1.15;
+}
+
 
 /* Tabella Ordini */
 .orders-list {
@@ -182,7 +209,43 @@
     align-items: center;
     gap: 5px;
     transition: all 0.3s;
-    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: var(--colore-primario);
+    color: var(--colore-bianco);
+}
+
+.btn-primary:hover {
+    background-color: var(--colore-primario-hover);
+}
+
+.btn-edit {
+    background-color: var(--colore-ombra-leggera);
+    color: var(--colore-primario);
+}
+
+.btn-edit:hover {
+    background-color: var(--colore-primario);
+    color: var(--colore-bianco);
+}
+
+.btn-delete {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.btn-delete:hover {
+    background-color: #f1b0b7;
+}
+
+.btn-cancel {
+    background-color: var(--colore-bordo-chiaro);
+    color: var(--colore-testo);
+}
+
+.btn-cancel:hover {
+    background-color: var(--colore-bordo);
 }
 
 
