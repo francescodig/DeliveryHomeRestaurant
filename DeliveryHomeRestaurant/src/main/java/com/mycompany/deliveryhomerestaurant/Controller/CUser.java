@@ -29,6 +29,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -213,6 +214,7 @@ public class CUser{
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         HttpSession session = UtilSession.getSession(request);
         String role = "";
+
         
         try {
 
@@ -225,7 +227,7 @@ public class CUser{
                 utente =  (EUtente) session.getAttribute("utente");
                 EUtente attachedUser = utenteDAO.findById(utente.getId());
                 logged = true;
-                role = utente.getRuolo();
+                role = attachedUser.getRuolo();
 
                
 
@@ -233,17 +235,20 @@ public class CUser{
                 Map<String, Object> data = new HashMap<>();
                 data.put("contextPath", request.getContextPath());
                                 
-                if(role == "cliente"){
-                    ECliente cliente = (ECliente) attachedUser; 
-                    data.put("indirizzi", cliente.getIndirizziConsegna() );
-                    data.put("carte_credito", cliente.getMetodiPagamento());
-                    
+                if(role.equals("cliente")){
+                    ECliente client = (ECliente) session.getAttribute("utente");
+                    ECliente clientAttached = (ECliente) utenteDAO.findById(client.getId()); 
+                    List<EIndirizzo> indirizzi = clientAttached.getIndirizziConsegna();
+                    List<ECartaCredito> cards = clientAttached.getMetodiPagamento();
+                    data.put("indirizzi", indirizzi);
+                    data.put("carte_credito", cards);
                 }
                
                 data.put("role", utente.getRuolo());
                 data.put("utente", utente);
                 data.put("logged", logged);
                 data.put("role", role);
+
 
                 response.setContentType("text/html;charset=UTF-8");
                 template.process(data, response.getWriter());
@@ -452,6 +457,7 @@ public void addAddress(HttpServletRequest request, HttpServletResponse response,
         String cap = request.getParameter("cap");
         String civico = request.getParameter("civico");
         String citta = request.getParameter("citta");
+        boolean attivo = true;
 
         // Recupera l'utente dalla sessione solo per prenderne l'ID
         ECliente clienteSession = (ECliente) UtilSession.getSession(request).getAttribute("utente");
@@ -465,6 +471,7 @@ public void addAddress(HttpServletRequest request, HttpServletResponse response,
         indirizzo.setCitta(citta);
         indirizzo.setCivico(civico);
         indirizzo.setCap(cap);
+        indirizzo.setAttivo(attivo);
 
         em.getTransaction().begin();
 
@@ -524,6 +531,7 @@ public void addCreditCard(HttpServletRequest request, HttpServletResponse respon
         cartaCredito.setCvv(cvv);
         cartaCredito.setNomeIntestatario(nomeIntestatario);
         cartaCredito.setCliente(cliente);
+        cartaCredito.setAttivo(true);
 
         // Persistenza
         em.getTransaction().begin();
@@ -574,6 +582,68 @@ public void showReviewForm(HttpServletRequest request, HttpServletResponse respo
     }
     
     
+}
+
+public void removeAddress(HttpServletRequest request, HttpServletResponse response, String[] params) throws IOException {
+    
+    EntityManager em = (EntityManager) request.getAttribute("em");
+    HttpSession session = UtilSession.getSession(request);
+    EIndirizzoDAO indirizzoDAO = new EIndirizzoDAOImpl(em);
+    EntityTransaction transaction = em.getTransaction();
+
+    
+    
+    try{
+        int indirizzoId = Integer.parseInt(request.getParameter("indirizzo_id"));
+        EIndirizzo indirizzo = indirizzoDAO.getAddressById(indirizzoId);
+        if(indirizzo != null){
+            indirizzo.setAttivo(false);
+           
+            transaction.begin();
+            em.merge(indirizzo);
+            transaction.commit();
+            
+            response.sendRedirect(request.getContextPath() + "/User/showProfile");
+        }
+        
+        
+        
+        
+    }catch(Exception e){
+        if(transaction.isActive()){
+            transaction.rollback();
+        }
+        throw e;
+    }
+    
+}
+
+public  void removeCreditCard(HttpServletRequest request, HttpServletResponse response, String[] params) throws Exception{
+    
+    EntityManager em = (EntityManager) request.getAttribute("em");
+    HttpSession session = UtilSession.getSession(request);
+    EntityTransaction transaction = em.getTransaction();
+    ECartaCreditoDAO creditoDAO = new ECartaCreditoDAOImpl(em);
+    
+    try{
+        String numCarta = request.getParameter("numero_carta");
+        ECartaCredito cartaCredito = creditoDAO.getCreditCardByCardNumber(numCarta);
+        if(cartaCredito == null){
+            throw new IllegalArgumentException("Carta di credito non trovata");
+        }
+        cartaCredito.setAttivo(false);
+        transaction.begin();
+        em.merge(cartaCredito);
+        transaction.commit();
+        
+        response.sendRedirect(request.getContextPath() + "/User/showProfile");
+        
+    }catch(Exception e){
+        if(transaction.isActive()){
+            transaction.rollback();
+        }
+        throw e;
+    }
 }
      
      

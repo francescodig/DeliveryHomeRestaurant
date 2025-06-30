@@ -168,4 +168,7 @@ public class EOrdine {
     public void addItemOrdine(EItemOrdine itemOrdine){
         this.itemOrdini.add(itemOrdine);
     }
+    public List<EItemOrdine> getItemOrdini(){
+        return this.itemOrdini;
+    }
 }

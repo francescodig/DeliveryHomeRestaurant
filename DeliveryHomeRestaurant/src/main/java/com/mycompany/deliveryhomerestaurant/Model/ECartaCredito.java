@@ -32,6 +32,9 @@ public class ECartaCredito {
 
     @Column(name = "nomeIntestatario", nullable = false)
     private String nomeIntestatario;
+    
+    @Column(nullable = false)
+    private boolean attivo;
 
     @ManyToOne
     @JoinColumn(name = "utente_id", nullable = false)
@@ -78,6 +81,14 @@ public class ECartaCredito {
         this.cvv = cvv;
     }
 
+    public  void setAttivo(boolean attivo){
+        this.attivo = attivo;
+    }
+    
+    public boolean getAttivo(){
+        return this.attivo;
+    }
+    
     public String getNomeIntestatario() {
         return nomeIntestatario;
     }

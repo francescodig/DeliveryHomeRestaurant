@@ -62,6 +62,8 @@ public class PopolaCarteCreditoFaker {
             carta.setNomeIntestatario(faker.name().fullName());
 
             carta.setCliente(clienti.get(random.nextInt(clienti.size())));
+            
+            carta.setAttivo(true);
 
             em.persist(carta);
         }

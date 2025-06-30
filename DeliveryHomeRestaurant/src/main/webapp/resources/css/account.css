@@ -61,6 +61,57 @@
     background-color: var(--colore-primario-hover);
 }
 
+.remove-address-btn, .remove-card-btn {
+    background-color: #FF4C4C; /* Un rosso vibrante per l'eliminazione */
+    color: #fff;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 30px; /* Bordo arrotondato per un aspetto moderno */
+    cursor: pointer;
+    transition: all 0.3s ease; /* Aggiungi una transizione fluida */
+    font-size: 1rem;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 40px;
+    height: 40px;
+}
+
+/* Hover effect */
+.remove-address-btn:hover, .remove-card-btn:hover {
+    background-color: #d93838; /* Colore più scuro al passaggio del mouse */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Aggiungi un'ombra */
+    transform: translateY(-2px); /* Leggera animazione di sollevamento */
+}
+
+/* Focus effect */
+.remove-address-btn:focus, .remove-card-btn:focus {
+    outline: none;
+    border: 2px solid #FF4C4C;
+    box-shadow: 0 0 5px rgba(255, 76, 76, 0.5); /* Effetto di contorno al focus */
+}
+
+/* Icona all'interno del bottone */
+.remove-address-btn i, .remove-card-btn i {
+    margin-right: 5px; /* Spazio tra l'icona e il testo */
+    font-size: 1.2rem; /* Aumenta la dimensione dell'icona */
+}
+
+/* Aggiungi l'animazione di sfumatura */
+.remove-address-btn, .remove-card-btn {
+    opacity: 0.9;
+}
+
+.remove-address-btn:hover, .remove-card-btn:hover {
+    opacity: 1;
+}
+
+
+
+
+
 .orders-link {
     margin-top: 30px;
     text-align: center;

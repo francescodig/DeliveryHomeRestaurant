@@ -79,7 +79,7 @@
                                 id="role" 
                                 name="role"  
                                 required 
-                                value="${role!'cliente'?html}"
+                                value="cliente"
                             >
                             <small>Inserisci cliente per prova</small>
                         </div>

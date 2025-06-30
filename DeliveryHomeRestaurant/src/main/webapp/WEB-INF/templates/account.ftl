@@ -62,18 +62,22 @@
                 <#if indirizzi?has_content>
                     <ul class="address-list">
                         <#list indirizzi as indirizzo>
-                            <li class="address-item">
-                                <span>
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    ${indirizzo.via}, ${indirizzo.civico}, ${indirizzo.cap} ${indirizzo.citta}
-                                </span>
-                                <form action="/DeliveryHomeRestaurant/User/removeAddress" method="POST" class="remove-address-form">
-                                    <input type="hidden" name="indirizzo_id" value="${indirizzo.id}">
-                                    <button type="submit" class="remove-address-btn" title="Rimuovi Indirizzo">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form>
-                            </li>
+                            <#if indirizzo.attivo>
+                                <li class="address-item">
+                                    <span>
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    
+                                            ${indirizzo.via}, ${indirizzo.civico}, ${indirizzo.cap} ${indirizzo.citta}
+                                    
+                                    </span>
+                                    <form action="/DeliveryHomeRestaurant/User/removeAddress" method="POST" class="remove-address-form">
+                                        <input type="hidden" name="indirizzo_id" value="${indirizzo.id}">
+                                        <button type="submit" class="remove-address-btn" title="Rimuovi Indirizzo">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </li>
+                            </#if>
                         </#list>
                     </ul>
                 <#else>
@@ -89,18 +93,20 @@
                 <#if carte_credito?has_content>
                     <ul class="cards-list">
                         <#list carte_credito as carta>
-                            <li class="card-item">
-                                <span>
-                                    <i class="far fa-credit-card"></i>
-                                    ${carta.nomeIntestatario}
-                                </span>
-                                <form action="/DeliveryHomeRestaurant/User/removeCreditCard" method="POST" class="remove-card-form">
-                                    <input type="hidden" name="numero_carta" value="${carta.numeroCarta}">
-                                    <button type="submit" class="remove-card-btn" title="Rimuovi Metodo di Pagamento">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form>
-                            </li>
+                            <#if carta.attivo>
+                                <li class="card-item">
+                                    <span>
+                                        <i class="far fa-credit-card"></i>
+                                        ${carta.nomeIntestatario}
+                                    </span>
+                                    <form action="/DeliveryHomeRestaurant/User/removeCreditCard" method="POST" class="remove-card-form">
+                                        <input type="hidden" name="numero_carta" value="${carta.numeroCarta}">
+                                        <button type="submit" class="remove-card-btn" title="Rimuovi Metodo di Pagamento">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </li>
+                            </#if>
                         </#list>
                     </ul>
                 <#else>

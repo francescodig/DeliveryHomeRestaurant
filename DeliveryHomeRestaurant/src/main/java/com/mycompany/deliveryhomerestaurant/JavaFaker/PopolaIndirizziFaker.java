@@ -38,6 +38,7 @@ public class PopolaIndirizziFaker {
             indirizzo.setCivico(faker.address().buildingNumber());
             indirizzo.setCap(faker.address().zipCode().substring(0, 5)); // Adatta se necessario
             indirizzo.setCitta(faker.address().cityName());
+            indirizzo.setAttivo(true);
 
             // Associa un cliente casuale all'indirizzo
             ECliente clienteCasuale = clienti.get(random.nextInt(clienti.size()));

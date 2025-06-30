@@ -31,6 +31,9 @@ public class EIndirizzo {
 
     @Column(nullable = false)
     private String citta;
+    
+    @Column(nullable = false)
+    private boolean attivo;
 
     @ManyToMany(mappedBy = "indirizziConsegna")
     private Set<ECliente> clienti = new HashSet<>();
@@ -77,6 +80,14 @@ public class EIndirizzo {
 
     public void setCitta(String citta) {
         this.citta = citta;
+    }
+    
+    public boolean getAttivo(){
+        return this.attivo;
+    }
+    
+    public void setAttivo(boolean attivo){
+        this.attivo = attivo;
     }
 
     public Set<ECliente> getClienti() {
