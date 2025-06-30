@@ -46,15 +46,17 @@
                             <div class="radio-group">
                                 <#if indirizzi?size gt 0>
                                     <#list indirizzi as indirizzo>
-                                        <div class="radio-option">
-                                            <input type="radio" id="indirizzo_${indirizzo.id}" name="indirizzo_id" value="${indirizzo.id}" <#if indirizzo?index == 0>checked</#if>>
-                                            <label class="radio-label" for="indirizzo_${indirizzo.id}">
-                                                <i class="fas fa-map-marker-alt"></i>
-                                                ${indirizzo.via}, 
-                                                ${indirizzo.civico}, 
-                                                ${indirizzo.citta}
-                                            </label>
-                                        </div>
+                                       <#if indirizzo.attivo>
+                                            <div class="radio-option">
+                                                <input type="radio" id="indirizzo_${indirizzo.id}" name="indirizzo_id" value="${indirizzo.id}" <#if indirizzo?index == 0>checked</#if>>
+                                                <label class="radio-label" for="indirizzo_${indirizzo.id}">
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                    ${indirizzo.via}, 
+                                                    ${indirizzo.civico}, 
+                                                    ${indirizzo.citta}
+                                                </label>
+                                            </div>
+                                       </#if>
                                     </#list>
                                 <#else>
                                     <p>Nessun indirizzo registrato.</p>
@@ -71,6 +73,7 @@
                             <div class="radio-group">
                                 <#if carte_credito?size gt 0>
                                     <#list carte_credito as carta>
+                                       <#if carta.attivo>
                                         <div class="radio-option">
                                             <input type="radio" id="carta_${carta.numeroCarta}" name="numero_carta" value="${carta.numeroCarta}" <#if carta?index == 0>checked</#if>>
                                             <label class="radio-label" for="carta_${carta.numeroCarta}">
@@ -80,6 +83,7 @@
                                                 (${carta.dataScadenza})
                                             </label>
                                         </div>
+                                       </#if>
                                     </#list>
                                 <#else>
                                     <p>Nessuna carta di credito registrata.</p>
