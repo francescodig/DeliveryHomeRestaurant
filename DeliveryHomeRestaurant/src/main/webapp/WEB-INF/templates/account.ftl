@@ -131,9 +131,6 @@
                 <a href="/DeliveryHomeRestaurant/User/logoutUser/" class="btn-logout">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
-                <a href="/DeliveryHomeRestaurant/User/deleteAccount/" class="btn-logout">
-                    <i class="fas fa-sign-out-alt"></i> Delete Account
-                </a>
             </div>
         </section>
     </main>

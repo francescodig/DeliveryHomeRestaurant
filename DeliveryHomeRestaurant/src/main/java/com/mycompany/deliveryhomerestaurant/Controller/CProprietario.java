@@ -7,24 +7,35 @@ package com.mycompany.deliveryhomerestaurant.Controller;
 
 import com.mycompany.deliveryhomerestaurant.DAO.ECategoriaDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EClienteDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.ECuocoDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
 import com.mycompany.deliveryhomerestaurant.DAO.ERecensioneDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.ESegnalazioneDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EProdottoDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.ERiderDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ECategoriaDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EClienteDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.ECuocoDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EOrdineDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ERecensioneDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ESegnalazioneDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EProdottoDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.ERiderDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
 import com.mycompany.deliveryhomerestaurant.Model.ECategoria;
+import com.mycompany.deliveryhomerestaurant.Model.ECuoco;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
 import com.mycompany.deliveryhomerestaurant.Model.EProprietario;
 import com.mycompany.deliveryhomerestaurant.Model.ESegnalazione;
 import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
+import com.mycompany.deliveryhomerestaurant.Model.ERider;
+import com.mycompany.deliveryhomerestaurant.Model.EUtente;
 import com.mycompany.deliveryhomerestaurant.util.UtilSession;
+import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
+import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -48,6 +59,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.UUID;
+
 
 
 /**
@@ -571,5 +584,274 @@ public class CProprietario {
             throw new ServletException("Errore nella visualizzazione del menu", e);
         }
     }
+    
+    public void saveProduct(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException {
+
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.getSession(request);
+
+        try {
+            Object utente = session != null ? session.getAttribute("utente") : null;
+            if (!(utente instanceof EProprietario)) {
+                response.sendRedirect(request.getContextPath() + "/showLogin");
+                return;
+            }
+
+            EProprietario proprietario = (EProprietario) utente;
+            if (!"proprietario".equalsIgnoreCase(proprietario.getRuolo())) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Accesso negato");
+                return;
+            }
+
+            String idStr = request.getParameter("product_id");
+            String nome = request.getParameter("nome") != null ? request.getParameter("nome").trim() : "";
+            String categoriaIdStr = request.getParameter("categoria_id");
+            String descrizione = request.getParameter("descrizione") != null ? request.getParameter("descrizione").trim() : "";
+            String costoStr = request.getParameter("costo");
+
+            if (nome.isEmpty() || categoriaIdStr == null || categoriaIdStr.isEmpty() || descrizione.isEmpty() || costoStr == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Dati mancanti o non validi");
+                return;
+            }
+
+            BigDecimal costo;
+            try {
+                costo = new BigDecimal(costoStr);
+                if (costo.compareTo(BigDecimal.ZERO) <= 0) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Costo non valido");
+                return;
+            }
+
+            Long categoriaId;
+            ECategoria categoria;
+            try {
+                categoriaId = Long.parseLong(categoriaIdStr);
+                categoria = em.find(ECategoria.class, categoriaId);
+                if (categoria == null) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Categoria non trovata");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID categoria non valido");
+                return;
+            }
+
+            EProdotto prodotto;
+            if (idStr != null && !idStr.isEmpty()) {
+                Long id = Long.parseLong(idStr);
+                prodotto = em.find(EProdotto.class, id);
+                if (prodotto == null) {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Prodotto non trovato");
+                    return;
+                }
+            } else {
+                prodotto = new EProdotto();
+            }
+
+            prodotto.setNome(nome);
+            prodotto.setCategoria(categoria);
+            prodotto.setDescrizione(descrizione);
+            prodotto.setCosto(costo);
+
+            em.getTransaction().begin();
+            em.persist(prodotto);
+            em.getTransaction().commit();
+
+            response.sendRedirect(request.getContextPath() + "/Proprietario/showMenu");
+
+        } catch (Exception e) {
+            throw new ServletException("Errore durante il salvataggio del prodotto", e);
+        }
+    }
+     
+    public void modifyProduct(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException {
+
+            EntityManager em = (EntityManager) request.getAttribute("em");
+            HttpSession session = UtilSession.getSession(request);
+
+            try {
+                Object utente = session != null ? session.getAttribute("utente") : null;
+                if (!(utente instanceof EProprietario)) {
+                    response.sendRedirect(request.getContextPath() + "/showLogin");
+                    return;
+                }
+
+                EProprietario proprietario = (EProprietario) utente;
+                if (!"proprietario".equalsIgnoreCase(proprietario.getRuolo())) {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Accesso negato");
+                    return;
+                }
+
+                String idStr = request.getParameter("product_id");
+                String nome = request.getParameter("nome") != null ? request.getParameter("nome").trim() : "";
+                String categoriaIdStr = request.getParameter("categoria_id");
+                String descrizione = request.getParameter("descrizione") != null ? request.getParameter("descrizione").trim() : "";
+                String costoStr = request.getParameter("costo");
+
+                // Validazione base dei dati
+                if (nome.isEmpty() || categoriaIdStr == null || categoriaIdStr.isEmpty() || descrizione.isEmpty() || costoStr == null) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Dati mancanti o non validi");
+                    return;
+                }
+
+                BigDecimal costo;
+                try {
+                    costo = new BigDecimal(costoStr);
+                    if (costo.compareTo(BigDecimal.ZERO) <= 0) {
+                        throw new NumberFormatException();
+                    }
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Costo non valido");
+                    return;
+                }
+
+                Long categoriaId;
+                ECategoria categoria;
+                try {
+                    categoriaId = Long.parseLong(categoriaIdStr);
+                    categoria = em.find(ECategoria.class, categoriaId);
+                    if (categoria == null) {
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Categoria non valida");
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID categoria non valido");
+                    return;
+                }
+
+                EProdotto prodotto;
+                if (idStr != null && !idStr.isEmpty()) {
+                    try {
+                        Long id = Long.parseLong(idStr);
+                        prodotto = em.find(EProdotto.class, id);
+                        if (prodotto == null) {
+                            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Prodotto non trovato");
+                            return;
+                        }
+                    } catch (NumberFormatException e) {
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID prodotto non valido");
+                        return;
+                    }
+                } else {
+                    prodotto = new EProdotto();
+                }
+
+                prodotto.setNome(nome);
+                prodotto.setCategoria(categoria);
+                prodotto.setDescrizione(descrizione);
+                prodotto.setCosto(costo);
+
+                em.getTransaction().begin();
+                em.persist(prodotto);
+                em.getTransaction().commit();
+
+                response.sendRedirect(request.getContextPath() + "/Proprietario/showMenu");
+
+            } catch (Exception e) {
+                throw new ServletException("Errore durante la modifica del prodotto", e);
+            }
+        }
+    
+    //deleteProduct da fare
+    
+    public void showCreateAccount(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException, TemplateException {
+
+        Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.getSession(request);
+
+        try {
+            boolean logged = false;
+            String role = "";
+            EProprietario proprietario = null;
+
+            if (session != null && session.getAttribute("utente") instanceof EProprietario) {
+                proprietario = (EProprietario) session.getAttribute("utente");
+                logged = true;
+                role = proprietario.getRuolo();
+            }
+
+            if (proprietario == null || !"proprietario".equalsIgnoreCase(role)) {
+                response.sendRedirect(request.getContextPath() + "/showLogin");
+                return;
+            }
+
+            ECuocoDAO chefDao = new ECuocoDAOImpl(em);
+            List<ECuoco> chefs = chefDao.getAllChefs();
+
+            ERiderDAO riderDao = new ERiderDAOImpl(em);
+            List<ERider> riders = riderDao.getAllRiders();
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("contextPath", request.getContextPath());
+            data.put("logged", logged);
+            data.put("role", role);
+            data.put("chefs", chefs);
+            data.put("riders", riders);
+
+            Template template = cfg.getTemplate("create_account_admin.ftl");
+            response.setContentType("text/html;charset=UTF-8");
+            template.process(data, response.getWriter());
+
+        } catch (Exception e) {
+            throw new ServletException("Errore nella visualizzazione della pagina di creazione account", e);
+        }
+    }
+    
+    public void createEmployee(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException, TemplateException {
+
+        String nome = request.getParameter("nome");
+        String cognome = request.getParameter("cognome");
+        String email = request.getParameter("email");
+        String password = request.getParameter("password");
+        String ruolo = request.getParameter("ruolo");
+
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
+        ProfiloService service = new ProfiloServiceImpl(utenteDAO);
+
+        EUtente<?> nuovoUtente;
+
+        if ("Cuoco".equalsIgnoreCase(ruolo)) {
+            ECuoco cuoco = new ECuoco();
+            String codiceCuoco = "CUOCO-" + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
+            cuoco.setCodiceCuoco(codiceCuoco);
+            nuovoUtente = cuoco;
+        } else if ("Rider".equalsIgnoreCase(ruolo)) {
+            ERider rider = new ERider();
+            String codiceRider = "RIDER-" + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
+            rider.setCodiceRider(codiceRider);
+            nuovoUtente = rider;
+        } else {
+            request.setAttribute("error", "Ruolo non valido.");
+            request.getRequestDispatcher("/WEB-INF/views/create_account_admin.ftl").forward(request, response);
+            return;
+        }
+
+        nuovoUtente.setNome(nome)
+                   .setCognome(cognome)
+                   .setEmail(email)
+                   .setPassword(password);
+
+        boolean success = service.Register(nuovoUtente);
+
+        if (success) {
+            response.sendRedirect(request.getContextPath() + "/Proprietario/showCreateAccount");
+        } else {
+            request.setAttribute("error", "Creazione dipendente fallita.");
+            request.getRequestDispatcher("/WEB-INF/views/create_account_admin.ftl").forward(request, response);
+        }
+    }
+
+
+    //delete Employee da fare eventualmente
+
 
 }

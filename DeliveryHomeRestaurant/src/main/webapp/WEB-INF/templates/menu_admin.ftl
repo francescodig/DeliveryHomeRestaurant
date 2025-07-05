@@ -74,9 +74,17 @@
                                 <td data-label="Categoria">${product.categoria.nome?html}</td>
                                 <td data-label="Prezzo">€${product.costo?string["0.00"]}</td>
                                 <td class="actions">
-                                    <button class="btn btn-edit" data-id="${product.id}">
+                                    <button 
+                                        class="btn btn-edit" 
+                                        data-modal-target="editProductModal"
+                                        data-id="${product.id}"
+                                        data-nome="${product.nome?html}"
+                                        data-descrizione="${product.descrizione?html}"
+                                        data-categoria="${product.categoria.id}"
+                                        data-prezzo="${product.costo?string['0.00']}">
                                         <i class="fas fa-edit"></i> Modifica
                                     </button>
+
                                     <form action="${contextPath}/Proprietario/deleteProduct" method="post" class="inline-delete-form">
                                         <input type="hidden" name="product_id" value="${product.id}">
                                         <button type="submit" class="btn btn-delete">
@@ -116,13 +124,16 @@
             <div class="form-group">
                 <label for="productCategory">Categoria:</label>
                 <select id="productCategory" name="categoria_id" required>
-                    <#if categories??>
-                        <#list categories as category>
-                            <option value="${category.id!}"
-                                <#if (editMode!false) == true && (editingProduct??) && (editingProduct.categoria??) && (editingProduct.categoria.id == category.id)>
+                    <#if categorie??>
+                        <#list categorie as category>
+                            <option value="${category.id}" 
+                                <#if (editMode!false) == true 
+                                      && (editingProduct??) 
+                                      && (editingProduct.categoria??) 
+                                      && (editingProduct.categoria.id == category.id)>
                                     selected
                                 </#if>>
-                                ${category.nome!?html}
+                                ${category.nome?cap_first}
                             </option>
                         </#list>
                     <#else>
@@ -163,7 +174,69 @@
     <!-- Footer -->
     <#include "footer.ftl">
 
+    <!-- Modale modifica -->
+
+    <!-- Modale per Modifica Prodotto -->
+    <div id="editProductModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2><i class="fas fa-pen"></i> Modifica Prodotto</h2>
+            <form id="editProductForm" method="post" action="${contextPath}/Proprietario/modifyProduct">
+                <input type="hidden" name="product_id" id="editProductId">
+
+                <div class="form-group">
+                    <label for="editNome">Nome:</label>
+                    <input type="text" id="editNome" name="nome" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editCategoria">Categoria:</label>
+                    <select id="editCategoria" name="categoria_id" required>
+                        <#if categorie??>
+                            <#list categorie as category>
+                                <option value="${category.id}">${category.nome?cap_first}</option>
+                            </#list>
+                        </#if>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editPrezzo">Prezzo (€):</label>
+                    <input type="number" id="editPrezzo" name="costo" step="0.01" min="0" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="editDescrizione">Descrizione:</label>
+                    <textarea id="editDescrizione" name="descrizione" rows="3" required></textarea>
+                </div>
+
+                <div class="form-group full-width actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Salva Modifiche
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <script src="${contextPath}/resources/Js/hamburger.js"></script>
     <script src="${contextPath}/resources/Js/theme.js"></script>
+    <script src="${contextPath}/resources/Js/modal.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-modal-target="editProductModal"]').forEach(button => {
+            button.addEventListener('click', function () {
+            document.getElementById('editProductId').value = this.dataset.id;
+            document.getElementById('editNome').value = this.dataset.nome;
+            document.getElementById('editDescrizione').value = this.dataset.descrizione;
+            document.getElementById('editCategoria').value = this.dataset.categoria;
+            const prezzoRaw = this.dataset.prezzo;
+            const prezzoNumber = prezzoRaw.replace(',', '.'); // sostituisci virgola con punto se presente
+            document.getElementById('editPrezzo').value = prezzoNumber;
+            });
+        });
+        });
+    </script>
 </body>
 </html>

@@ -59,7 +59,7 @@
                 </div>
                 <div class="section-arrow"><i class="fas fa-chevron-right"></i></div>
             </a>
-            <a href="/Delivery/Proprietario/showCreateAccount" class="admin-section-card">
+            <a href="${contextPath}/Proprietario/showCreateAccount" class="admin-section-card">
                 <div class="section-icon"><i class="fas fa-cog"></i></div>
                 <div class="section-content">
                     <h2>Gestione account</h2>
