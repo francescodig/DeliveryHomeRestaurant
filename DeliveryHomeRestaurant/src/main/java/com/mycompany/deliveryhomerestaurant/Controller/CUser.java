@@ -645,6 +645,32 @@ public  void removeCreditCard(HttpServletRequest request, HttpServletResponse re
         throw e;
     }
 }
+
+public void removeAccount(HttpServletRequest request, HttpServletResponse response, String[] params){
+    
+    EntityManager em = (EntityManager) request.getAttribute("em");
+    HttpSession session = UtilSession.getSession(request);
+    EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
+    
+    
+    try{
+        if(session == null || session.getAttribute("utente") != null){
+            response.sendRedirect(request.getContextPath() + "/User/home");
+            return;
+        }
+        EUtente utente = (EUtente) session.getAttribute("utente"); 
+        int userId = utente.getId();
+        EUtente utenteAttached = utenteDAO.findById(userId);
+        
+        
+        em.remove(utenteAttached);
+        response.sendRedirect(request.getContextPath() + "/User/logoutUser");
+        
+    } catch(Exception e){
+        
+    }
+    
+}
      
      
      

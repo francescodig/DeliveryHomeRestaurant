@@ -59,17 +59,21 @@ public class COrdine {
         HttpSession session = UtilSession.getSession(request);
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
+        String role = "";
+        boolean logged = true;
         
         try{
             
                 // Controllo login e ruolo
             if (session == null || session.getAttribute("utente") == null) {
                 response.sendRedirect("/DeliveryHomeRestaurant/User/showProfile"); // Utente non autenticato
+                logged = false;
                 return;
             }
 
             ECliente client = (ECliente) session.getAttribute("utente");
             ECliente clientAttached = (ECliente) utenteDAO.findById(client.getId());
+            role = clientAttached.getRuolo();
 
 
             // Recupero e parsing del carrello JSON
@@ -103,6 +107,8 @@ public class COrdine {
             data.put("contextPath", request.getContextPath());
             data.put("carte_credito", cards);
             data.put("indirizzi", adresses);
+            data.put("role", role);
+            data.put("logged", logged);
             Template template = cfg.getTemplate("check_order.ftl");
 
 
