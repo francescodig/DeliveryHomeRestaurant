@@ -25,6 +25,7 @@ import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
 import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
 import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
+import com.mycompany.deliveryhomerestaurant.util.TemplateRenderer;
 import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -57,14 +58,12 @@ public class CUser{
             throws ServletException, IOException, TemplateException {
         
         EntityManager em = (EntityManager) request.getAttribute("em");
-        Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         String role = "";
         
         try {
            
 
 
-            Template template = cfg.getTemplate("home.ftl");
 
             ERecensioneDAO recensioneDAO = new ERecensioneDAOImpl(em);
             List<ERecensione> allReviews = recensioneDAO.getAllReviews();
@@ -85,8 +84,7 @@ public class CUser{
             data.put("logged", logged);
             data.put("role", role);
 
-            response.setContentType("text/html;charset=UTF-8");
-            template.process(data, response.getWriter());
+            TemplateRenderer.render(request, response, "home.ftl", data);
 
         } catch (Exception e) {
             throw new ServletException("Errore nel processing del template", e);

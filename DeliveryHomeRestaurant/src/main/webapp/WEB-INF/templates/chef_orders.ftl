@@ -75,8 +75,20 @@
     </main>
 
     <#include "footer.ftl">
+
+    {* Modale per conferma *}
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <p>Sei sicuro di voler aggiornare lo stato in <strong><span id="modalStatus"></span></strong>?</p>
+            <button id="confirmBtn">Conferma</button>
+            <button onclick="closeModal()">Annulla</button>
+        </div>
+    </div>
+
+    <script src="${contextPath}/resources/Js/orders.js"></script>
     <script src="${contextPath}/resources/Js/hamburger.js"></script>
     <script src="${contextPath}/resources/Js/theme.js" defer></script>
+
 
 </body>
 </html>

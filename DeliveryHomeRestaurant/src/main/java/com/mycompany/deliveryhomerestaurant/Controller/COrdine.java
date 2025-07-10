@@ -235,7 +235,7 @@ public class COrdine {
             transaction.rollback();
         }
          // Preparo pagina di errore FTL
-        Template template = cfg.getTemplate("errore.ftl");
+        Template template = cfg.getTemplate("generic_error.ftl");
         Map<String, Object> data = new HashMap<>();
         data.put("contextPath", request.getContextPath());
         data.put("errorMessage", e.getMessage());
