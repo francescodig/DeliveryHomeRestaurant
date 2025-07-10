@@ -1,5 +1,6 @@
 package com.mycompany.deliveryhomerestaurant.Controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.deliveryhomerestaurant.DAO.ECartaCreditoDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EClienteDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EIndirizzoDAO;
@@ -17,6 +18,7 @@ import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
 import com.mycompany.deliveryhomerestaurant.Model.ECartaCredito;
 import com.mycompany.deliveryhomerestaurant.Model.ECliente;
+import com.mycompany.deliveryhomerestaurant.Model.EElencoProdotti;
 import com.mycompany.deliveryhomerestaurant.Model.EIndirizzo;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
@@ -37,6 +39,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -127,6 +130,31 @@ public class CUser{
         } catch (Exception e) {
             throw new ServletException("Errore nel processing del template", e);
         }
+    }
+    
+    public void getMenuJson(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException{
+        
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        
+        EMenuDAO menuDAO = new EMenuDAOImpl(em);
+        
+        List<Map<String, Object>>  menu =  menuDAO.getMenu();
+        
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        // Supponiamo che menu sia già una List<Map<String, Object>>
+        String json = mapper.writeValueAsString(menu);
+
+        PrintWriter out = response.getWriter();
+        out.print(json);
+        out.flush();
+
+        
+        
     }
 
     public void order(HttpServletRequest request, HttpServletResponse response, String[] params)

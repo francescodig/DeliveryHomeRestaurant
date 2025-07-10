@@ -20,31 +20,32 @@
         </section>
 
         <section class="menu-section">
-            <h1>Ordina dal menù</h1>
+            <div id="menu-container"></div>
+                <h1>Ordina dal menù</h1>
 
-            <#list menu as categoria>
-                <div class="menu-category">
-                    <h2>
-                        <#if categoria.categoria == "PIZZE"><i class="fas fa-pizza-slice"></i></#if>
-                        <#if categoria.categoria == "CALZONI"><i class="fas fa-bread-slice"></i></#if>
-                        <#if categoria.categoria == "CONTORNI"><i class="fas fa-carrot"></i></#if>
-                        <#if categoria.categoria == "BEVANDE"><i class="fas fa-glass-whiskey"></i></#if>
-                        ${categoria.categoria?html}
-                    </h2>
-                    <div class="menu-items">
-                        <#list categoria.piatti as piatto>
-                            <div class="menu-item">
-                                <div class="item-info">
-                                    <h3>${piatto.nome?html}</h3>
-                                    <p>${piatto.descrizione?html}</p>
+                <#list menu as categoria>
+                    <div class="menu-category">
+                        <h2>
+                            <#if categoria.categoria == "PIZZE"><i class="fas fa-pizza-slice"></i></#if>
+                            <#if categoria.categoria == "CALZONI"><i class="fas fa-bread-slice"></i></#if>
+                            <#if categoria.categoria == "CONTORNI"><i class="fas fa-carrot"></i></#if>
+                            <#if categoria.categoria == "BEVANDE"><i class="fas fa-glass-whiskey"></i></#if>
+                            ${categoria.categoria?html}
+                        </h2>
+                        <div class="menu-items">
+                            <#list categoria.piatti as piatto>
+                                <div class="menu-item">
+                                    <div class="item-info">
+                                        <h3>${piatto.nome?html}</h3>
+                                        <p>${piatto.descrizione?html}</p>
+                                    </div>
+                                    <div class="item-price">€${piatto.costo?string("0.00")}</div>
+                                    <button class="add-button" data-id="${piatto.id}">+</button>
                                 </div>
-                                <div class="item-price">€${piatto.costo?string("0.00")}</div>
-                                <button class="add-button" data-id="${piatto.id}">+</button>
-                            </div>
-                        </#list>
+                            </#list>
+                        </div>
                     </div>
-                </div>
-            </#list>
+                </#list>
         </section>
     </main>
 
@@ -77,6 +78,7 @@
 </body>
 
 <script src="${contextPath}/resources/Js/cart.js" defer></script>
+<script src="${contextPath}/resources/Js/menu.js" defer></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         cart = localStorage.getItem("cart") ? JSON.parse(localStorage.getItem("cart")) : [];

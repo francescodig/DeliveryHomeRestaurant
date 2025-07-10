@@ -1,0 +1,82 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 10 lug 2025, 14:47:34
+    Author     : franc
+*/
+
+.accesso-negato-container {
+  max-width: 600px;
+  margin: 100px auto;
+  padding: 2.5rem 2rem;
+  background-color: var(--colore-ombra-chiara);
+  border: 1px solid var(--colore-bordo);
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px var(--colore-ombra-media);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: center;
+}
+
+.crossed-utensils {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.crossed-utensils .fork {
+  font-size: 4rem;
+  color: var(--colore-primario, #cc0000);
+  animation: rotateIcon 4s linear infinite;
+}
+
+@keyframes rotateIcon {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.accesso-negato-container h1 {
+  color: var(--colore-primario);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.accesso-negato-container p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: var(--colore-testo-secondario);
+}
+
+.accesso-negato-container .button {
+  display: inline-block;
+  background-color: var(--colore-primario);
+  color: var(--colore-bianco);
+  padding: 0.7rem 1.2rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.accesso-negato-container .button:hover {
+  background-color: var(--colore-primario-hover);
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .crossed-utensils .fork {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .crossed-utensils .fork {
+    font-size: 2.2rem;
+  }
+}

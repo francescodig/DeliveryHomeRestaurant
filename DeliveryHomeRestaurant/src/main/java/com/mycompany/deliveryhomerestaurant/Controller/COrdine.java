@@ -137,12 +137,15 @@ public class COrdine {
         EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
         EntityTransaction transaction = null;
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+        String role = "";
+        Boolean logged = true;
         double totalPrice = 0.0;
 
         
         try{
             
             EUtente utente = (EUtente) session.getAttribute("utente");
+            role = utente.getRuolo();
             ECliente cliente = (ECliente) utenteDAO.findById(utente.getId());
             String cartJson = request.getParameter("cart_data");
             String note = request.getParameter("note");
@@ -175,7 +178,15 @@ public class COrdine {
                 if (prodotto == null) {
                     throw new IllegalArgumentException("Prodotto " + item.getString("name") + " non trovato.");
                 }
+                BigDecimal priceFromCart = item.getBigDecimal("price");
+                BigDecimal priceFromDb = prodotto.getCosto();
 
+                if (priceFromDb.compareTo(priceFromCart) != 0) {
+                    
+                    throw new IllegalArgumentException("Prodotto " + item.getString("name") + " non trovato.");
+        
+                }
+                
                 EItemOrdine itemOrdine = new EItemOrdine();
                 itemOrdine.setOrdine(ordine);
                 itemOrdine.setProdotto(prodotto);
@@ -197,32 +208,41 @@ public class COrdine {
             ordine.setIndirizzoConsegna(indirizzoConsegna);
             ordine.setCartaPagamento(metodoPagamento);
             
-                    // Inizio Transazione
-        transaction = em.getTransaction();
-        transaction.begin();
-        em.persist(ordine);
-        for (EItemOrdine itemOrdine : itemOrdineList) {
-            em.persist(itemOrdine);
-        }
-        em.flush();
-        transaction.commit();
-        // Fine Transazione
-        Template template = cfg.getTemplate("confirmed_order.ftl");
-        
-        Map<String, Object> data = new HashMap();
-        
-        data.put("contextPath", request.getContextPath());
-        
-        template.process(data, response.getWriter());
-        
+            // Inizio Transazione
+            transaction = em.getTransaction();
+            transaction.begin();
+            em.persist(ordine);
+            for (EItemOrdine itemOrdine : itemOrdineList) {
+                em.persist(itemOrdine);
+            }
+            em.flush();
+            transaction.commit();
+            // Fine Transazione
+            Template template = cfg.getTemplate("confirmed_order.ftl");
+
+            Map<String, Object> data = new HashMap();
+
+            data.put("contextPath", request.getContextPath());
+            data.put("role", role);
+            data.put("logged", logged);
+
+            template.process(data, response.getWriter());
+
         
 
     } catch (IllegalArgumentException e) {
         if(transaction != null){
             transaction.rollback();
         }
-        System.err.println("Errore input utente: " + e.getMessage());
-        throw e;
+         // Preparo pagina di errore FTL
+        Template template = cfg.getTemplate("errore.ftl");
+        Map<String, Object> data = new HashMap<>();
+        data.put("contextPath", request.getContextPath());
+        data.put("errorMessage", e.getMessage());
+        data.put("role", role);
+        data.put("logged", logged);
+
+        template.process(data, response.getWriter());
     } catch (Exception e) {
         if(transaction != null){
             transaction.rollback();
