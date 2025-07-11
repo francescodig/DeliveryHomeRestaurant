@@ -43,6 +43,14 @@
                 </div>
                 <div class="section-arrow"><i class="fas fa-chevron-right"></i></div>
             </a>
+            <a href="${contextPath}/Proprietario/showCalendar/" class="admin-section-card">
+                <div class="section-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="section-content">
+                    <h2>Gestione Calendario</h2>
+                    <p>Gestisci i giorni di apertura e chiusura</p>
+                </div>
+                <div class="section-arrow"><i class="fas fa-chevron-right"></i></div>
+            </a>
             <a href="${contextPath}/Proprietario/showReviews/" class="admin-section-card">
                 <div class="section-icon"><i class="fas fa-star"></i></div>
                 <div class="section-content">

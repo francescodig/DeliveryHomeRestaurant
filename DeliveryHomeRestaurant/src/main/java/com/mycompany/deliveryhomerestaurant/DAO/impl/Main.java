@@ -4,42 +4,24 @@
  */
 package com.mycompany.deliveryhomerestaurant.DAO.impl;
 
+import com.mycompany.deliveryhomerestaurant.DAO.ECalendarioDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EClienteDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EMenuDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
 import com.mycompany.deliveryhomerestaurant.DAO.ERecensioneDAO;
-import com.mycompany.deliveryhomerestaurant.Model.ECliente;
-import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
-import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import com.mycompany.deliveryhomerestaurant.DAO.EProdottoDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.EProdottoDAOImpl;
-import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
 import com.mycompany.deliveryhomerestaurant.DAO.ECartaCreditoDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EIndirizzoDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.ECartaCreditoDAOImpl;
-import com.mycompany.deliveryhomerestaurant.Model.ECartaCredito;
-import com.mycompany.deliveryhomerestaurant.Model.EIndirizzo;
-import java.util.List;
-import java.util.Map;
-import com.mycompany.deliveryhomerestaurant.Model.EItemOrdine;
-import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
 import com.mycompany.deliveryhomerestaurant.DAO.ECuocoDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EExceptionCalendarioDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.ERiderDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.ECuocoDAOImpl;
-import com.mycompany.deliveryhomerestaurant.Model.ECuoco;
-import com.mycompany.deliveryhomerestaurant.Model.ERider;
 import com.mycompany.deliveryhomerestaurant.DAO.ESegnalazioneDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.ESegnalazioneDAOImpl;
-import com.mycompany.deliveryhomerestaurant.Model.ESegnalazione;
-import com.mycompany.deliveryhomerestaurant.Model.EUtente;
 import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
 import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
-import jakarta.servlet.http.HttpSession;
-import java.math.BigDecimal;
 
 
 public class Main {
@@ -60,6 +42,8 @@ public class Main {
         ESegnalazioneDAO segnalazioneDAO = new ESegnalazioneDAOImpl(em);
         EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
         ProfiloService profileService = new ProfiloServiceImpl(utenteDAO);
+        ECalendarioDAO calendarioDAO = new ECalendarioDAOImpl(em);
+        EExceptionCalendarioDAO exceptioncalendarioDAO = new EExceptionCalendarioDAOImpl(em);
 
 
         /*

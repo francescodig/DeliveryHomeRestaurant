@@ -32,6 +32,8 @@ public class PopolaDbFaker {
             PopolaOrdiniFaker.popola();
             PopolaRecensioniFaker.popola();
             PopolaSegnalazioniFaker.popola();
+            PopolaCalendarioFaker.popola();
+            PopolaExceptionCalendarioFaker.popola();
             
            
             

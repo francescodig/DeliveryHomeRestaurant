@@ -14,6 +14,8 @@ import com.mycompany.deliveryhomerestaurant.DAO.ESegnalazioneDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EProdottoDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.ERiderDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.ECalendarioDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EExceptionCalendarioDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ECategoriaDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EClienteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ECuocoDAOImpl;
@@ -23,9 +25,13 @@ import com.mycompany.deliveryhomerestaurant.DAO.impl.ESegnalazioneDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EProdottoDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ERiderDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.ECalendarioDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EExceptionCalendarioDAOImpl;
 import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
+import com.mycompany.deliveryhomerestaurant.Model.ECalendario;
 import com.mycompany.deliveryhomerestaurant.Model.ECategoria;
 import com.mycompany.deliveryhomerestaurant.Model.ECuoco;
+import com.mycompany.deliveryhomerestaurant.Model.EExceptionCalendario;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
 import com.mycompany.deliveryhomerestaurant.Model.EProprietario;
@@ -40,6 +46,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -54,6 +61,8 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -852,6 +861,296 @@ public class CProprietario {
 
 
     //delete Employee da fare eventualmente
+
+
+    public void showCalendar(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException, TemplateException {
+
+        Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.getSession(request);
+
+        try {
+            boolean logged = false;
+            String role = "";
+            EProprietario proprietario = null;
+
+            if (session != null && session.getAttribute("utente") instanceof EProprietario) {
+                proprietario = (EProprietario) session.getAttribute("utente");
+                logged = true;
+                role = proprietario.getRuolo();
+            }
+
+            if (proprietario == null || !"proprietario".equalsIgnoreCase(role)) {
+                response.sendRedirect(request.getContextPath() + "/showLogin");
+                return;
+            }
+
+            // recupero dati calendario
+            ECalendarioDAO calendarioDAO = new ECalendarioDAOImpl(em);
+            EExceptionCalendarioDAO exceptioncalendarioDAO = new EExceptionCalendarioDAOImpl(em);
+            List<ECalendario> giorniChiusuraSettimanali = calendarioDAO.getCalendario();
+            List<EExceptionCalendario> giorniChiusuraEccezionali = exceptioncalendarioDAO.getExceptionCalendario();
+
+            // recupero eventuali messaggi flash dalla sessione
+            String message = (String) session.getAttribute("flash");
+            if (message != null) {
+                request.setAttribute("message", message);
+                session.removeAttribute("flash");
+            }
+
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter dbDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            
+            // trasformo la lista in una lista di Mappe con stringhe già formattate
+            List<Map<String, Object>> giorniFormattati = new ArrayList<>();
+            for (ECalendario giorno : giorniChiusuraSettimanali) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("data", giorno.getData());
+                map.put("orarioApertura", giorno.getOrarioApertura() != null ? giorno.getOrarioApertura().format(timeFormatter) : null);
+                map.put("orarioChiusura", giorno.getOrarioChiusura() != null ? giorno.getOrarioChiusura().format(timeFormatter) : null);
+                map.put("aperto", giorno.isAperto());
+                giorniFormattati.add(map);
+            }
+            
+            // mappatura giorniChiusuraEccezionali
+            List<Map<String, Object>> eccezioniFormattate = new ArrayList<>();
+            for (EExceptionCalendario eccezione : giorniChiusuraEccezionali) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("exceptionDate", eccezione.getExceptionDate().format(dateFormatter));
+                map.put("exceptionDateRaw", eccezione.getExceptionDate().format(dbDateFormatter)); // per <input hidden>
+                map.put("orarioApertura", eccezione.getOrarioApertura() != null ? eccezione.getOrarioApertura().format(timeFormatter) : "");
+                map.put("orarioChiusura", eccezione.getOrarioChiusura() != null ? eccezione.getOrarioChiusura().format(timeFormatter) : "");
+                map.put("aperto", eccezione.isAperto());
+                map.put("motivoChiusura", eccezione.getMotivoChiusura());
+                eccezioniFormattate.add(map);
+            }
+
+            // preparazione dati per la view
+            Map<String, Object> data = new HashMap<>();
+            data.put("contextPath", request.getContextPath());
+            data.put("logged", logged);
+            data.put("role", role);
+            data.put("giorniChiusuraSettimanali", giorniFormattati);
+            data.put("giorniChiusuraEccezionali", eccezioniFormattate);
+
+            Template template = cfg.getTemplate("calendar_admin.ftl");
+            response.setContentType("text/html;charset=UTF-8");
+            template.process(data, response.getWriter());
+
+        } catch (Exception e) {
+            throw new ServletException("Errore nella visualizzazione del calendario", e);
+        }
+    }
+    
+    public void addExceptionDay(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException {
+
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.getSession(request);
+
+        try {
+            Object utente = session != null ? session.getAttribute("utente") : null;
+            if (!(utente instanceof EProprietario)) {
+                response.sendRedirect(request.getContextPath() + "/showLogin");
+                return;
+            }
+
+            EProprietario proprietario = (EProprietario) utente;
+            if (!"proprietario".equalsIgnoreCase(proprietario.getRuolo())) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Accesso negato");
+                return;
+            }
+
+            String dataStr = request.getParameter("dataChiusura");
+
+            if (dataStr == null || dataStr.isBlank()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Data mancante");
+                return;
+            }
+
+            LocalDate dataChiusura;
+            try {
+                dataChiusura = LocalDate.parse(dataStr); // formato yyyy-MM-dd
+            } catch (Exception e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Formato data non valido");
+                return;
+            }
+
+            EExceptionCalendario eccezione = new EExceptionCalendario();
+            eccezione.setExceptionDate(dataChiusura);
+            eccezione.setAperto(false); // giorno chiuso
+
+            em.getTransaction().begin();
+            em.persist(eccezione);
+            em.getTransaction().commit();
+
+            response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
+
+        } catch (Exception e) {
+            throw new ServletException("Errore durante l'aggiunta del giorno di chiusura", e);
+        }
+    }
+
+    public void deleteExceptionDay(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException {
+
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.getSession(request);
+
+        try {
+            Object utente = session != null ? session.getAttribute("utente") : null;
+            if (!(utente instanceof EProprietario)) {
+                response.sendRedirect(request.getContextPath() + "/showLogin");
+                return;
+            }
+
+            EProprietario proprietario = (EProprietario) utente;
+            if (!"proprietario".equalsIgnoreCase(proprietario.getRuolo())) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Accesso negato");
+                return;
+            }
+
+            String dataChiusuraStr = request.getParameter("dataChiusura");
+            if (dataChiusuraStr == null || dataChiusuraStr.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Data mancante");
+                return;
+            }
+
+            LocalDate dataChiusura;
+            try {
+                dataChiusura = LocalDate.parse(dataChiusuraStr);
+            } catch (DateTimeParseException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Formato data non valido");
+                return;
+            }
+
+            // trova nel DB tramite query
+            EExceptionCalendario eccezione = null;
+            try {
+                eccezione = em.createQuery(
+                        "SELECT e FROM EExceptionCalendario e WHERE e.exceptionDate = :date", EExceptionCalendario.class)
+                        .setParameter("date", dataChiusura)
+                        .getSingleResult();
+            } catch (NoResultException e) {
+                
+            }
+
+            if (eccezione == null) {
+                request.getSession().setAttribute("flash_error", "Giorno di chiusura eccezionale non trovato");
+            } else {
+                // elimina dal DB
+                em.getTransaction().begin();
+                EExceptionCalendario toRemove = em.find(EExceptionCalendario.class, eccezione.getId());
+                if (toRemove != null) {
+                    em.remove(toRemove);
+                    em.getTransaction().commit();
+                    request.getSession().setAttribute("flash_success", "Giorno di chiusura eccezionale rimosso con successo");
+                } else {
+                    em.getTransaction().rollback();
+                    request.getSession().setAttribute("flash_error", "Errore durante la rimozione del giorno di chiusura eccezionale");
+                }
+            }
+
+            response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
+
+        } catch (Exception e) {
+            throw new ServletException("Errore durante la rimozione del giorno di chiusura eccezionale", e);
+        }
+    }
+    
+    public void editDay(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException {
+
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.getSession(request);
+
+        try {
+            Object utente = session != null ? session.getAttribute("utente") : null;
+            if (!(utente instanceof EProprietario)) {
+                response.sendRedirect(request.getContextPath() + "/showLogin");
+                return;
+            }
+
+            EProprietario proprietario = (EProprietario) utente;
+            if (!"proprietario".equalsIgnoreCase(proprietario.getRuolo())) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Accesso negato");
+                return;
+            }
+
+            // parametri dal form
+            String giornoStr = request.getParameter("giorno");
+            String aperturaStr = request.getParameter("orariapertura");
+            String chiusuraStr = request.getParameter("orarichiusura");
+            String stato = request.getParameter("orari[stato]");
+
+            if (giornoStr == null || stato == null) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Dati mancanti");
+                return;
+            }
+
+            LocalDate giorno;
+            try {
+                giorno = LocalDate.parse(giornoStr);
+            } catch (DateTimeParseException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Formato data non valido");
+                return;
+            }
+
+            // trova l'entità ECalendario per la data specifica
+            ECalendario giornoCalendario = em.find(ECalendario.class, giorno);
+            if (giornoCalendario == null) {
+                request.getSession().setAttribute("flash_error", "Giorno calendario non trovato");
+                response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
+                return;
+            }
+
+            em.getTransaction().begin();
+
+            if ("chiuso".equalsIgnoreCase(stato)) {
+                giornoCalendario.setAperto(false);
+                giornoCalendario.setOrarioApertura(null);
+                giornoCalendario.setOrarioChiusura(null);
+            } else {
+                giornoCalendario.setAperto(true);
+
+                LocalTime orarioApertura = null;
+                LocalTime orarioChiusura = null;
+
+                try {
+                    orarioApertura = (aperturaStr != null && !aperturaStr.isEmpty()) ? LocalTime.parse(aperturaStr) : null;
+                    orarioChiusura = (chiusuraStr != null && !chiusuraStr.isEmpty()) ? LocalTime.parse(chiusuraStr) : null;
+                } catch (DateTimeParseException e) {
+                    em.getTransaction().rollback();
+                    request.getSession().setAttribute("flash_error", "Formato orario non valido");
+                    response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
+                    return;
+                }
+
+                if (orarioApertura == null || orarioChiusura == null || !orarioApertura.isBefore(orarioChiusura)) {
+                    em.getTransaction().rollback();
+                    request.getSession().setAttribute("flash_error", "L'orario di apertura deve essere precedente all'orario di chiusura");
+                    response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
+                    return;
+                }
+
+                giornoCalendario.setOrarioApertura(orarioApertura);
+                giornoCalendario.setOrarioChiusura(orarioChiusura);
+            }
+
+            em.merge(giornoCalendario);
+            em.getTransaction().commit();
+
+            request.getSession().setAttribute("flash_success", "Giorno modificato con successo");
+            response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
+
+        } catch (Exception e) {
+            throw new ServletException("Errore durante la modifica del giorno", e);
+        }
+    }
+
+
 
 
 }
