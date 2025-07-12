@@ -65,8 +65,13 @@ public class EOrdine {
         inverseJoinColumns = @JoinColumn(name = "prodotto_id"))
     private Set<EProdotto> prodotti;
 
-    @Column(columnDefinition = "ENUM('in_attesa', 'in_preparazione', 'pronto', 'consegnato', 'annullato')")
+    @Column(columnDefinition = "ENUM('in_attesa', 'in_preparazione', 'pronto', 'consegnato', 'annullato', 'in_consegna')")
     private String stato;
+    
+    @ManyToOne
+    @JoinColumn(name = "riderConsegna_id", referencedColumnName = "id", nullable = true)
+    private ERider riderConsegna;
+
 
     public EOrdine() {
     }
@@ -107,6 +112,14 @@ public class EOrdine {
     
     public void setDataConsegna(LocalDateTime dataConsegna){
         this.dataConsegna = dataConsegna;
+    }
+    
+    public void setRiderConsegna(ERider rider){
+        this.riderConsegna = rider;
+    }
+    
+    public ERider getRiderConsegna(){
+        return this.riderConsegna;
     }
 
     public BigDecimal getCosto() {

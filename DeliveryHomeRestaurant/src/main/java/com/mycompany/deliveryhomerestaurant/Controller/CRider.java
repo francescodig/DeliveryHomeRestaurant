@@ -1,7 +1,11 @@
 package com.mycompany.deliveryhomerestaurant.Controller;
 
+import com.mycompany.deliveryhomerestaurant.DAO.EClienteDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
+import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EClienteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EOrdineDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.ERider;
@@ -38,10 +42,15 @@ public class CRider {
             ERider rider = AccessControlUtil.checkUserRole(utente, ERider.class);
             role = rider.getRuolo();
 
-            List<EOrdine> ordiniRider = ordineDAO.getOrdersByState("pronto");
+            List<EOrdine> ordiniPronti = ordineDAO.getOrdersByState("pronto");
+            List<EOrdine> ordiniInConsegna = ordineDAO.getOrdersByStateNotMine("in_consegna", rider);
+            List<EOrdine> ordiniRider = ordineDAO.getOrdersByRider(rider);
+            
             
             Map<String, Object> data = new HashMap<>();
-            data.put("orders", ordiniRider);
+            data.put("orders", ordiniPronti);
+            data.put("ordersOnDelivery", ordiniInConsegna);
+            data.put("myOrders", ordiniRider);
             data.put("role", role);
 
             TemplateRenderer.render(request, response, "rider_orders.ftl", data);
@@ -54,44 +63,70 @@ public class CRider {
             TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
-
+    
     public void cambiaStatoOrdine(HttpServletRequest request, HttpServletResponse response, String[] params)
-            throws IOException, TemplateException, ServletException {
+        throws IOException, TemplateException, ServletException {
 
-        EntityManager em = (EntityManager) request.getAttribute("em");
-        EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
-        String role = "";
-        boolean logged = true;
+    EntityManager em = (EntityManager) request.getAttribute("em");
+    EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
+    EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
+    String role = "";
+    boolean logged = true;
 
-        try {
-            EUtente utente = AccessControlUtil.getLoggedUser(request);
-            ERider rider = AccessControlUtil.checkUserRole(utente, ERider.class);
-            role = rider.getRuolo();
+    try {
+        EUtente utente = AccessControlUtil.getLoggedUser(request);
+        ERider rider = AccessControlUtil.checkUserRole(utente, ERider.class);
+        role = rider.getRuolo();
 
-            String ordineId = request.getParameter("ordineId");
-            String nuovoStato = request.getParameter("stato");
+        String ordineId = request.getParameter("ordineId");
+        String nuovoStato = request.getParameter("stato");
 
+        EOrdine ordine = ordineDAO.getOrdineById(ordineId);
 
-            EOrdine ordine = ordineDAO.getOrdineById(ordineId);
+        em.getTransaction().begin();
 
-            em.getTransaction().begin();
-            ordine.setStato(nuovoStato);
-            if ("consegnato".equals(nuovoStato)) {
-                ordine.setDataConsegna(LocalDateTime.now());
-            }
-            em.flush();
-            em.getTransaction().commit();
-
-            response.sendRedirect(request.getContextPath() + "/Rider/showOrders");
-
-        } catch (SecurityException e) {
-            logged = false;
-            TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
+        // Controlla se l'ordine ha già un rider assegnato diverso dall'attuale
+        ERider riderConsegna = ordine.getRiderConsegna();
+        if (riderConsegna != null && !(riderConsegna.getId().equals(rider.getId()))) {
+            em.getTransaction().rollback();
+            TemplateRenderer.mostraErrore(
+                request,
+                response,
+                "rider_error.ftl",
+                "L'ordine è già stato preso in carico da un altro rider.",
+                rider.getRuolo(),
+                true
+            );
+            return;
         }
+
+        ordine.setStato(nuovoStato);
+        // Se non ha rider, lo assegna
+        ordine.setRiderConsegna(rider);
+
+        
+
+        // Se è stato consegnato, salva anche data e ora
+        if ("consegnato".equalsIgnoreCase(nuovoStato)) {
+            ordine.setDataConsegna(LocalDateTime.now());
+        }
+
+        em.flush();
+        em.getTransaction().commit();
+
+        response.sendRedirect(request.getContextPath() + "/Rider/showOrders");
+
+    } catch (SecurityException e) {
+        logged = false;
+        TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
+    } catch (Exception e) {
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+        TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
     }
+}
+
+
+    
 }

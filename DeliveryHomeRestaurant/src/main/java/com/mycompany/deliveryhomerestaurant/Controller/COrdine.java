@@ -155,8 +155,9 @@ public class COrdine {
             }
             
             String dataConsegnaStr = request.getParameter("dataConsegna");
+            String dataConsegnaStrFormatted = dataConsegnaStr.replace(" ", "T");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-            LocalDateTime dataConsegna = LocalDateTime.parse(dataConsegnaStr, formatter);
+            LocalDateTime dataConsegna = LocalDateTime.parse(dataConsegnaStrFormatted, formatter);
             
             int indirizzoId = Integer.parseInt(request.getParameter("indirizzo_id"));
             EIndirizzo indirizzoConsegna = indirizzoDAO.getAddressById(indirizzoId);

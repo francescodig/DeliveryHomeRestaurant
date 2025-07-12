@@ -7,6 +7,7 @@ package com.mycompany.deliveryhomerestaurant.DAO.impl;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.ECliente;
 import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
+import com.mycompany.deliveryhomerestaurant.Model.ERider;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -55,7 +56,26 @@ public class EOrdineDAOImpl implements EOrdineDao {
         query.setParameter("stato", stato);
         return query.getResultList();
     }
+    
+    @Override
+    public List<EOrdine> getOrdersByStateNotMine(String stato, ERider rider){
+        TypedQuery<EOrdine> query = em.createQuery(
+            "SELECT o FROM EOrdine o WHERE o.stato = :stato AND o.riderConsegna != :rider", EOrdine.class);
+        query.setParameter("stato", stato);
+        query.setParameter("rider", rider);
+        return query.getResultList();
+        
+    }
 
+    @Override
+    public List<EOrdine> getOrdersByRider(ERider rider){
+        TypedQuery<EOrdine> query = em.createQuery(
+            "SELECT o FROM EOrdine o WHERE o.riderConsegna = :rider AND o.stato != :stato", EOrdine.class);
+        query.setParameter("rider", rider);
+        query.setParameter("stato", "consegnato");
+        return query.getResultList();
+    }
+    
     @Override
     public List<EOrdine> getOrdersByDataEsecuzione(LocalDateTime data) {
         TypedQuery<EOrdine> query = em.createQuery(

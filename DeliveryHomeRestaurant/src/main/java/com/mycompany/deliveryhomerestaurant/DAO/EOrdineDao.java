@@ -6,6 +6,7 @@ package com.mycompany.deliveryhomerestaurant.DAO;
 
 import com.mycompany.deliveryhomerestaurant.Model.ECliente;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
+import com.mycompany.deliveryhomerestaurant.Model.ERider;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,8 +20,11 @@ public interface EOrdineDao {
     List<EOrdine> getAllOrders();
     List<EOrdine> getOrdersByClient(ECliente cliente);
     List<EOrdine> getOrdersByState(String state);
+    List<EOrdine> getOrdersByStateNotMine(String state, ERider rider);
+    List<EOrdine> getOrdersByRider(ERider rider);
     List<EOrdine> getOrdersByDataEsecuzione(LocalDateTime data);
     List<EOrdine> getOrdersByDataGiornaliera(LocalDateTime data);
+    
     
     
     
