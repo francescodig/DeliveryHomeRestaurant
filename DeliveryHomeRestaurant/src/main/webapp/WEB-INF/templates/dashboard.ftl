@@ -83,7 +83,6 @@
                     <th>Cliente</th>
                     <th>Importo</th>
                     <th>Stato</th>
-                    <th>Azioni</th>
                 </tr>
             </thead>
             <tbody>
@@ -97,7 +96,6 @@
                                 ${ordine.getStato()?cap_first}
                             </span>
                         </td>
-                        <td><a href="/ordini/dettagli/${ordine.getId()}" class="btn-details">Dettagli</a></td>
                     </tr>
                 </#list>
             </tbody>

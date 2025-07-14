@@ -186,6 +186,21 @@ section[id] {
   background-color: var(--colore-primario-hover);
 }
 
+.cart remove-btn:hover {
+  background-color: var(--colore-primario-hover);
+}
+
+.cart .remove-btn{
+  background-color: var(--colore-primario);
+  color: var(--colore-bianco);
+  border: none;
+  padding: 5px 10px;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
 /* Modal */
 .modal {
   position: fixed;
