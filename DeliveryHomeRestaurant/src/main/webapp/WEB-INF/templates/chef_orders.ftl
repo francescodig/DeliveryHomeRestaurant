@@ -59,7 +59,7 @@
 
                     <form method="POST" action="${contextPath}/Chef/cambiaStatoOrdine" class="status-form">
                         <input type="hidden" name="ordineId" value="${order.id}">
-                        <input type="hidden" name="stato_attuale" value="{$order.stato}">
+                        <input type="hidden" name="stato_attuale" value="${order.stato}">
                         <label for="status${order.id}">Modifica stato:</label>
                         <select name="stato" id="status${order.id}" class="status-select" onchange="this.form.submit()">
                             <option value="">-- Seleziona stato --</option>

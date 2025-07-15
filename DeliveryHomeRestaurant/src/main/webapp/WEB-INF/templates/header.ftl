@@ -22,6 +22,7 @@
 
             <#if role?? && role == "cuoco">
                 <a href="/DeliveryHomeRestaurant/Chef/showOrders/">Ordini In Cucina</a>
+                <a href="/DeliveryHomeRestaurant/Chef/showOrdersInAttesa/">Ordini In Attesa</a>
             </#if>
 
             <#if logged?? && (logged && role == "cliente")>
