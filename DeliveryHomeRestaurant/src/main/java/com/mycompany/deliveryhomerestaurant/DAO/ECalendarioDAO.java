@@ -15,6 +15,7 @@ public interface ECalendarioDAO {
     
     List<ECalendario> getCalendario() throws Exception;
     List<ECalendario> getGiorniChiusureSettimanali() throws Exception;
+    ECalendario getDayById(String id);
     List<ECalendario> getGiorniApertureSettimanali() throws Exception;
     
 }

@@ -4,19 +4,25 @@
  */
 package com.mycompany.deliveryhomerestaurant.Controller;
 import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
+import com.mycompany.deliveryhomerestaurant.DAO.ECalendarioDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.ECartaCreditoDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EExceptionCalendarioDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EIndirizzoDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
 import com.mycompany.deliveryhomerestaurant.DAO.EProdottoDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.ECalendarioDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ECartaCreditoDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EExceptionCalendarioDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EIndirizzoDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EOrdineDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EProdottoDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
+import com.mycompany.deliveryhomerestaurant.Model.ECalendario;
 import com.mycompany.deliveryhomerestaurant.Model.ECartaCredito;
 import com.mycompany.deliveryhomerestaurant.Model.ECliente;
+import com.mycompany.deliveryhomerestaurant.Model.EExceptionCalendario;
 import com.mycompany.deliveryhomerestaurant.Model.EIndirizzo;
 import com.mycompany.deliveryhomerestaurant.Model.EItemOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
@@ -37,12 +43,16 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -127,12 +137,14 @@ public class COrdine {
      }
     
     public void confirmPayment(HttpServletRequest request, HttpServletResponse response, String[] params)
-             throws IOException, TemplateException {
+             throws IOException, TemplateException, Exception {
         
         HttpSession session = UtilSession.getSession(request);
         EntityManager em = (EntityManager) request.getAttribute("em");
         EIndirizzoDAO indirizzoDAO = new EIndirizzoDAOImpl(em);
         ECartaCreditoDAO cartaCreditoDAO = new ECartaCreditoDAOImpl(em);
+        ECalendarioDAO calendarioDAO = new ECalendarioDAOImpl(em);
+        EExceptionCalendarioDAO exceptionCalendarioDAO = new EExceptionCalendarioDAOImpl(em);
         EProdottoDAO prodottoDAO = new EProdottoDAOImpl(em);
         EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
         EntityTransaction transaction = null;
@@ -158,6 +170,51 @@ public class COrdine {
             String dataConsegnaStrFormatted = dataConsegnaStr.replace(" ", "T");
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
             LocalDateTime dataConsegna = LocalDateTime.parse(dataConsegnaStrFormatted, formatter);
+            
+            String nomeGiorno = dataConsegna.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+            
+            ECalendario giorno = calendarioDAO.getDayById(nomeGiorno);
+            
+            LocalTime orarioApertura = giorno.getOrarioApertura();
+            LocalTime orarioChiusura = giorno.getOrarioChiusura();
+            
+            // Se il giorno non esiste o è chiuso
+            if (!orarioApertura.equals(null) && !orarioChiusura.equals(null)) {
+                throw new IllegalArgumentException("Data non esistente");
+            }
+            
+            List<EExceptionCalendario> giorniChiusuraEccezionali = exceptionCalendarioDAO.getGiorniChiusureStraordinarie();
+            
+            String dataConsegnaFormatted = dataConsegna.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            
+
+            for (EExceptionCalendario giornoChiusura : giorniChiusuraEccezionali) {
+                String giornoChiusuraStr = giornoChiusura.getExceptionDate().format(formatter);
+                if (giornoChiusuraStr.equals(dataConsegnaStr)) {
+                    
+                    throw new IllegalArgumentException();
+                    
+                    
+                }
+            }
+            
+            // dataConsegna è un LocalDateTime
+            LocalDate dataSoloData = dataConsegna.toLocalDate();
+
+            LocalDateTime apertura = LocalDateTime.of(dataSoloData, orarioApertura);
+            LocalDateTime chiusura = LocalDateTime.of(dataSoloData, orarioChiusura);
+
+            if (dataConsegna.isBefore(apertura) || dataConsegna.isAfter(chiusura)) {
+                throw new IllegalArgumentException();
+            }
+
+
+
+            
+            
+            
+            
+            
             
             int indirizzoId = Integer.parseInt(request.getParameter("indirizzo_id"));
             EIndirizzo indirizzoConsegna = indirizzoDAO.getAddressById(indirizzoId);
@@ -315,7 +372,7 @@ public class COrdine {
             numeroOrdini = 10;
         }
 
-        OrderTimeCalculator orderTime = new OrderTimeCalculator();
+        OrderTimeCalculator orderTime = new OrderTimeCalculator(em);
         LocalDateTime estimatedTime = orderTime.orarioConsegnaCalculator(itemOrderList, numeroOrdini, indirizzoCliente);
 
         response.setContentType("application/json");

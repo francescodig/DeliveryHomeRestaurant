@@ -33,6 +33,11 @@ public class ECalendarioDAOImpl implements ECalendarioDAO{
     }
     
     @Override
+    public ECalendario getDayById(String data){
+        return em.find(ECalendario.class, data);
+    }
+    
+    @Override
     public List<ECalendario> getGiorniChiusureSettimanali() throws Exception {
         try {
             TypedQuery<ECalendario> query = em.createQuery("SELECT c FROM ECalendario c WHERE c.aperto = false", ECalendario.class);
