@@ -54,7 +54,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="hidden" name="giorno" value="${day.data}">
+                                    <input type="hidden" name="giorno" value="${day.data.toString()}">
                                     <button type="submit" class="btn-save">Aggiorna</button>
                                 </td>
                             </form>

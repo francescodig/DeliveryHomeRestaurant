@@ -11,13 +11,15 @@ package com.mycompany.deliveryhomerestaurant.Model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.DayOfWeek;
 
 @Entity
 @Table(name = "calendario")
 public class ECalendario {
     @Id
-    @Column(name = "data", nullable = false)
-    private LocalDate data;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "data", nullable = false, unique = true)
+    private DayOfWeek data;
 
     @Column(name = "orario_apertura")
     private LocalTime orarioApertura;
@@ -33,11 +35,11 @@ public class ECalendario {
 
     // Getter e Setter
 
-    public LocalDate getData() {
+    public DayOfWeek getData() {
         return data;
     }
 
-    public void setData(LocalDate data) {
+    public void setData(DayOfWeek data) {
         this.data = data;
     }
 

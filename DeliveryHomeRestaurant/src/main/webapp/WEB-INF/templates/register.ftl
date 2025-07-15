@@ -73,18 +73,6 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="role">Ruolo</label>
-                            <input 
-                                type="text" 
-                                id="role" 
-                                name="role"  
-                                required 
-                                value="cliente"
-                            >
-                            <small>Inserisci cliente per prova</small>
-                        </div>
-                        
-                        <div class="form-group">
                             <button type="submit" class="btn">Registrati</button>
                         </div>
                         <div class="form-group">

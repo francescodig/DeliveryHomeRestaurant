@@ -34,9 +34,6 @@
         </div>
 
         <div class="user-actions">
-            <a href="admin_panel.html" title="Notifiche">
-                <i class="fas fa-bell"></i>
-            </a>
             <a href="/DeliveryHomeRestaurant/User/showProfile" title="Profilo">
                 <i class="fas fa-user"></i>
             </a>

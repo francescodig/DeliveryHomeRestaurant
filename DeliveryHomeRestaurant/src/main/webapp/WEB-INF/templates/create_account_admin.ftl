@@ -100,11 +100,8 @@
                                     <td>${chef.nome} ${chef.cognome}</td>
                                     <td>${chef.email}</td>
                                     <td class="actions">
-                                        <button class="btn btn-edit" data-id="${chef.id}">
-                                            <i class="fas fa-edit"></i> Modifica
-                                        </button>
-                                        <form action="${contextPath}/Proprietario/deleteEmployee" method="POST" class="inline-form">
-                                            <input type="hidden" name="employeeId" value="${chef.codiceCuoco}" />
+                                        <form action="${contextPath}/Proprietario/deleteEmployee" method="POST" onsubmit="return confirm('Sei sicuro di voler eliminare questo collaboratore?');" class="inline-form">
+                                            <input type="hidden" name="employeeId" value="${chef.id}" />
                                             <button type="submit" class="btn btn-delete">
                                                 <i class="fas fa-trash-alt"></i> Elimina
                                             </button>
@@ -140,11 +137,8 @@
                                     <td>${rider.nome} ${rider.cognome}</td>
                                     <td>${rider.email}</td>
                                     <td class="actions">
-                                        <button class="btn btn-edit" data-id="${rider.id}">
-                                            <i class="fas fa-edit"></i> Modifica
-                                        </button>
                                         <form action="${contextPath}/Proprietario/deleteEmployee" method="POST" class="inline-form">
-                                            <input type="hidden" name="employeeId" value="${rider.codiceRider}" />
+                                            <input type="hidden" name="employeeId" value="${rider.id}" />
                                             <button type="submit" class="btn btn-delete">
                                                 <i class="fas fa-trash-alt"></i> Elimina
                                             </button>

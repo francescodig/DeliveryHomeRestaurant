@@ -860,8 +860,61 @@ public class CProprietario {
     }
 
 
-    //delete Employee da fare eventualmente
+   /* public void deleteEmployee(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException, TemplateException {
 
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.getSession(request);
+
+        try {
+            String employeeIdStr = request.getParameter("employeeId");
+            if (employeeIdStr == null || employeeIdStr.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID collaboratore mancante");
+                return;
+            }
+
+            int employeeId;
+            try {
+                employeeId = Integer.parseInt(employeeIdStr);
+            } catch (NumberFormatException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID collaboratore non valido");
+                return;
+            }
+
+            EUtente collaboratore = em.find(EUtente.class, employeeId);
+            if (collaboratore == null) {
+                request.getSession().setAttribute("flash_error", "Collaboratore non trovato");
+                response.sendRedirect(request.getContextPath() + "/Proprietario/showEmployees");
+                return;
+            }
+
+            if ("proprietario".equalsIgnoreCase(collaboratore.getRuolo())) {
+                request.getSession().setAttribute("flash_error", "Non puoi eliminare un proprietario");
+                response.sendRedirect(request.getContextPath() + "/Proprietario/showEmployees");
+                return;
+            }
+
+            em.getTransaction().begin();
+
+            try {
+                em.remove(collaboratore);
+                em.getTransaction().commit();
+
+                request.getSession().setAttribute("flash_success", "Collaboratore eliminato con successo");
+            } catch (Exception e) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                request.getSession().setAttribute("flash_error", "Errore durante l'eliminazione del collaboratore");
+                throw new ServletException("Errore durante l'eliminazione del collaboratore", e);
+            }
+
+            response.sendRedirect(request.getContextPath() + "/Proprietario/showEmployees");
+
+        } catch (Exception e) {
+            throw new ServletException("Errore durante l'eliminazione del collaboratore", e);
+        }
+    }*/
 
     public void showCalendar(HttpServletRequest request, HttpServletResponse response, String[] params)
         throws ServletException, IOException, TemplateException {
@@ -1079,8 +1132,8 @@ public class CProprietario {
                 return;
             }
 
-            // parametri dal form
-            String giornoStr = request.getParameter("giorno");
+        
+            String giornoStr = request.getParameter("giorno"); 
             String aperturaStr = request.getParameter("orariapertura");
             String chiusuraStr = request.getParameter("orarichiusura");
             String stato = request.getParameter("orari[stato]");
@@ -1090,16 +1143,16 @@ public class CProprietario {
                 return;
             }
 
-            LocalDate giorno;
+            // converto la stringa in DayOfWeek
+            DayOfWeek day;
             try {
-                giorno = LocalDate.parse(giornoStr);
-            } catch (DateTimeParseException e) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Formato data non valido");
+                day = DayOfWeek.valueOf(giornoStr.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Giorno della settimana non valido");
                 return;
             }
 
-            // trova l'entità ECalendario per la data specifica
-            ECalendario giornoCalendario = em.find(ECalendario.class, giorno);
+            ECalendario giornoCalendario = em.find(ECalendario.class, day);
             if (giornoCalendario == null) {
                 request.getSession().setAttribute("flash_error", "Giorno calendario non trovato");
                 response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
@@ -1146,11 +1199,11 @@ public class CProprietario {
             response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
 
         } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             throw new ServletException("Errore durante la modifica del giorno", e);
         }
     }
-
-
-
 
 }
