@@ -78,9 +78,41 @@ public class CChef {
 
         String ordineId = request.getParameter("ordineId");
         String nuovoStato = request.getParameter("stato");
+        String statoAttuale = request.getParameter("stato_attuale");
         EOrdine ordine = ordineDAO.getOrdineById(ordineId);
+        
 
         em.getTransaction().begin();
+        
+        if (statoAttuale == null ? ordine.getStato() != null : !statoAttuale.equals(ordine.getStato())){
+            
+                em.getTransaction().rollback();
+                TemplateRenderer.mostraErrore(
+                    request,
+                    response,
+                    "chef_error.ftl",
+                    "L'ordine è già stato modificato da un altro cuoco.",
+                    cuoco.getRuolo(),
+                    true
+                );
+                return;
+                
+            }
+            if(("in_preparazione".equals(nuovoStato) && !"in_attesa".equals(ordine.getStato())) || ("pronto".equals(nuovoStato) && !"in_preparazione".equals(ordine.getStato()))){
+                em.getTransaction().rollback();
+                TemplateRenderer.mostraErrore(
+                    request,
+                    response,
+                    "chef_error.ftl",
+                    "L'ordine è già stato modificato da un altro cuoco.",
+                    cuoco.getRuolo(),
+                    true
+                );
+                return;
+            }
+
+
+        
         ordine.setStato(nuovoStato);
         if ("pronto".equals(nuovoStato)) {
             ordine.setDataConsegna(LocalDateTime.now());

@@ -59,14 +59,14 @@
 
                     <form method="POST" action="${contextPath}/Chef/cambiaStatoOrdine" class="status-form">
                         <input type="hidden" name="ordineId" value="${order.id}">
+                        <input type="hidden" name="stato_attuale" value="{$order.stato}">
                         <label for="status${order.id}">Modifica stato:</label>
                         <select name="stato" id="status${order.id}" class="status-select" onchange="this.form.submit()">
                             <option value="">-- Seleziona stato --</option>
                             <option value="annullato" <#if statoClasse == "annullato">selected</#if>>Annullato</option>
-                            <option value="consegnato" <#if statoClasse == "consegnato">selected</#if>>Consegnato</option>
                             <option value="pronto" <#if statoClasse == "pronto">selected</#if>>Pronto</option>
                             <option value="in_preparazione" <#if statoClasse == "in_preparazione">selected</#if>>In Preparazione</option>
-                            <option value="in_attesa" <#if statoClasse == "errore">selected</#if>>In Attesa</option>
+                            
                         </select>
                     </form>
                 </div>
