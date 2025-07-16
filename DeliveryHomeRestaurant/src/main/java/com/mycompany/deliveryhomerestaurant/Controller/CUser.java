@@ -271,7 +271,7 @@ public class CUser{
                 if(role.equals("cliente")){
                     ECliente client = (ECliente) session.getAttribute("utente");
                     ECliente clientAttached = (ECliente) utenteDAO.findById(client.getId()); 
-                    List<EIndirizzo> indirizzi = clientAttached.getIndirizziConsegna();
+                    List<EIndirizzo> indirizzi = clientAttached.getActiveIndirizziConsegna();
                     List<ECartaCredito> cards = clientAttached.getMetodiPagamento();
                     data.put("indirizzi", indirizzi);
                     data.put("carte_credito", cards);
@@ -527,52 +527,80 @@ public class CUser{
      }
  }
      
-/* Differenza tra Attached e Detached entity */  
-public void addAddress(HttpServletRequest request, HttpServletResponse response, String[] params)
-        throws ServletException, IOException, TemplateException {
+    /* Differenza tra Attached e Detached entity */  
+    public void addAddress(HttpServletRequest request, HttpServletResponse response, String[] params)
+            throws ServletException, IOException, TemplateException {
 
-    EntityManager em = (EntityManager) request.getAttribute("em");
+        EntityManager em = (EntityManager) request.getAttribute("em");
 
-    try {
-        String via = request.getParameter("via");
-        String cap = request.getParameter("cap");
-        String civico = request.getParameter("civico");
-        String citta = request.getParameter("citta");
+        try {
+            String via = request.getParameter("via");
+            String cap = request.getParameter("cap");
+            String civico = request.getParameter("civico");
+            String citta = request.getParameter("citta");
 
-        // Recupera l'utente dalla sessione solo per prenderne l'ID
-        ECliente clienteSession = (ECliente) UtilSession.getSession(request).getAttribute("utente");
+            // Recupera l'utente dalla sessione solo per prenderne l'ID
+            ECliente clienteSession = (ECliente) UtilSession.getSession(request).getAttribute("utente");
 
-        // Ricarica il cliente dal DB con l'EntityManager
-        ECliente cliente = em.find(ECliente.class, clienteSession.getId());
+            // Ricarica il cliente dal DB con l'EntityManager
+            ECliente cliente = em.find(ECliente.class, clienteSession.getId());
 
-        // Crea l'indirizzo
-        EIndirizzo indirizzo = new EIndirizzo();
-        indirizzo.setVia(via);
-        indirizzo.setCitta(citta);
-        indirizzo.setCivico(civico);
-        indirizzo.setCap(cap);
+            // Controllo se l'indirizzo esiste altrimenti ne creo uno nuovo
+            EIndirizzo indirizzo = checkIfAddressAlreadyExistsForUser(cliente, citta, via, civico);
+            indirizzo.setVia(via);
+            indirizzo.setCitta(citta);
+            indirizzo.setCivico(civico);
+            indirizzo.setCap(cap);
+            indirizzo.setAttivo(true);
 
-        em.getTransaction().begin();
+            em.getTransaction().begin();
 
-        // Salva l'indirizzo
-        em.persist(indirizzo);
+            // Salva l'indirizzo
+            em.persist(indirizzo);
 
-        // Collega indirizzo al cliente
-        cliente.getIndirizziConsegna().add(indirizzo);
+            em.getTransaction().commit();
+            UtilFlashMessages.addMessage(request, "success", "Indirizzo aggiunto correttamente!");
+            response.sendRedirect(request.getContextPath() + "/User/showProfile");
 
-        // Il cliente è managed, quindi non serve merge
-        
-
-        em.getTransaction().commit();
-        UtilFlashMessages.addMessage(request, "success", "Indirizzo aggiunto correttamente!");
-        response.sendRedirect(request.getContextPath() + "/User/showProfile");
-
-    } catch (Exception e) {
-        em.getTransaction().rollback();
-        UtilFlashMessages.addMessage(request, "error", "Errore nel salvataggio dell'indirizzo, riprovare!");
-        response.sendRedirect(request.getContextPath() + "/User/showProfile");
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            UtilFlashMessages.addMessage(request, "error", "Errore nel salvataggio dell'indirizzo, riprovare!");
+            response.sendRedirect(request.getContextPath() + "/User/showProfile");
+        }
     }
-}
+    
+    public EIndirizzo checkIfAddressAlreadyExistsForUser(
+            ECliente cliente,
+            String newCitta,
+            String newVia,
+            String newCivico
+    ) {
+        List<EIndirizzo> indirizzi = cliente.getIndirizziConsegna();
+
+        // Normalizzazione input
+        String cittaNorm = newCitta.toLowerCase();
+        String viaNorm = newVia.toLowerCase();
+        String civicoNorm = newCivico.toLowerCase();
+
+        // Controllo se esiste già
+        for (EIndirizzo indirizzo : indirizzi) {
+            String cittaEsistente = indirizzo.getCitta().toLowerCase();
+            String viaEsistente = indirizzo.getVia().toLowerCase();
+            String civicoEsistente = indirizzo.getCivico().toLowerCase();
+
+            if (cittaNorm.equals(cittaEsistente)
+                    && viaNorm.equals(viaEsistente)
+                    && civicoNorm.equals(civicoEsistente)) {
+                return indirizzo;
+            }
+        }
+
+        // Se non esiste, ne creo uno nuovo e lo associo
+        EIndirizzo nuovoIndirizzo = new EIndirizzo();
+        nuovoIndirizzo.addCliente(cliente);
+
+        return nuovoIndirizzo;
+    }
 
     public void addCreditCard(HttpServletRequest request, HttpServletResponse response, String[] params)
             throws IOException, ServletException, TemplateException {

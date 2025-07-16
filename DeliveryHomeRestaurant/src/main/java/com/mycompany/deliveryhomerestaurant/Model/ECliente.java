@@ -53,6 +53,10 @@ public class ECliente extends EUtente {
     }
 
     public List<EIndirizzo> getIndirizziConsegna() {
+        return indirizziConsegna;
+    }
+    
+    public List<EIndirizzo> getActiveIndirizziConsegna() {
         List<EIndirizzo> addresses = indirizziConsegna;
         addresses.removeIf(indirizzo -> !indirizzo.getAttivo());
         return addresses;
@@ -63,7 +67,9 @@ public class ECliente extends EUtente {
     }
 
     public void addIndirizzoConsegna(EIndirizzo indirizzo) {
-        this.indirizziConsegna.add(indirizzo);
+        if (!indirizziConsegna.contains(indirizzo)){
+            this.indirizziConsegna.add(indirizzo);
+        }
     }
 
     public List<EOrdine> getOrdini() {

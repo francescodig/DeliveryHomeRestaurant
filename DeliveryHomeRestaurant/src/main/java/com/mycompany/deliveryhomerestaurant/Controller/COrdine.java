@@ -109,7 +109,7 @@ public class COrdine {
 
             // Caricamento indirizzi e carte dell'utente
 
-            List<EIndirizzo> adresses = clientAttached.getIndirizziConsegna();
+            List<EIndirizzo> adresses = clientAttached.getActiveIndirizziConsegna();
             List<ECartaCredito> cards = clientAttached.getMetodiPagamento();
 
 
