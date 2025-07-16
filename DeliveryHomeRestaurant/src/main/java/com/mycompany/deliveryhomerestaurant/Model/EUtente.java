@@ -30,7 +30,8 @@ public abstract class EUtente <T extends EUtente<T>>  {
     private String password;
 
     // Costruttore
-    public EUtente() {}
+    public EUtente() {
+    }
 
     // Getters
     public Integer getId() {

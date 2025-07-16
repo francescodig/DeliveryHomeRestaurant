@@ -38,13 +38,15 @@ public class EMenuDAOImpl implements EMenuDAO {
 
             List<Map<String, Object>> piattiList = new ArrayList<>();
             for (EProdotto piatto : cat.getPiatti()) {
-                Map<String, Object> piattoMap = new HashMap<>();
-                piattoMap.put("id", piatto.getId());
-                piattoMap.put("nome", piatto.getNome());
-                piattoMap.put("descrizione", piatto.getDescrizione());
-                piattoMap.put("costo", piatto.getCosto());
+                if (piatto.getAttivo()){
+                    Map<String, Object> piattoMap = new HashMap<>();
+                    piattoMap.put("id", piatto.getId());
+                    piattoMap.put("nome", piatto.getNome());
+                    piattoMap.put("descrizione", piatto.getDescrizione());
+                    piattoMap.put("costo", piatto.getCosto());
 
-                piattiList.add(piattoMap);
+                    piattiList.add(piattoMap);
+                }
             }
 
             categoriaMap.put("piatti", piattiList);

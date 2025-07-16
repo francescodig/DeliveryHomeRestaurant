@@ -15,5 +15,7 @@ import java.util.List;
  */
 public interface EProdottoDAO {
     List<EProdotto> getAllProducts();
+    List<EProdotto> getAllInactiveProducts();
+    List<EProdotto> getAllActiveProducts();
     EProdotto getProductById(int id);
 }

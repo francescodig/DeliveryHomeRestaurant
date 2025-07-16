@@ -45,6 +45,7 @@ public class ECartaCredito {
 
 
     public ECartaCredito() {
+        this.attivo=true;
     }
 
     // Getters and setters

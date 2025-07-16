@@ -538,7 +538,6 @@ public void addAddress(HttpServletRequest request, HttpServletResponse response,
         String cap = request.getParameter("cap");
         String civico = request.getParameter("civico");
         String citta = request.getParameter("citta");
-        boolean attivo = true;
 
         // Recupera l'utente dalla sessione solo per prenderne l'ID
         ECliente clienteSession = (ECliente) UtilSession.getSession(request).getAttribute("utente");
@@ -552,7 +551,6 @@ public void addAddress(HttpServletRequest request, HttpServletResponse response,
         indirizzo.setCitta(citta);
         indirizzo.setCivico(civico);
         indirizzo.setCap(cap);
-        indirizzo.setAttivo(attivo);
 
         em.getTransaction().begin();
 
@@ -576,187 +574,158 @@ public void addAddress(HttpServletRequest request, HttpServletResponse response,
     }
 }
 
-public void addCreditCard(HttpServletRequest request, HttpServletResponse response, String[] params)
-        throws IOException, ServletException, TemplateException {
+    public void addCreditCard(HttpServletRequest request, HttpServletResponse response, String[] params)
+            throws IOException, ServletException, TemplateException {
 
-    EntityManager em = (EntityManager) request.getAttribute("em");
-    ECliente cliente = (ECliente) UtilSession.getSession(request).getAttribute("utente");
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        ECliente cliente = (ECliente) UtilSession.getSession(request).getAttribute("utente");
+        ECartaCreditoDAO creditoDAO = new ECartaCreditoDAOImpl(em);
 
-    try {
-        // Validazione e parsing dei parametri
-        String numeroCarta = request.getParameter("numero_carta");
-        String nomeCarta = request.getParameter("nome_carta");
-        String dataScadenzaStr = request.getParameter("data_scadenza"); // formato atteso: "MM/yy"
-        String cvv = request.getParameter("cvv");
-        String nomeIntestatario = request.getParameter("nome_intestatario");
+        try {
+            // Validazione e parsing dei parametri
+            String numeroCarta = request.getParameter("numero_carta");
+            String nomeCarta = request.getParameter("nome_carta");
+            String dataScadenzaStr = request.getParameter("data_scadenza"); // formato atteso: "MM/yy"
+            String cvv = request.getParameter("cvv");
+            String nomeIntestatario = request.getParameter("nome_intestatario");
 
-        // Validazione base
-        if (numeroCarta == null || numeroCarta.length() != 16 || !numeroCarta.matches("\\d{16}")) {
-            throw new IllegalArgumentException("Numero carta non valido.");
-        }
-        if (cvv == null || !cvv.matches("\\d{3,4}")) {
-            throw new IllegalArgumentException("CVV non valido.");
-        }
+            // Validazione base
+            if (numeroCarta == null || numeroCarta.length() != 16 || !numeroCarta.matches("\\d{16}")) {
+                throw new IllegalArgumentException("Numero carta non valido.");
+            }
+            if (cvv == null || !cvv.matches("\\d{3,4}")) {
+                throw new IllegalArgumentException("CVV non valido.");
+            }
 
-        // Parsing data scadenza in formato "MM/yy"
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
-        YearMonth yearMonth = YearMonth.parse(dataScadenzaStr, formatter);
-        LocalDate dataScadenza = yearMonth.atEndOfMonth(); // ultimo giorno del mese
-        LocalDateTime dataScadenzaCompleta = dataScadenza.atTime(23, 59, 59);
+            // Parsing data scadenza in formato "MM/yy"
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
+            YearMonth yearMonth = YearMonth.parse(dataScadenzaStr, formatter);
+            LocalDate dataScadenza = yearMonth.atEndOfMonth(); // ultimo giorno del mese
+            LocalDateTime dataScadenzaCompleta = dataScadenza.atTime(23, 59, 59);
+            em.getTransaction().begin();
+            //Se la carta esiste ma è disattivata la riattiviamo
+            ECartaCredito cartaEsistente = creditoDAO.getCreditCardByCardNumber(numeroCarta);
+            if(cartaEsistente != null) {
+                cartaEsistente.setAttivo(true);
+                em.persist(cartaEsistente);
+            } else {
+                ECartaCredito cartaCredito = new ECartaCredito();
+                cartaCredito.setNumeroCarta(numeroCarta);
+                cartaCredito.setNomeCarta(nomeCarta);
+                cartaCredito.setDataScadenza(dataScadenzaCompleta);
+                cartaCredito.setCvv(cvv);
+                cartaCredito.setNomeIntestatario(nomeIntestatario);
+                cartaCredito.setCliente(cliente);
+                em.persist(cartaCredito);
+            }
+            em.getTransaction().commit();
 
-        // Costruzione oggetto carta
-        ECartaCredito cartaCredito = new ECartaCredito();
-        cartaCredito.setNumeroCarta(numeroCarta);
-        cartaCredito.setNomeCarta(nomeCarta);
-        cartaCredito.setDataScadenza(dataScadenzaCompleta);
-        cartaCredito.setCvv(cvv);
-        cartaCredito.setNomeIntestatario(nomeIntestatario);
-        cartaCredito.setCliente(cliente);
-        cartaCredito.setAttivo(true);
+            // Reindirizzamento al profilo utente
+            UtilFlashMessages.addMessage(request, "success", "Metodo di pagamento salvato con successo!");
+            response.sendRedirect(request.getContextPath() + "/User/showProfile");
 
-        // Persistenza
-        em.getTransaction().begin();
-        em.persist(cartaCredito);
-        em.getTransaction().commit();
-
-        // Reindirizzamento al profilo utente
-        UtilFlashMessages.addMessage(request, "success", "Metodo di pagamento salvato con successo!");
-        response.sendRedirect(request.getContextPath() + "/User/showProfile");
-
-    } catch (IllegalArgumentException e) {
-        em.getTransaction().rollback();
-        UtilFlashMessages.addMessage(request, "error", e.getMessage());
-        response.sendRedirect(request.getContextPath() + "/User/showProfile");
-    } catch (PersistenceException e) {
-        em.getTransaction().rollback();
-        UtilFlashMessages.addMessage(request, "error", "Errore nel salvataggio, riprovare");
-        response.sendRedirect(request.getContextPath() + "/User/showProfile");
-    } catch (Exception e) {
-        em.getTransaction().rollback();
-        UtilFlashMessages.addMessage(request, "error", "Errore nel salvataggio, riprovare!");
-        response.sendRedirect(request.getContextPath() + "/User/showProfile");
-    }
-}
-
-public void showReviewForm(HttpServletRequest request, HttpServletResponse response, String[] params) throws IOException{
-    
-    EntityManager em = (EntityManager) request.getAttribute("em");
-    HttpSession session = UtilSession.getSession(request);
-    String role = "";
-    Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
-    
-    try{
-        
-        if(session != null && session.getAttribute("utente") != null){
-            EUtente utente = (EUtente) session.getAttribute("utente");
-            role = utente.getRuolo();
-        }
-        
-        Map<String, Object> data = new HashMap<>();
-        data.put("contextPath", request.getContextPath());
-        data.put("role", role);
-        Template template = cfg.getTemplate("review_form.ftl");
-        
-        response.setContentType("text/html;charset=UTF-8");
-        template.process(data , response.getWriter() );
-        
-        
-    }catch(Exception e){
-        
-    }
-    
-    
-}
-
-public void removeAddress(HttpServletRequest request, HttpServletResponse response, String[] params) throws IOException {
-    
-    EntityManager em = (EntityManager) request.getAttribute("em");
-    HttpSession session = UtilSession.getSession(request);
-    EIndirizzoDAO indirizzoDAO = new EIndirizzoDAOImpl(em);
-    EntityTransaction transaction = em.getTransaction();
-
-    
-    
-    try{
-        int indirizzoId = Integer.parseInt(request.getParameter("indirizzo_id"));
-        EIndirizzo indirizzo = indirizzoDAO.getAddressById(indirizzoId);
-        if(indirizzo != null){
-            indirizzo.setAttivo(false);
-            transaction.begin();
-            em.merge(indirizzo);
-            transaction.commit();
-            UtilFlashMessages.addMessage(request, "success", "Indirizzo rimosso correttamente!");
+        } catch (IllegalArgumentException e) {
+            em.getTransaction().rollback();
+            UtilFlashMessages.addMessage(request, "error", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/User/showProfile");
+        } catch (PersistenceException e) {
+            em.getTransaction().rollback();
+            UtilFlashMessages.addMessage(request, "error", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/User/showProfile");
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            UtilFlashMessages.addMessage(request, "error", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/User/showProfile");
         }
-    }catch(Exception e){
-        if(transaction.isActive()){
-            transaction.rollback();
-        }
-        UtilFlashMessages.addMessage(request, "error", "Errore nella rimozione, riprovare!");
-        response.sendRedirect(request.getContextPath() + "/User/showProfile");
     }
-    
-}
 
-public  void removeCreditCard(HttpServletRequest request, HttpServletResponse response, String[] params) throws Exception{
-    
-    EntityManager em = (EntityManager) request.getAttribute("em");
-    HttpSession session = UtilSession.getSession(request);
-    EntityTransaction transaction = em.getTransaction();
-    ECartaCreditoDAO creditoDAO = new ECartaCreditoDAOImpl(em);
-    
-    try{
-        String numCarta = request.getParameter("numero_carta");
-        ECartaCredito cartaCredito = creditoDAO.getCreditCardByCardNumber(numCarta);
-        if(cartaCredito == null){
-            throw new IllegalArgumentException("Carta di credito non trovata");
-        }
-        cartaCredito.setAttivo(false);
-        transaction.begin();
-        em.merge(cartaCredito);
-        transaction.commit();
-        UtilFlashMessages.addMessage(request, "success", "Metodo di pagamento rimosso con successo!");
-        response.sendRedirect(request.getContextPath() + "/User/showProfile");
-        
-    }catch(Exception e){
-        if(transaction.isActive()){
-            transaction.rollback();
-        }
-        UtilFlashMessages.addMessage(request, "error", "Errore nella rimozione, riprovare!");
-        response.sendRedirect(request.getContextPath() + "/User/showProfile");
-    }
-}
+    public void showReviewForm(HttpServletRequest request, HttpServletResponse response, String[] params) throws IOException{
 
-public void removeAccount(HttpServletRequest request, HttpServletResponse response, String[] params){
-    
-    EntityManager em = (EntityManager) request.getAttribute("em");
-    HttpSession session = UtilSession.getSession(request);
-    EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
-    
-    
-    try{
-        if(session == null || session.getAttribute("utente") != null){
-            response.sendRedirect(request.getContextPath() + "/User/home");
-            return;
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.getSession(request);
+        String role = "";
+        Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+
+        try{
+
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente = (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("contextPath", request.getContextPath());
+            data.put("role", role);
+            Template template = cfg.getTemplate("review_form.ftl");
+
+            response.setContentType("text/html;charset=UTF-8");
+            template.process(data , response.getWriter() );
+
+
+        }catch(Exception e){
+
         }
-        EUtente utente = (EUtente) session.getAttribute("utente"); 
-        int userId = utente.getId();
-        EUtente utenteAttached = utenteDAO.findById(userId);
-        
-        
-        em.remove(utenteAttached);
-        response.sendRedirect(request.getContextPath() + "/User/logoutUser");
-        
-    } catch(Exception e){
-        
+
+
     }
-    
-}
+
+    public void removeAddress(HttpServletRequest request, HttpServletResponse response, String[] params) throws IOException {
+
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.getSession(request);
+        EIndirizzoDAO indirizzoDAO = new EIndirizzoDAOImpl(em);
+        EntityTransaction transaction = em.getTransaction();
+
+
+
+        try{
+            int indirizzoId = Integer.parseInt(request.getParameter("indirizzo_id"));
+            EIndirizzo indirizzo = indirizzoDAO.getAddressById(indirizzoId);
+            if(indirizzo != null){
+                indirizzo.setAttivo(false);
+                transaction.begin();
+                em.merge(indirizzo);
+                transaction.commit();
+                UtilFlashMessages.addMessage(request, "success", "Indirizzo rimosso correttamente!");
+                response.sendRedirect(request.getContextPath() + "/User/showProfile");
+            }
+        }catch(Exception e){
+            if(transaction.isActive()){
+                transaction.rollback();
+            }
+            UtilFlashMessages.addMessage(request, "error", "Errore nella rimozione, riprovare!");
+            response.sendRedirect(request.getContextPath() + "/User/showProfile");
+        }
+
+    }
+
+    public  void removeCreditCard(HttpServletRequest request, HttpServletResponse response, String[] params) throws Exception{
+
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.getSession(request);
+        EntityTransaction transaction = em.getTransaction();
+        ECartaCreditoDAO creditoDAO = new ECartaCreditoDAOImpl(em);
+
+        try{
+            String numCarta = request.getParameter("numero_carta");
+            ECartaCredito cartaCredito = creditoDAO.getCreditCardByCardNumber(numCarta);
+            if(cartaCredito == null){
+                throw new IllegalArgumentException("Carta di credito non trovata");
+            }
+            cartaCredito.setAttivo(false);
+            transaction.begin();
+            em.merge(cartaCredito);
+            transaction.commit();
+            UtilFlashMessages.addMessage(request, "success", "Metodo di pagamento rimosso con successo!");
+            response.sendRedirect(request.getContextPath() + "/User/showProfile");
+
+        }catch(Exception e){
+            if(transaction.isActive()){
+                transaction.rollback();
+            }
+            UtilFlashMessages.addMessage(request, "error", "Errore nella rimozione, riprovare!");
+            response.sendRedirect(request.getContextPath() + "/User/showProfile");
+        }
+    } 
      
-     
-     
-     
-     
- 
-    
 }

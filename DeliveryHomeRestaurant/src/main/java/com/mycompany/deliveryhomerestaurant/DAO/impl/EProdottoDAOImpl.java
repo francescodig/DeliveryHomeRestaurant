@@ -28,6 +28,20 @@ public class EProdottoDAOImpl implements EProdottoDAO {
     }
     
     @Override
+    public List<EProdotto> getAllInactiveProducts() {
+        return em.createQuery("FROM EProdotto p WHERE p.attivo = :attivo", EProdotto.class)
+                .setParameter("attivo", false)
+                .getResultList();
+    }
+    
+    @Override
+    public List<EProdotto> getAllActiveProducts() {
+        return em.createQuery("FROM EProdotto p WHERE p.attivo = :attivo", EProdotto.class)
+                .setParameter("attivo", true)
+                .getResultList();
+    }
+    
+    @Override
     public EProdotto getProductById(int id){
         
         try {

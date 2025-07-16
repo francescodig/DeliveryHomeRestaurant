@@ -42,6 +42,7 @@ public class EIndirizzo {
     private Set<EOrdine> ordini; 
 
     public EIndirizzo() {
+        this.attivo = true;
     }
 
     // Getters and setters

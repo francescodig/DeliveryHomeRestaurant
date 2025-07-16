@@ -446,7 +446,7 @@ public class CProprietario {
             }
 
             EProdottoDAO prodottoDao = new EProdottoDAOImpl(em);
-            List<EProdotto> prodotti = prodottoDao.getAllProducts();
+            List<EProdotto> prodotti = prodottoDao.getAllActiveProducts();
             Map<Integer, String> mappaProdotti = new HashMap<>();
             for (EProdotto prodotto : prodotti) {
                 mappaProdotti.put(prodotto.getId(), prodotto.getNome());
@@ -560,7 +560,7 @@ public class CProprietario {
             }
 
             EProdottoDAO prodottoDao = new EProdottoDAOImpl(em);
-            List<EProdotto> prodotti = prodottoDao.getAllProducts();
+            List<EProdotto> prodotti = prodottoDao.getAllActiveProducts();
             
             ECategoriaDAO categoriaDao = new ECategoriaDAOImpl(em);
             List<ECategoria> categorie = categoriaDao.getAllCategories();
@@ -607,6 +607,7 @@ public class CProprietario {
         throws ServletException, IOException {
 
         EntityManager em = (EntityManager) request.getAttribute("em");
+        EProdottoDAOImpl prodottoDao = new EProdottoDAOImpl(em);
         HttpSession session = UtilSession.getSession(request);
 
         try {
@@ -667,13 +668,18 @@ public class CProprietario {
                     return;
                 }
             } else {
-                prodotto = new EProdotto();
+                List<EProdotto> prodottiNonAttivi = prodottoDao.getAllInactiveProducts();
+                prodotto = prodottiNonAttivi.stream()
+                    .filter(p -> p.getNome().equals(nome))
+                    .findFirst()
+                    .orElse(new EProdotto());
             }
 
             prodotto.setNome(nome);
             prodotto.setCategoria(categoria);
             prodotto.setDescrizione(descrizione);
             prodotto.setCosto(costo);
+            prodotto.setAttivo(true);
 
             em.getTransaction().begin();
             em.persist(prodotto);
@@ -775,7 +781,38 @@ public class CProprietario {
             }
         }
     
-    //deleteProduct da fare
+    public void deleteProduct(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws ServletException, IOException {
+            EntityManager em = (EntityManager) request.getAttribute("em");
+            HttpSession session = UtilSession.getSession(request);
+            try {
+                Object utente = session != null ? session.getAttribute("utente") : null;
+                if (!(utente instanceof EProprietario)) {
+                    response.sendRedirect(request.getContextPath() + "/showLogin");
+                    return;
+                }
+                EProprietario proprietario = (EProprietario) utente;
+                if (!"proprietario".equalsIgnoreCase(proprietario.getRuolo())) {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Accesso negato");
+                    return;
+                }
+                String idStr = request.getParameter("product_id");
+                Long id = Long.parseLong(idStr);
+                EProdotto prodotto = em.find(EProdotto.class, id);
+                prodotto.setAttivo(false);
+                em.getTransaction().begin();
+                em.persist(prodotto);
+                em.getTransaction().commit();
+                UtilFlashMessages.addMessage(request, "success", "Prodotto eliminato con successo!");
+                response.sendRedirect(request.getContextPath() + "/Proprietario/showMenu");
+            } catch(Exception e){
+                if(em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                UtilFlashMessages.addMessage(request, "error", e.getMessage());
+                response.sendRedirect(request.getContextPath() + "/Proprietario/showMenu");
+            }
+    }
     
     public void showCreateAccount(HttpServletRequest request, HttpServletResponse response, String[] params)
         throws ServletException, IOException, TemplateException {
@@ -869,63 +906,6 @@ public class CProprietario {
         }
         response.sendRedirect(request.getContextPath() + "/Proprietario/showCreateAccount");
     }
-
-
-   /* public void deleteEmployee(HttpServletRequest request, HttpServletResponse response, String[] params)
-        throws ServletException, IOException, TemplateException {
-
-        EntityManager em = (EntityManager) request.getAttribute("em");
-        HttpSession session = UtilSession.getSession(request);
-
-        try {
-            String employeeIdStr = request.getParameter("employeeId");
-            if (employeeIdStr == null || employeeIdStr.isEmpty()) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID collaboratore mancante");
-                return;
-            }
-
-            int employeeId;
-            try {
-                employeeId = Integer.parseInt(employeeIdStr);
-            } catch (NumberFormatException e) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID collaboratore non valido");
-                return;
-            }
-
-            EUtente collaboratore = em.find(EUtente.class, employeeId);
-            if (collaboratore == null) {
-                request.getSession().setAttribute("flash_error", "Collaboratore non trovato");
-                response.sendRedirect(request.getContextPath() + "/Proprietario/showEmployees");
-                return;
-            }
-
-            if ("proprietario".equalsIgnoreCase(collaboratore.getRuolo())) {
-                request.getSession().setAttribute("flash_error", "Non puoi eliminare un proprietario");
-                response.sendRedirect(request.getContextPath() + "/Proprietario/showEmployees");
-                return;
-            }
-
-            em.getTransaction().begin();
-
-            try {
-                em.remove(collaboratore);
-                em.getTransaction().commit();
-
-                request.getSession().setAttribute("flash_success", "Collaboratore eliminato con successo");
-            } catch (Exception e) {
-                if (em.getTransaction().isActive()) {
-                    em.getTransaction().rollback();
-                }
-                request.getSession().setAttribute("flash_error", "Errore durante l'eliminazione del collaboratore");
-                throw new ServletException("Errore durante l'eliminazione del collaboratore", e);
-            }
-            UtilFlashMessages.addMessage(request, "success", "Account dipendente eliminato con successo");
-            response.sendRedirect(request.getContextPath() + "/Proprietario/showEmployees");
-
-        } catch (Exception e) {
-            throw new ServletException("Errore durante l'eliminazione del collaboratore", e);
-        }
-    }*/
 
     public void showCalendar(HttpServletRequest request, HttpServletResponse response, String[] params)
         throws ServletException, IOException, TemplateException {

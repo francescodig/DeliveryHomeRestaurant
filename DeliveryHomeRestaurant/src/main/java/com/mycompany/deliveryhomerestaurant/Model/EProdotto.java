@@ -24,6 +24,9 @@ public class EProdotto {
 
     @Column(nullable = false)
     private String descrizione;
+    
+    @Column(nullable=false)
+    private boolean attivo;
 
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal costo;
@@ -36,6 +39,7 @@ public class EProdotto {
     private ECategoria categoria;
 
     public EProdotto() {
+        this.attivo = true;
     }
 
     // Getters and setters
@@ -86,5 +90,13 @@ public class EProdotto {
 
     public void setCategoria(ECategoria categoria) {
         this.categoria = categoria;
+    }
+    
+    public boolean getAttivo(){
+        return attivo;
+    }
+    
+    public void setAttivo(boolean attivo){
+        this.attivo = attivo;
     }
 }

@@ -43,7 +43,9 @@ public class ECliente extends EUtente {
     // Getters e Setters
 
     public List<ECartaCredito> getMetodiPagamento() {
-        return metodiPagamento;
+        List<ECartaCredito> cards = metodiPagamento;
+        cards.removeIf(carta -> !carta.getAttivo());
+        return cards;
     }
 
     public void setMetodiPagamento(List<ECartaCredito> metodiPagamento) {
@@ -51,7 +53,9 @@ public class ECliente extends EUtente {
     }
 
     public List<EIndirizzo> getIndirizziConsegna() {
-        return indirizziConsegna;
+        List<EIndirizzo> addresses = indirizziConsegna;
+        addresses.removeIf(indirizzo -> !indirizzo.getAttivo());
+        return addresses;
     }
 
     public void setIndirizziConsegna(List<EIndirizzo> indirizziConsegna) {
