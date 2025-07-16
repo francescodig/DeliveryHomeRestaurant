@@ -26,6 +26,7 @@ import com.mycompany.deliveryhomerestaurant.Model.EUtente;
 import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
 import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
 import com.mycompany.deliveryhomerestaurant.util.TemplateRenderer;
+import com.mycompany.deliveryhomerestaurant.util.UtilFlashMessages;
 import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -260,6 +261,8 @@ public class CUser{
                 Template template = cfg.getTemplate("account.ftl");
                 Map<String, Object> data = new HashMap<>();
                 data.put("contextPath", request.getContextPath());
+                Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
+                data.put("messages", messages);
                                 
                 if(role.equals("cliente")){
                     ECliente client = (ECliente) session.getAttribute("utente");
@@ -294,20 +297,37 @@ public class CUser{
         } 
     }
     
+    
+    public void showLoginForm(HttpServletRequest request, HttpServletResponse response, String[] params)
+                throws ServletException, IOException, TemplateException {
+        HttpSession session = UtilSession.startSession(request);
+        //Controllo se l'utente è gia loggato
+        if(session.getAttribute("utente") != null){
+            response.sendRedirect(request.getContextPath() + "/User/home/");
+        }
+        Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+        try{
+            Template template = cfg.getTemplate("login.ftl");
+            Map<String, Object> data = new HashMap<>();
+            Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
+            data.put("contextPath", request.getContextPath());
+            data.put("messages", messages);
+            data.put("role", "");
+            template.process(data, response.getWriter());
+        }catch(TemplateException | IOException e){
+            response.sendRedirect(request.getContextPath() + "/User/home/");
+        }
+    }
+    
     public void loginUser(HttpServletRequest request, HttpServletResponse response, String[] params)
         throws ServletException, IOException, TemplateException {
         
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.startSession(request);
         try {
-            
-
-
             // se l'utente è gia in sessione 
             if(session.getAttribute("utente") != null){
-
                 response.sendRedirect(request.getContextPath() + "/User/home/");
-
             }
             else{
                  // 1. Validazione parametri
@@ -316,17 +336,17 @@ public class CUser{
                 EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
                 ProfiloService service = new ProfiloServiceImpl(utenteDAO);
                 EUtente utenteLogin = service.login(email, password, session);
-
                 if(utenteLogin != null) {
                     response.sendRedirect(request.getContextPath() + "/User/home/");
                     return;
                 } else {
-                    request.setAttribute("error", "Credenziali non valide");
-                    request.getRequestDispatcher("/WEB-INF/views/login.ftl").forward(request, response);
+                    UtilFlashMessages.addMessage(request, "error", "Credenziali non valide");
+                    response.sendRedirect(request.getContextPath() + "/User/showLoginForm/");
                 }
-
-
             }
+        }catch (IllegalArgumentException e) {
+            UtilFlashMessages.addMessage(request, "error", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/User/showLoginForm/");
         }catch (Exception e) {
             System.err.println("Errore durante il login:");
             e.printStackTrace();
@@ -339,19 +359,16 @@ public class CUser{
         
         EntityManager em = (EntityManager) request.getAttribute("em");
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
-        String role = "";
-
-        
         try{
             Template template = cfg.getTemplate("register.ftl");
             Map<String, Object> data = new HashMap<>();
+            Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
             data.put("contextPath", request.getContextPath());
-            data.put("role",role);
+            data.put("messages", messages);
+            data.put("role", "");
             template.process(data, response.getWriter());
-            
-            
         }catch(Exception e){
-            
+            response.sendRedirect(request.getContextPath() + "/User/home/");
         }
   
         
@@ -386,8 +403,8 @@ public class CUser{
             response.sendRedirect(request.getContextPath() + "/User/home/");    
         } else {
             // Registrazione fallita, mostra pagina di registrazione con errore
-            request.setAttribute("error", "Registrazione fallita");
-            request.getRequestDispatcher("/WEB-INF/views/register.ftl").forward(request, response);
+            UtilFlashMessages.addMessage(request, "error" , "Utente già registrato, esegui l'accesso!");
+            response.sendRedirect(request.getContextPath() + "/User/showRegisterForm/");
         }
     }
         
@@ -439,7 +456,7 @@ public class CUser{
         // aggiorna anche in sessione se serve
         session.setAttribute("utente", utente);
 
-        
+        UtilFlashMessages.addMessage(request, "success", "Modifiche effettuate con successo!");
         response.sendRedirect(request.getContextPath() + "/User/showProfile");
     } 
 }
@@ -460,11 +477,13 @@ public class CUser{
             if(BCrypt.checkpw(oldPassword, currentUser.getPassword())){
                 currentUser.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt() ));
                 utenteDAO.save(currentUser);
-                response.sendRedirect(request.getContextPath() + "/User/");
+                UtilFlashMessages.addMessage(request, "success", "Password modificata con successo!");
+                response.sendRedirect(request.getContextPath() + "/User/showProfile");
             }
-        else {
-            response.sendRedirect(request.getContextPath() + "/User/showProfile");
-         }
+            else {
+                UtilFlashMessages.addMessage(request, "error", "Errore nella modifica della password, riprovare!");
+                response.sendRedirect(request.getContextPath() + "/User/showProfile");
+            }
          
         }
      } catch(Exception e){
@@ -511,13 +530,13 @@ public void addAddress(HttpServletRequest request, HttpServletResponse response,
         
 
         em.getTransaction().commit();
-
+        UtilFlashMessages.addMessage(request, "success", "Indirizzo aggiunto correttamente!");
         response.sendRedirect(request.getContextPath() + "/User/showProfile");
 
     } catch (Exception e) {
         em.getTransaction().rollback();
+        UtilFlashMessages.addMessage(request, "error", "Errore nel salvataggio dell'indirizzo, riprovare!");
         response.sendRedirect(request.getContextPath() + "/User/showProfile");
-        e.printStackTrace();
     }
 }
 
@@ -565,18 +584,21 @@ public void addCreditCard(HttpServletRequest request, HttpServletResponse respon
         em.getTransaction().commit();
 
         // Reindirizzamento al profilo utente
+        UtilFlashMessages.addMessage(request, "success", "Metodo di pagamento salvato con successo!");
         response.sendRedirect(request.getContextPath() + "/User/showProfile");
 
     } catch (IllegalArgumentException e) {
         em.getTransaction().rollback();
-        // puoi gestire il messaggio con una setResponse o logging
-        e.printStackTrace();
+        UtilFlashMessages.addMessage(request, "error", e.getMessage());
+        response.sendRedirect(request.getContextPath() + "/User/showProfile");
     } catch (PersistenceException e) {
         em.getTransaction().rollback();
-        e.printStackTrace();
+        UtilFlashMessages.addMessage(request, "error", "Errore nel salvataggio, riprovare");
+        response.sendRedirect(request.getContextPath() + "/User/showProfile");
     } catch (Exception e) {
         em.getTransaction().rollback();
-        e.printStackTrace();
+        UtilFlashMessages.addMessage(request, "error", "Errore nel salvataggio, riprovare!");
+        response.sendRedirect(request.getContextPath() + "/User/showProfile");
     }
 }
 
@@ -624,22 +646,18 @@ public void removeAddress(HttpServletRequest request, HttpServletResponse respon
         EIndirizzo indirizzo = indirizzoDAO.getAddressById(indirizzoId);
         if(indirizzo != null){
             indirizzo.setAttivo(false);
-           
             transaction.begin();
             em.merge(indirizzo);
             transaction.commit();
-            
+            UtilFlashMessages.addMessage(request, "success", "Indirizzo rimosso correttamente!");
             response.sendRedirect(request.getContextPath() + "/User/showProfile");
         }
-        
-        
-        
-        
     }catch(Exception e){
         if(transaction.isActive()){
             transaction.rollback();
         }
-        throw e;
+        UtilFlashMessages.addMessage(request, "error", "Errore nella rimozione, riprovare!");
+        response.sendRedirect(request.getContextPath() + "/User/showProfile");
     }
     
 }
@@ -661,14 +679,15 @@ public  void removeCreditCard(HttpServletRequest request, HttpServletResponse re
         transaction.begin();
         em.merge(cartaCredito);
         transaction.commit();
-        
+        UtilFlashMessages.addMessage(request, "success", "Metodo di pagamento rimosso con successo!");
         response.sendRedirect(request.getContextPath() + "/User/showProfile");
         
     }catch(Exception e){
         if(transaction.isActive()){
             transaction.rollback();
         }
-        throw e;
+        UtilFlashMessages.addMessage(request, "error", "Errore nella rimozione, riprovare!");
+        response.sendRedirect(request.getContextPath() + "/User/showProfile");
     }
 }
 

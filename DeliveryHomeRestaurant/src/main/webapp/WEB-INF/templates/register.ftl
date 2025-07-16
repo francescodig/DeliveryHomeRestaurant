@@ -27,9 +27,8 @@
                 <div class="login-form">
                     <h1>Registrati</h1>
 
-                    <#if error??>
-                        <div class="error-message">${error}</div>
-                    </#if>
+                    <!-- Error Section -->
+                    <#include "error_section.ftl">
 
                     <form action="/DeliveryHomeRestaurant/User/registerUser" method="POST">
                         <div class="form-group">

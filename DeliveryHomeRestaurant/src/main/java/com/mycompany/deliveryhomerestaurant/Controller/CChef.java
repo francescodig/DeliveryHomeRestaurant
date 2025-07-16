@@ -20,6 +20,7 @@ import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
 import com.mycompany.deliveryhomerestaurant.util.AccessControlUtil;
 import com.mycompany.deliveryhomerestaurant.util.TemplateRenderer;
+import com.mycompany.deliveryhomerestaurant.util.UtilFlashMessages;
 import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -44,45 +45,43 @@ public class CChef {
     
     public void showOrders(HttpServletRequest request, HttpServletResponse response, String[] params)
     throws IOException, TemplateException, ServletException {
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
+        String role = "";
+        boolean logged = true;
+        try {
+            EUtente utente = AccessControlUtil.getLoggedUser(request);
+            ECuoco cuoco = AccessControlUtil.checkUserRole(utente, ECuoco.class);
+            role = cuoco.getRuolo();
 
-    EntityManager em = (EntityManager) request.getAttribute("em");
-    EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
-    String role = "";
-    boolean logged = true;
+            List<EOrdine> ordiniChef = ordineDAO.getOrdersByState("in_preparazione");
 
-    try {
-        EUtente utente = AccessControlUtil.getLoggedUser(request);
-        ECuoco cuoco = AccessControlUtil.checkUserRole(utente, ECuoco.class);
-        role = cuoco.getRuolo();
+            Map<String, Object> data = new HashMap<>();
+            data.put("orders", ordiniChef);
+            data.put("role", role);
+            Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
+            data.put("messages", messages);
 
-        List<EOrdine> ordiniChef = ordineDAO.getOrdersByState("in_preparazione");
+            TemplateRenderer.render(request, response, "chef_orders.ftl", data);
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("orders", ordiniChef);
-        data.put("role", role);
-
-        TemplateRenderer.render(request, response, "chef_orders.ftl", data);
-
-    } catch (SecurityException e) {
-        logged = false;
-        TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
-    } catch (Exception e) {
-        TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
+        } catch (SecurityException e) {
+            logged = false;
+            TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
+        } catch (Exception e) {
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
+        }
     }
-}
 
     public void cambiaStatoOrdine(HttpServletRequest request, HttpServletResponse response, String[] params)
-    throws IOException, TemplateException, ServletException {
-
-    EntityManager em = (EntityManager) request.getAttribute("em");
-    EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
-    String role = "";
-    boolean logged = true;
-
-    try {
-        EUtente utente = AccessControlUtil.getLoggedUser(request);
-        ECuoco cuoco = AccessControlUtil.checkUserRole(utente, ECuoco.class);
-        role = cuoco.getRuolo();
+    throws IOException, TemplateException, ServletException, IllegalArgumentException {
+        EntityManager em = (EntityManager) request.getAttribute("em");
+        EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
+        String role = "";
+        boolean logged = true;
+        try {
+            EUtente utente = AccessControlUtil.getLoggedUser(request);
+            ECuoco cuoco = AccessControlUtil.checkUserRole(utente, ECuoco.class);
+            role = cuoco.getRuolo();
 
         String ordineId = request.getParameter("ordineId");
         String nuovoStato = request.getParameter("stato");
@@ -95,28 +94,11 @@ public class CChef {
         if (statoAttuale == null ? ordine.getStato() != null : !statoAttuale.equals(ordine.getStato())){
             
                 em.getTransaction().rollback();
-                TemplateRenderer.mostraErrore(
-                    request,
-                    response,
-                    "chef_error.ftl",
-                    "L'ordine è già stato modificato da un altro cuoco.",
-                    cuoco.getRuolo(),
-                    true
-                );
-                return;
-                
+                throw new IllegalArgumentException("Ordine già modificato da un altro utente");
             }
             if(("in_preparazione".equals(nuovoStato) && !"in_attesa".equals(ordine.getStato())) || ("pronto".equals(nuovoStato) && !"in_preparazione".equals(ordine.getStato()))){
                 em.getTransaction().rollback();
-                TemplateRenderer.mostraErrore(
-                    request,
-                    response,
-                    "chef_error.ftl",
-                    "L'ordine è già stato modificato da un altro cuoco.",
-                    cuoco.getRuolo(),
-                    true
-                );
-                return;
+                throw new IllegalArgumentException("Ordine già modificato da un altro utente");
             }
 
 
@@ -127,14 +109,15 @@ public class CChef {
         }
         em.flush();
         em.getTransaction().commit();
-
+        UtilFlashMessages.addMessage(request, "success", "Ordine modificato con successo");
         response.sendRedirect(request.getContextPath() + "/Chef/showOrders");
 
     } catch (SecurityException e) {
         logged = false;
         TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
     } catch(IllegalArgumentException e){
-        TemplateRenderer.mostraErrore(request, response, "chef_error.ftl", e.getMessage(), role, logged);
+        UtilFlashMessages.addMessage(request, "error", e.getMessage());
+        response.sendRedirect(request.getContextPath() + "/Chef/showOrders/");
     } catch (Exception e) {
         TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
     }
@@ -158,6 +141,8 @@ public class CChef {
         Map<String, Object> data = new HashMap<>();
         data.put("orders", ordiniChef);
         data.put("role", role);
+        Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
+        data.put("messages", messages);
 
         TemplateRenderer.render(request, response, "waiting_orders.ftl", data);
 
@@ -193,7 +178,7 @@ public class CChef {
             
             EOrdine ordine = em.find(EOrdine.class, ordineId, LockModeType.PESSIMISTIC_WRITE);
             if(!"in_attesa".equals(ordine.getStato())){
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("L'ordine selezionato è già stato modificato da un altro dipendente!");
             }
             
             ordine.setStato("in_preparazione");
@@ -232,7 +217,7 @@ public class CChef {
         em.flush();
         em.getTransaction().commit();
         
-        
+        UtilFlashMessages.addMessage(request, "success", "Ordine accettato con successo");
         response.sendRedirect(request.getContextPath() + "/Chef/showOrdersInAttesa");
         
         
@@ -249,9 +234,8 @@ public class CChef {
             logged = false;
             TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         }  catch(IllegalArgumentException e){
-            
-            TemplateRenderer.mostraErrore(request, response, "chef_error.ftl", e.getMessage(), role, logged);
-        
+            UtilFlashMessages.addMessage(request, "error", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/Chef/showOrdersInAttesa");
         } catch(Exception e){
             
             TemplateRenderer.mostraErrore(request, response, "chef_error.ftl", e.getMessage(), role, logged);
@@ -292,7 +276,7 @@ public class CChef {
             EOrdine ordine = em.find(EOrdine.class, ordineId, LockModeType.PESSIMISTIC_WRITE);
             
             if(!ordine.getStato().equals("in_attesa")){
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("L'ordine selezionato è già stato modificato da un altro dipendente!");
             }
             
             ordine.setStato("annullato");
@@ -333,7 +317,7 @@ public class CChef {
             em.flush();
             em.getTransaction().commit();
         
-        
+            UtilFlashMessages.addMessage(request, "success", "Ordine rifiutato con successo");
             response.sendRedirect(request.getContextPath() + "/Chef/showOrdersInAttesa");
             
             
@@ -341,9 +325,8 @@ public class CChef {
             logged = false;
             TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         }  catch(IllegalArgumentException e){
-            
-            TemplateRenderer.mostraErrore(request, response, "chef_error.ftl", e.getMessage(), role, logged);
-        
+            UtilFlashMessages.addMessage(request, "error", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/Chef/showOrdersInAttesa");
         } catch(Exception e){
             
             TemplateRenderer.mostraErrore(request, response, "chef_error.ftl", e.getMessage(), role, logged);

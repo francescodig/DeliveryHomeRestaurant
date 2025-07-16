@@ -21,6 +21,9 @@
         </div>
 
         <section class="calendar-section">
+
+            <!-- Error Section -->
+            <#include "error_section.ftl">
            
             <h2><i class="fas fa-clock"></i> Orari Settimanali</h2>
 

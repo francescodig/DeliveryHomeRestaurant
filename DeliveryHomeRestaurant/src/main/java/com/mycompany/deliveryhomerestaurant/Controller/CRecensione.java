@@ -6,6 +6,7 @@ package com.mycompany.deliveryhomerestaurant.Controller;
 
 import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
+import com.mycompany.deliveryhomerestaurant.util.UtilFlashMessages;
 import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,7 +62,7 @@ public class CRecensione {
         em.getTransaction().begin();
         em.persist(recensione);
         em.getTransaction().commit();
-
+        UtilFlashMessages.addMessage(request, "success", "Recensione aggiunta con successo");
         response.sendRedirect(request.getContextPath() + "/User/showProfile");
 
     } catch (Exception e) {

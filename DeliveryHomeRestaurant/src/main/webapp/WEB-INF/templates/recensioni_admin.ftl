@@ -22,7 +22,11 @@
             <p class="admin-subtitle">Visualizza e gestisci tutte le recensioni dei clienti</p>
         </div>
         
-       <!-- Filtri e Ricerca -->
+        <!-- Filtri e Ricerca -->
+
+        <!-- Error Section -->
+        <#include "error_section.ftl">
+
         <section class="filters-section">
             <form method="GET" action="${contextPath}/Proprietario/showReviews" id="filterForm">
                 <div class="filters-grid">

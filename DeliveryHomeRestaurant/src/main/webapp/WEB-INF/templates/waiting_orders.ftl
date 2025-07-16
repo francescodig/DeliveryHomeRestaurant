@@ -14,7 +14,8 @@
 
     <main>
         <div class="deliveries-container">
-
+            <!-- Error Section -->
+            <#include "error_section.ftl">
 
 
             <#if orders?has_content>

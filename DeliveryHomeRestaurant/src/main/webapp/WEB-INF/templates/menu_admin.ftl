@@ -23,6 +23,10 @@
         </div>
         
         <!-- Filtri e Ricerca -->
+
+        <!-- Error Section -->
+        <#include "error_section.ftl">
+
         <section class="filters-section">
         <form method="get" action="${contextPath}/Proprietario/showMenu" id="filterForm">
             <div class="filters-grid">
