@@ -10,11 +10,13 @@ import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.ERider;
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
+import com.mycompany.deliveryhomerestaurant.ServiceImpl.MailServiceImpl;
 import com.mycompany.deliveryhomerestaurant.util.AccessControlUtil;
 import com.mycompany.deliveryhomerestaurant.util.TemplateRenderer;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -103,12 +105,57 @@ public class CRider {
         ordine.setStato(nuovoStato);
         // Se non ha rider, lo assegna
         ordine.setRiderConsegna(rider);
+        
+        if("in_consegna".equalsIgnoreCase(nuovoStato)){
+            
+            MailServiceImpl emailServiceImpl = new MailServiceImpl();
+
+            String oggetto = "Ordine in consegna - Delivery Home Restaurant";
+
+            String corpo = """
+                
+                
+                Ciao %s,
+                Il tuo ordine %s è stato preso in consegna dal rider %s.
+                Grazie per averci scelto!
+                Il team di Delivery
+                """.formatted(ordine.getCliente().getNome(), ordine.getId(), ordine.getRiderConsegna().getCodiceRider());
+
+            try {
+                emailServiceImpl.sendEmail(ordine.getCliente().getEmail(), oggetto, corpo);
+            } catch (MessagingException e) {
+                request.setAttribute("warning", "L'invio dell'email è fallito.");
+            }
+            
+        }
 
         
 
         // Se è stato consegnato, salva anche data e ora
         if ("consegnato".equalsIgnoreCase(nuovoStato)) {
             ordine.setDataConsegna(LocalDateTime.now());
+            
+            
+                                    
+            MailServiceImpl emailServiceImpl = new MailServiceImpl();
+
+            String oggetto = "Ordine rifiutato - Delivery Home Restaurant";
+
+            String corpo = """
+                Il tuo ordine è stato consegnato
+                
+                Ciao %s,
+                L'ordine %s è stato consegnato.
+                Grazie per averci scelto!
+                Il team di Delivery
+                """.formatted(ordine.getCliente().getNome(), ordine.getId());
+
+            try {
+                emailServiceImpl.sendEmail(ordine.getCliente().getEmail(), oggetto, corpo);
+            } catch (MessagingException e) {
+                request.setAttribute("warning", "L'invio dell'email è fallito.");
+            }
+
         }
 
         em.flush();

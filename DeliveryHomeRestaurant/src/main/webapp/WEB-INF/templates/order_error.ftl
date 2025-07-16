@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prezzo Modificato</title>
-  <link rel="icon" type="image/x-icon" href="${contextPath}/Smarty/Immagini/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="${contextPath}/resources/Immagini/favicon.ico">
   <link rel="stylesheet" href="${contextPath}/resources/css/layout.css">
   <link rel="stylesheet" href="${contextPath}/resources/css/error.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">

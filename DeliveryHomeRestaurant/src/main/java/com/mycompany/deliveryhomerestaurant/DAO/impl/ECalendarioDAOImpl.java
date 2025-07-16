@@ -12,6 +12,7 @@ import com.mycompany.deliveryhomerestaurant.DAO.ECalendarioDAO;
 import com.mycompany.deliveryhomerestaurant.Model.ECalendario;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import java.time.DayOfWeek;
 import java.util.List;
 
 public class ECalendarioDAOImpl implements ECalendarioDAO{
@@ -33,7 +34,7 @@ public class ECalendarioDAOImpl implements ECalendarioDAO{
     }
     
     @Override
-    public ECalendario getDayById(String data){
+    public ECalendario getDayById(DayOfWeek data){
         return em.find(ECalendario.class, data);
     }
     

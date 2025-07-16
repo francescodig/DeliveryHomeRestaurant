@@ -23,13 +23,17 @@ import com.mycompany.deliveryhomerestaurant.Model.EIndirizzo;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
+import com.mycompany.deliveryhomerestaurant.Service.MailService;
 import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
+import com.mycompany.deliveryhomerestaurant.ServiceImpl.MailServiceImpl;
 import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
+import com.mycompany.deliveryhomerestaurant.util.Constants;
 import com.mycompany.deliveryhomerestaurant.util.TemplateRenderer;
 import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -358,7 +362,7 @@ public class CUser{
     }
     
     public void registerUser(HttpServletRequest request, HttpServletResponse response, String[] params)
-            throws ServletException, IOException, TemplateException{
+            throws ServletException, IOException, TemplateException, MessagingException{
         
         String nome = request.getParameter("nome");
         String cognome = request.getParameter("cognome");
@@ -382,7 +386,39 @@ public class CUser{
         if(register){
             HttpSession session = UtilSession.startSession(request);
             EUtente utenteOnDb = utenteDAO.findByUsername(email);
+            
+            
+            
             session.setAttribute("utente", utenteOnDb);
+            
+            
+           
+            MailServiceImpl emailServiceImpl = new MailServiceImpl();
+
+            String oggetto = "Benvenuto su Delivery Home Restaurant!";
+            String corpo = """
+                    Ciao %s %s,
+
+                    Grazie per esserti registrato su Delivery Home Restaurant!
+                    Siamo felici di averti con noi 🍽️
+
+                    Puoi accedere alla tua area personale e iniziare a ordinare i tuoi piatti preferiti.
+
+                    A presto,
+                    Il team di Delivery
+            """.formatted(nome, cognome);
+
+            try {
+                emailServiceImpl.sendEmail(email, oggetto, corpo);
+            } catch (MessagingException e) {
+                request.setAttribute("warning", "Registrazione riuscita, ma l'invio dell'email è fallito.");
+            }
+            
+            
+            
+            
+            
+            
             response.sendRedirect(request.getContextPath() + "/User/home/");    
         } else {
             // Registrazione fallita, mostra pagina di registrazione con errore

@@ -5,6 +5,7 @@
 package com.mycompany.deliveryhomerestaurant.DAO;
 
 import com.mycompany.deliveryhomerestaurant.Model.ECalendario;
+import java.time.DayOfWeek;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public interface ECalendarioDAO {
     
     List<ECalendario> getCalendario() throws Exception;
     List<ECalendario> getGiorniChiusureSettimanali() throws Exception;
-    ECalendario getDayById(String id);
+    ECalendario getDayById(DayOfWeek id);
     List<ECalendario> getGiorniApertureSettimanali() throws Exception;
     
 }

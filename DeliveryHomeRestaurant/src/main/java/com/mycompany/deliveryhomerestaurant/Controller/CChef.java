@@ -18,12 +18,16 @@ import com.mycompany.deliveryhomerestaurant.Model.EIndirizzo;
 import com.mycompany.deliveryhomerestaurant.Model.EItemOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
+import com.mycompany.deliveryhomerestaurant.ServiceImpl.MailServiceImpl;
 import com.mycompany.deliveryhomerestaurant.util.AccessControlUtil;
+import com.mycompany.deliveryhomerestaurant.util.Constants;
+import static com.mycompany.deliveryhomerestaurant.util.Constants.email;
 import com.mycompany.deliveryhomerestaurant.util.TemplateRenderer;
 import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import jakarta.servlet.ServletException;
@@ -71,7 +75,7 @@ public class CChef {
     }
 }
 
-    public void cambiaStatoOrdine(HttpServletRequest request, HttpServletResponse response, String[] params)
+  public void cambiaStatoOrdine(HttpServletRequest request, HttpServletResponse response, String[] params)
     throws IOException, TemplateException, ServletException {
 
     EntityManager em = (EntityManager) request.getAttribute("em");
@@ -125,6 +129,30 @@ public class CChef {
         if ("pronto".equals(nuovoStato)) {
             ordine.setDataConsegna(LocalDateTime.now());
         }
+        
+        if(nuovoStato.equals("annullato")){
+
+
+            MailServiceImpl emailServiceImpl = new MailServiceImpl();
+
+            String oggetto = "Ordine annullato - Delivery Home Restaurant";
+
+            String corpo = """
+                Il tuo ordine è stato annullato
+                
+                Ciao %s,
+                Ci dispiace informarti che l'ordine %s è stato annullato.
+                Se hai domande o dubbi, non esitare a contattarci.
+                Il team di Delivery
+                """.formatted(ordine.getCliente().getNome(), ordine.getId());
+
+            try {
+                emailServiceImpl.sendEmail(ordine.getCliente().getEmail(), oggetto, corpo);
+            } catch (MessagingException e) {
+                request.setAttribute("warning", "L'invio dell'email è fallito.");
+            }
+        }
+
         em.flush();
         em.getTransaction().commit();
 
@@ -199,34 +227,28 @@ public class CChef {
             ordine.setStato("in_preparazione");
             
             ECliente cliente = ordine.getCliente();
-            String email  = cliente.getEmail();
-            String nome = cliente.getNome();
             
-            int orderId = ordine.getId();
-            List<EItemOrdine> prodotti = ordine.getItemOrdini();
-            LocalDateTime dataOrdine = ordine.getDataEsecuzione();
-            BigDecimal costo = ordine.getCosto();
-            EIndirizzo indirizzo = ordine.getIndirizzoConsegna();
-            ECartaCredito pagamento = ordine.getCartaPagamento();
             
+            
+            
+            MailServiceImpl emailServiceImpl = new MailServiceImpl();
 
+            String oggetto = "Ordine accettato - Delivery Home Restaurant";
 
-            StringBuilder listaProdotti = new StringBuilder("<ul>");
-            for (EItemOrdine item : prodotti) {
-                EProdotto prodotto = item.getProdotto();
-                String nomeProdotto = StringEscapeUtils.escapeHtml4(prodotto.getNome());
-                int quantita = item.getQuantita();
-                BigDecimal prezzo = item.getPrezzoUnitario();
+            String corpo = """
+                Il tuo ordine è stato accettato
+                
+                Ciao %s,
+                L'ordine %s è stato accettato.
+                Riceverai un'email non appena la consegna verrà presa in carico.
+                Il team di Delivery
+                """.formatted(ordine.getCliente().getNome(), ordine.getId());
 
-                listaProdotti.append("<li>")
-                             .append(nomeProdotto)
-                             .append(" - qty: ")
-                             .append(quantita)
-                             .append(" - €")
-                             .append(prezzo)
-                             .append("</li>");
+            try {
+                emailServiceImpl.sendEmail(ordine.getCliente().getEmail(), oggetto, corpo);
+            } catch (MessagingException e) {
+                request.setAttribute("warning", "L'invio dell'email è fallito.");
             }
-            listaProdotti.append("</ul>");
             
             
         em.flush();
@@ -297,36 +319,28 @@ public class CChef {
             
             ordine.setStato("annullato");
             
-    
-            
-            ECliente cliente = ordine.getCliente();
-            String email  = cliente.getEmail();
-            String nome = cliente.getNome();
-            
-            int orderId = ordine.getId();
-            List<EItemOrdine> prodotti = ordine.getItemOrdini();
-            LocalDateTime dataOrdine = ordine.getDataEsecuzione();
-            BigDecimal costo = ordine.getCosto();
-            EIndirizzo indirizzo = ordine.getIndirizzoConsegna();
-            ECartaCredito pagamento = ordine.getCartaPagamento();
+   
             
             
-            StringBuilder listaProdotti = new StringBuilder("<ul>");
-            for (EItemOrdine item : prodotti) {
-                EProdotto prodotto = item.getProdotto();
-                String nomeProdotto = StringEscapeUtils.escapeHtml4(prodotto.getNome());
-                int quantita = item.getQuantita();
-                BigDecimal prezzo = item.getPrezzoUnitario();
+                        
+            MailServiceImpl emailServiceImpl = new MailServiceImpl();
 
-                listaProdotti.append("<li>")
-                             .append(nomeProdotto)
-                             .append(" - qty: ")
-                             .append(quantita)
-                             .append(" - €")
-                             .append(prezzo)
-                             .append("</li>");
+            String oggetto = "Ordine rifiutato - Delivery Home Restaurant";
+
+            String corpo = """
+                Il tuo ordine è stato rifiutato
+                
+                Ciao %s,
+                L'ordine %s è stato rifiutato, per la seguente motivazione: %s.
+                Ci scusiamo per l'inconviente. Non esitare a contattarci. 
+                Il team di Delivery
+                """.formatted(ordine.getCliente().getNome(), ordine.getId(), motivazioneRifiuto);
+
+            try {
+                emailServiceImpl.sendEmail(ordine.getCliente().getEmail(), oggetto, corpo);
+            } catch (MessagingException e) {
+                request.setAttribute("warning", "L'invio dell'email è fallito.");
             }
-            listaProdotti.append("</ul>");
 
       
             

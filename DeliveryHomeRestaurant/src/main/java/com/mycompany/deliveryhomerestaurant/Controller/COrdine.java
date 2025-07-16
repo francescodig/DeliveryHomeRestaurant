@@ -128,7 +128,6 @@ public class COrdine {
             
         } catch(Exception e){
             
-             e.printStackTrace(); // oppure log.error("Errore", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             
             
@@ -136,191 +135,176 @@ public class COrdine {
 
      }
     
-    public void confirmPayment(HttpServletRequest request, HttpServletResponse response, String[] params)
-             throws IOException, TemplateException, Exception {
-        
-        HttpSession session = UtilSession.getSession(request);
-        EntityManager em = (EntityManager) request.getAttribute("em");
-        EIndirizzoDAO indirizzoDAO = new EIndirizzoDAOImpl(em);
-        ECartaCreditoDAO cartaCreditoDAO = new ECartaCreditoDAOImpl(em);
-        ECalendarioDAO calendarioDAO = new ECalendarioDAOImpl(em);
-        EExceptionCalendarioDAO exceptionCalendarioDAO = new EExceptionCalendarioDAOImpl(em);
-        EProdottoDAO prodottoDAO = new EProdottoDAOImpl(em);
-        EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
-        EntityTransaction transaction = null;
-        Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
-        String role = "";
-        Boolean logged = true;
-        double totalPrice = 0.0;
+   public void confirmPayment(HttpServletRequest request, HttpServletResponse response, String[] params)
+        throws IOException, TemplateException, Exception {
 
-        
-        try{
-            
-            EUtente utente = (EUtente) session.getAttribute("utente");
-            role = utente.getRuolo();
-            ECliente cliente = (ECliente) utenteDAO.findById(utente.getId());
-            String cartJson = request.getParameter("cart_data");
-            String note = request.getParameter("note");
-            JSONArray cartArray = new JSONArray(cartJson);
-            if (cartArray.isEmpty()) {
-                throw new IllegalArgumentException("Carrello non valido o vuoto.");
+    HttpSession session = UtilSession.getSession(request);
+    EntityManager em = (EntityManager) request.getAttribute("em");
+    EIndirizzoDAO indirizzoDAO = new EIndirizzoDAOImpl(em);
+    ECartaCreditoDAO cartaCreditoDAO = new ECartaCreditoDAOImpl(em);
+    ECalendarioDAO calendarioDAO = new ECalendarioDAOImpl(em);
+    EExceptionCalendarioDAO exceptionCalendarioDAO = new EExceptionCalendarioDAOImpl(em);
+    EProdottoDAO prodottoDAO = new EProdottoDAOImpl(em);
+    EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
+    EntityTransaction transaction = null;
+    Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+    String role = "";
+    Boolean logged = true;
+    double totalPrice = 0.0;
+
+    try {
+        System.out.println("[DEBUG] Inizio conferma pagamento");
+
+        EUtente utente = (EUtente) session.getAttribute("utente");
+        role = utente.getRuolo();
+        System.out.println("[DEBUG] Utente: " + utente.getId() + " - Ruolo: " + role);
+
+        ECliente cliente = (ECliente) utenteDAO.findById(utente.getId());
+
+        String cartJson = request.getParameter("cart_data");
+        System.out.println("[DEBUG] JSON carrello: " + cartJson);
+        JSONArray cartArray = new JSONArray(cartJson);
+
+        if (cartArray.isEmpty()) {
+            throw new IllegalArgumentException("Carrello non valido o vuoto.");
+        }
+        System.out.println("[DEBUG] Carrello parsificato: elementi = " + cartArray.length());
+
+        String note = request.getParameter("note");
+        String dataConsegnaStr = request.getParameter("dataConsegna");
+        System.out.println("[DEBUG] Data consegna raw: " + dataConsegnaStr);
+        String dataConsegnaStrFormatted = dataConsegnaStr.replace(" ", "T");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        LocalDateTime dataConsegna = LocalDateTime.parse(dataConsegnaStrFormatted, formatter);
+        System.out.println("[DEBUG] Data consegna parsificata: " + dataConsegna);
+
+        DayOfWeek nomeGiorno = dataConsegna.getDayOfWeek();
+        System.out.println("[DEBUG] Giorno della settimana: " + nomeGiorno);
+
+        ECalendario giorno = calendarioDAO.getDayById(nomeGiorno);
+        LocalTime orarioApertura = giorno.getOrarioApertura();
+        LocalTime orarioChiusura = giorno.getOrarioChiusura();
+
+        if (orarioApertura == null || orarioChiusura == null) {
+            throw new IllegalArgumentException("Il ristorante è chiuso in questo giorno.");
+        }
+        System.out.println("[DEBUG] Apertura: " + orarioApertura + " - Chiusura: " + orarioChiusura);
+
+        List<EExceptionCalendario> giorniChiusuraEccezionali = exceptionCalendarioDAO.getGiorniChiusureStraordinarie();
+        String dataConsegnaFormatted = dataConsegna.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        for (EExceptionCalendario giornoChiusura : giorniChiusuraEccezionali) {
+            String giornoChiusuraStr = giornoChiusura.getExceptionDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            if (giornoChiusuraStr.equals(dataConsegnaStrFormatted)) {
+                throw new IllegalArgumentException("La data selezionata è un giorno di chiusura eccezionale.");
             }
-            
-            String dataConsegnaStr = request.getParameter("dataConsegna");
-            String dataConsegnaStrFormatted = dataConsegnaStr.replace(" ", "T");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-            LocalDateTime dataConsegna = LocalDateTime.parse(dataConsegnaStrFormatted, formatter);
-            
-            String nomeGiorno = dataConsegna.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-            
-            ECalendario giorno = calendarioDAO.getDayById(nomeGiorno);
-            
-            LocalTime orarioApertura = giorno.getOrarioApertura();
-            LocalTime orarioChiusura = giorno.getOrarioChiusura();
-            
-            // Se il giorno non esiste o è chiuso
-            if (!orarioApertura.equals(null) && !orarioChiusura.equals(null)) {
-                throw new IllegalArgumentException("Data non esistente");
-            }
-            
-            List<EExceptionCalendario> giorniChiusuraEccezionali = exceptionCalendarioDAO.getGiorniChiusureStraordinarie();
-            
-            String dataConsegnaFormatted = dataConsegna.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            
+        }
 
-            for (EExceptionCalendario giornoChiusura : giorniChiusuraEccezionali) {
-                String giornoChiusuraStr = giornoChiusura.getExceptionDate().format(formatter);
-                if (giornoChiusuraStr.equals(dataConsegnaStr)) {
-                    
-                    throw new IllegalArgumentException();
-                    
-                    
-                }
-            }
-            
-            // dataConsegna è un LocalDateTime
-            LocalDate dataSoloData = dataConsegna.toLocalDate();
+        LocalDate dataSoloData = dataConsegna.toLocalDate();
+        LocalDateTime apertura = LocalDateTime.of(dataSoloData, orarioApertura);
+        LocalDateTime chiusura = LocalDateTime.of(dataSoloData, orarioChiusura);
 
-            LocalDateTime apertura = LocalDateTime.of(dataSoloData, orarioApertura);
-            LocalDateTime chiusura = LocalDateTime.of(dataSoloData, orarioChiusura);
+        if (dataConsegna.isBefore(apertura) || dataConsegna.isAfter(chiusura)) {
+            throw new IllegalArgumentException("La fascia oraria selezionata è fuori dall'orario di apertura.");
+        }
 
-            if (dataConsegna.isBefore(apertura) || dataConsegna.isAfter(chiusura)) {
-                throw new IllegalArgumentException();
+        int indirizzoId = Integer.parseInt(request.getParameter("indirizzo_id"));
+        System.out.println("[DEBUG] Indirizzo ID selezionato: " + indirizzoId);
+        EIndirizzo indirizzoConsegna = indirizzoDAO.getAddressById(indirizzoId);
+
+        String numeroCarta = request.getParameter("numero_carta");
+        System.out.println("[DEBUG] Numero carta: " + numeroCarta);
+        ECartaCredito metodoPagamento = cartaCreditoDAO.getCreditCardByCardNumber(numeroCarta);
+
+        EOrdine ordine = new EOrdine();
+        List<EItemOrdine> itemOrdineList = new ArrayList<>();
+
+        for (int i = 0; i < cartArray.length(); i++) {
+            JSONObject item = cartArray.getJSONObject(i);
+
+            int prodottoId = item.getInt("id");
+            int qty = item.getInt("qty");
+            System.out.println("[DEBUG] Prodotto ID: " + prodottoId + ", Quantità: " + qty);
+
+            EProdotto prodotto = prodottoDAO.getProductById(prodottoId);
+            if (prodotto == null) {
+                throw new IllegalArgumentException("Prodotto " + item.getString("name") + " non trovato.");
             }
 
+            BigDecimal priceFromCart = item.getBigDecimal("price");
+            BigDecimal priceFromDb = prodotto.getCosto();
+            System.out.println("[DEBUG] Prezzo carrello: " + priceFromCart + " - Prezzo DB: " + priceFromDb);
 
-
-            
-            
-            
-            
-            
-            
-            int indirizzoId = Integer.parseInt(request.getParameter("indirizzo_id"));
-            EIndirizzo indirizzoConsegna = indirizzoDAO.getAddressById(indirizzoId);
-            
-            String numeroCarta = request.getParameter("numero_carta");
-            ECartaCredito metodoPagamento = cartaCreditoDAO.getCreditCardByCardNumber(numeroCarta);
-            
-            EOrdine ordine = new EOrdine();
-            List<EItemOrdine> itemOrdineList = new ArrayList<>();
-
-
-            for (int i = 0; i < cartArray.length(); i++) {
-                JSONObject item = cartArray.getJSONObject(i);
-
-                
-                int prodottoId = item.getInt("id");
-                int qty = item.getInt("qty");
-                EProdotto prodotto = prodottoDAO.getProductById(prodottoId);
-                if (prodotto == null) {
-                    throw new IllegalArgumentException("Prodotto " + item.getString("name") + " non trovato.");
-                }
-                BigDecimal priceFromCart = item.getBigDecimal("price");
-                BigDecimal priceFromDb = prodotto.getCosto();
-
-                if (priceFromDb.compareTo(priceFromCart) != 0) {
-                    
-                    throw new IllegalArgumentException("Prodotto " + item.getString("name") + " non trovato.");
-        
-                }
-                
-                EItemOrdine itemOrdine = new EItemOrdine();
-                itemOrdine.setOrdine(ordine);
-                itemOrdine.setProdotto(prodotto);
-                itemOrdine.setQuantita(qty);
-                itemOrdine.setPrezzoUnitario(item.getBigDecimal("price"));
-
-                ordine.addItemOrdine(itemOrdine);
-                itemOrdineList.add(itemOrdine); 
-
-                totalPrice += item.getDouble("price") * item.getInt("qty");
+            if (priceFromDb.compareTo(priceFromCart) != 0) {
+                throw new IllegalArgumentException("Il prezzo del prodotto " + item.getString("name") + " non è valido.");
             }
-            
-            ordine.setDataEsecuzione(LocalDateTime.now());
-            ordine.setDataRicezione(LocalDateTime.now());
-            ordine.setCosto(BigDecimal.valueOf(totalPrice));
-            ordine.setCliente(cliente);
-            ordine.setStato("in_attesa");
-            ordine.setNote(note);
-            ordine.setIndirizzoConsegna(indirizzoConsegna);
-            ordine.setCartaPagamento(metodoPagamento);
-            
-            // Inizio Transazione
-            transaction = em.getTransaction();
-            transaction.begin();
-            em.persist(ordine);
-            for (EItemOrdine itemOrdine : itemOrdineList) {
-                em.persist(itemOrdine);
-            }
-            em.flush();
-            transaction.commit();
-            // Fine Transazione
-            Template template = cfg.getTemplate("confirmed_order.ftl");
 
-            Map<String, Object> data = new HashMap();
+            EItemOrdine itemOrdine = new EItemOrdine();
+            itemOrdine.setOrdine(ordine);
+            itemOrdine.setProdotto(prodotto);
+            itemOrdine.setQuantita(qty);
+            itemOrdine.setPrezzoUnitario(priceFromCart);
 
-            data.put("contextPath", request.getContextPath());
-            data.put("role", role);
-            data.put("logged", logged);
+            ordine.addItemOrdine(itemOrdine);
+            itemOrdineList.add(itemOrdine);
 
-            template.process(data, response.getWriter());
+            totalPrice += priceFromCart.doubleValue() * qty;
+        }
 
-        
+        ordine.setDataEsecuzione(LocalDateTime.now());
+        ordine.setDataRicezione(LocalDateTime.now());
+        ordine.setCosto(BigDecimal.valueOf(totalPrice));
+        ordine.setCliente(cliente);
+        ordine.setStato("in_attesa");
+        ordine.setNote(note);
+        ordine.setIndirizzoConsegna(indirizzoConsegna);
+        ordine.setCartaPagamento(metodoPagamento);
+
+        System.out.println("[DEBUG] Inizio transazione");
+        transaction = em.getTransaction();
+        transaction.begin();
+
+        System.out.println("[DEBUG] Persisto ordine...");
+        em.persist(ordine);
+        for (EItemOrdine itemOrdine : itemOrdineList) {
+            System.out.println("[DEBUG] Persisto item ordine: prodottoId=" + itemOrdine.getProdotto().getId());
+            em.persist(itemOrdine);
+        }
+
+        em.flush();
+        transaction.commit();
+        System.out.println("[DEBUG] Ordine e item persistiti correttamente");
+
+        Template template = cfg.getTemplate("confirmed_order.ftl");
+        Map<String, Object> data = new HashMap<>();
+        data.put("contextPath", request.getContextPath());
+        data.put("role", role);
+        data.put("logged", logged);
+        template.process(data, response.getWriter());
 
     } catch (IllegalArgumentException e) {
-        if(transaction != null){
+        if (transaction != null && transaction.isActive()) {
             transaction.rollback();
         }
-         // Preparo pagina di errore FTL
+        System.err.println("[ERROR] Eccezione di validazione: " + e.getMessage());
         Template template = cfg.getTemplate("generic_error.ftl");
         Map<String, Object> data = new HashMap<>();
         data.put("contextPath", request.getContextPath());
         data.put("errorMessage", e.getMessage());
         data.put("role", role);
         data.put("logged", logged);
-
         template.process(data, response.getWriter());
+
     } catch (Exception e) {
-        if(transaction != null){
+        if (transaction != null && transaction.isActive()) {
             transaction.rollback();
         }
-        System.err.println("Errore database: " + e.getMessage());
+        System.err.println("[ERROR] Errore generico durante la conferma pagamento: " + e.getMessage());
+        e.printStackTrace(); // mostra la riga esatta dove esplode
         throw e;
     }
+}
 
-            
-
-            
-            
-
-        
-        
-        
-        
-
-
-    }
     
     public void getEstimatedTime(HttpServletRequest request, HttpServletResponse response, String[] params)
         throws IOException, ServletException {

@@ -39,7 +39,7 @@
                     ${itemOrdine.prodotto.nome?html} -
                     ${itemOrdine.prodotto.descrizione?html} -
                     qty: ${itemOrdine.quantita} -
-                    €${itemOrdine.prezzoUnitarioAlMomento}
+                    €${itemOrdine.prezzoUnitario}
                 </li>
             </#list>
         </ul>

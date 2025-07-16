@@ -48,7 +48,7 @@
                             <ul>
                                 <#list order.itemOrdini as itemOrdine>
                                     <li class="product-item">
-                                        ${itemOrdine.prodotto.nome?html} - ${itemOrdine.prodotto.descrizione?html} - qty: ${itemOrdine.quantita} - €${itemOrdine.prezzoUnitarioAlMomento}
+                                        ${itemOrdine.prodotto.nome?html} - ${itemOrdine.prodotto.descrizione?html} - qty: ${itemOrdine.quantita} - €${itemOrdine.prezzoUnitario}
                                     </li>
                                 </#list>
                             </ul>
