@@ -23,6 +23,9 @@
         </div>
 
         <section class="form-container">
+            <!-- Error Section -->
+            <#include "error_section.ftl">
+
             <div class="form-card">
                 <form action="${contextPath}/Proprietario/createEmployee" method="POST">
                     <div class="form-grid">

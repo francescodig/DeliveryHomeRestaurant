@@ -13,7 +13,9 @@
     <#include "header.ftl">
 
     <main>
-
+        
+        <!-- Error Section -->
+        <#include "error_section.ftl">
 
         <div class="deliveries-container">
             <h2>Ordini Pronti</h2>

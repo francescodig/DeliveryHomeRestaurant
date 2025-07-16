@@ -13,6 +13,10 @@
 
     <main>
         <div class="deliveries-container">
+
+            <!-- Error Section -->
+            <#include "error_section.ftl">
+
             <#list orders as order>
                 <div class="delivery-card">
                     <div class="delivery-header">

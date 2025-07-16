@@ -1,6 +1,10 @@
 html, body {
   height: 100%;
   margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--colore-bianco);
+  color: var(--colore-testo);
 }
 
 main {
@@ -10,18 +14,15 @@ main {
   align-items: center;
 }
 
-
-
-
 main section {
   max-width: 600px;
   margin: 100px auto;
   padding: 2rem;
-  background-color: #fff5f5;
-  border: 1px solid #ffcccc;
-  border-radius: 8px;
+  background-color: var(--colore-bianco);
+  border: 1px solid var(--colore-bordo);
+  border-radius: 12px;
   text-align: center;
-  box-shadow: 0 0 10px rgba(21, 255, 0, 0.1);
+  box-shadow: 0 0 12px var(--colore-ombra-media);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -29,7 +30,7 @@ main section {
 }
 
 main section h1 {
-  color: #00cc00;
+  color: var(--colore-primario);
   font-size: 2rem;
   margin-bottom: 1rem;
 }
@@ -37,19 +38,20 @@ main section h1 {
 main section p {
   font-size: 1.1rem;
   margin-bottom: 2rem;
-  color: #333;
+  color: var(--colore-testo);
 }
 
 main section .button {
   display: inline-block;
-  background-color: #00cc00;
-  color: white;
+  background-color: var(--colore-primario);
+  color: var(--colore-bianco);
   padding: 0.7rem 1.2rem;
-  border-radius: 5px;
+  border-radius: 8px;
   text-decoration: none;
   transition: background-color 0.3s ease;
+  font-weight: bold;
 }
 
 main section .button:hover {
-  background-color: #00cc00;
+  background-color: var(--colore-primario-hover);
 }

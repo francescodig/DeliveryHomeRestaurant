@@ -42,6 +42,7 @@ import com.mycompany.deliveryhomerestaurant.Model.EUtente;
 import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
 import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
+import com.mycompany.deliveryhomerestaurant.util.UtilFlashMessages;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -221,6 +222,8 @@ public class CProprietario {
             data.put("search", search);
             data.put("stars", stars);
             data.put("sort", sort);
+            Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
+            data.put("messages", messages);
 
             Template template = cfg.getTemplate("recensioni_admin.ftl");
             response.setContentType("text/html;charset=UTF-8");
@@ -301,6 +304,8 @@ public class CProprietario {
             data.put("search", search);
             data.put("status", status);
             data.put("sort", sort);
+            Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
+            data.put("messages", messages);
 
             Template template = cfg.getTemplate("admin_order.ftl");  
             response.setContentType("text/html;charset=UTF-8");
@@ -378,6 +383,8 @@ public class CProprietario {
             data.put("role", role);
             data.put("search", search);
             data.put("sort", sort);
+            Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
+            data.put("messages", messages);
 
             Template template = cfg.getTemplate("admin_segnalazioni.ftl");
             response.setContentType("text/html;charset=UTF-8");
@@ -584,6 +591,8 @@ public class CProprietario {
             data.put("search", search);
             data.put("category", categoryFilter);
             data.put("categorie", categorie);
+            Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
+            data.put("messages", messages);
 
             Template template = cfg.getTemplate("menu_admin.ftl");
             response.setContentType("text/html;charset=UTF-8");
@@ -669,7 +678,7 @@ public class CProprietario {
             em.getTransaction().begin();
             em.persist(prodotto);
             em.getTransaction().commit();
-
+            UtilFlashMessages.addMessage(request, "success", "Prodotto aggiunto con successo");
             response.sendRedirect(request.getContextPath() + "/Proprietario/showMenu");
 
         } catch (Exception e) {
@@ -758,7 +767,7 @@ public class CProprietario {
                 em.getTransaction().begin();
                 em.persist(prodotto);
                 em.getTransaction().commit();
-
+                UtilFlashMessages.addMessage(request, "success", "Prodotto modificato con successo");
                 response.sendRedirect(request.getContextPath() + "/Proprietario/showMenu");
 
             } catch (Exception e) {
@@ -803,6 +812,8 @@ public class CProprietario {
             data.put("role", role);
             data.put("chefs", chefs);
             data.put("riders", riders);
+            Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
+            data.put("messages", messages);
 
             Template template = cfg.getTemplate("create_account_admin.ftl");
             response.setContentType("text/html;charset=UTF-8");
@@ -852,11 +863,11 @@ public class CProprietario {
         boolean success = service.Register(nuovoUtente);
 
         if (success) {
-            response.sendRedirect(request.getContextPath() + "/Proprietario/showCreateAccount");
+            UtilFlashMessages.addMessage(request, "success", "Account dipendente creato con successo");
         } else {
-            request.setAttribute("error", "Creazione dipendente fallita.");
-            request.getRequestDispatcher("/WEB-INF/views/create_account_admin.ftl").forward(request, response);
+            UtilFlashMessages.addMessage(request, "error", "Errore nella creazione dell'account");
         }
+        response.sendRedirect(request.getContextPath() + "/Proprietario/showCreateAccount");
     }
 
 
@@ -908,7 +919,7 @@ public class CProprietario {
                 request.getSession().setAttribute("flash_error", "Errore durante l'eliminazione del collaboratore");
                 throw new ServletException("Errore durante l'eliminazione del collaboratore", e);
             }
-
+            UtilFlashMessages.addMessage(request, "success", "Account dipendente eliminato con successo");
             response.sendRedirect(request.getContextPath() + "/Proprietario/showEmployees");
 
         } catch (Exception e) {
@@ -945,13 +956,6 @@ public class CProprietario {
             List<ECalendario> giorniChiusuraSettimanali = calendarioDAO.getCalendario();
             List<EExceptionCalendario> giorniChiusuraEccezionali = exceptioncalendarioDAO.getExceptionCalendario();
 
-            // recupero eventuali messaggi flash dalla sessione
-            String message = (String) session.getAttribute("flash");
-            if (message != null) {
-                request.setAttribute("message", message);
-                session.removeAttribute("flash");
-            }
-
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             DateTimeFormatter dbDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -987,6 +991,8 @@ public class CProprietario {
             data.put("role", role);
             data.put("giorniChiusuraSettimanali", giorniFormattati);
             data.put("giorniChiusuraEccezionali", eccezioniFormattate);
+            Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
+            data.put("messages", messages);
 
             Template template = cfg.getTemplate("calendar_admin.ftl");
             response.setContentType("text/html;charset=UTF-8");
@@ -1038,7 +1044,7 @@ public class CProprietario {
             em.getTransaction().begin();
             em.persist(eccezione);
             em.getTransaction().commit();
-
+            UtilFlashMessages.addMessage(request, "success", "Operazione eseguita con successo");
             response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
 
         } catch (Exception e) {
@@ -1091,7 +1097,7 @@ public class CProprietario {
             }
 
             if (eccezione == null) {
-                request.getSession().setAttribute("flash_error", "Giorno di chiusura eccezionale non trovato");
+                UtilFlashMessages.addMessage(request, "error", "Giorno di chiusura eccezionale non trovato");
             } else {
                 // elimina dal DB
                 em.getTransaction().begin();
@@ -1099,13 +1105,12 @@ public class CProprietario {
                 if (toRemove != null) {
                     em.remove(toRemove);
                     em.getTransaction().commit();
-                    request.getSession().setAttribute("flash_success", "Giorno di chiusura eccezionale rimosso con successo");
+                    UtilFlashMessages.addMessage(request, "success", "Giorno di chiusura eccezionale rimosso con successo");
                 } else {
                     em.getTransaction().rollback();
-                    request.getSession().setAttribute("flash_error", "Errore durante la rimozione del giorno di chiusura eccezionale");
+                    UtilFlashMessages.addMessage(request, "error", "Errore durante la rimozione del giorno di chiusura eccezionale");
                 }
             }
-
             response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
 
         } catch (Exception e) {
@@ -1154,7 +1159,7 @@ public class CProprietario {
 
             ECalendario giornoCalendario = em.find(ECalendario.class, day);
             if (giornoCalendario == null) {
-                request.getSession().setAttribute("flash_error", "Giorno calendario non trovato");
+                UtilFlashMessages.addMessage(request, "error", "Giorno calendario non trovato");
                 response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
                 return;
             }
@@ -1176,14 +1181,14 @@ public class CProprietario {
                     orarioChiusura = (chiusuraStr != null && !chiusuraStr.isEmpty()) ? LocalTime.parse(chiusuraStr) : null;
                 } catch (DateTimeParseException e) {
                     em.getTransaction().rollback();
-                    request.getSession().setAttribute("flash_error", "Formato orario non valido");
+                    UtilFlashMessages.addMessage(request, "error", "Formato orario non valido");
                     response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
                     return;
                 }
 
                 if (orarioApertura == null || orarioChiusura == null || !orarioApertura.isBefore(orarioChiusura)) {
                     em.getTransaction().rollback();
-                    request.getSession().setAttribute("flash_error", "L'orario di apertura deve essere precedente all'orario di chiusura");
+                    UtilFlashMessages.addMessage(request, "error", "L'orario di apertura deve essere precedente all'orario di chiusura");
                     response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
                     return;
                 }
@@ -1195,7 +1200,7 @@ public class CProprietario {
             em.merge(giornoCalendario);
             em.getTransaction().commit();
 
-            request.getSession().setAttribute("flash_success", "Giorno modificato con successo");
+            UtilFlashMessages.addMessage(request, "success", "Giorno modificato con successo");
             response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
 
         } catch (Exception e) {

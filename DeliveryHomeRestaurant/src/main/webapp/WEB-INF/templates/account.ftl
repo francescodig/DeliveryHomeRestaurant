@@ -21,6 +21,9 @@
 
         <section class="account-container">
             <h2>Gestione Account</h2>
+            
+            <!-- Error Section -->
+            <#include "error_section.ftl">
 
             <div class="password-section">
                 <h3>Modifica Profilo</h3>

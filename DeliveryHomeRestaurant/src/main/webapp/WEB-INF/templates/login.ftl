@@ -31,9 +31,8 @@
                 <div class="login-form">
                     <h1>Accedi al tuo Account</h1>
 
-                    <#if error??>
-                        <div class="error-message">${error}</div>
-                    </#if>
+                    <!-- Error Section -->
+                    <#include "error_section.ftl">
 
                     <form action="/DeliveryHomeRestaurant/User/loginUser" method="POST">
                         <div class="form-group">
