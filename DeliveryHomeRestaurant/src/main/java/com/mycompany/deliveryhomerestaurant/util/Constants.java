@@ -10,13 +10,14 @@ public class Constants {
     public static final String smtpHost = "smtp.gmail.com";
     public static final int port = 587; 
     public static final String email = "delivery.home.restaurantaq@gmail.com";
-    public static final String passwordApp = "uvjhgacwkxabqmtm";
+    public static final String passwordApp;
 
     static {
         Properties prop = new Properties();
         try (InputStream input = Constants.class.getClassLoader().getResourceAsStream("config.properties")) {
             prop.load(input);
             API_KEY = prop.getProperty("api.key");
+            passwordApp = prop.getProperty("passwordApp");
         } catch (IOException e) {
             throw new RuntimeException("API_KEY non trovata");
         }
