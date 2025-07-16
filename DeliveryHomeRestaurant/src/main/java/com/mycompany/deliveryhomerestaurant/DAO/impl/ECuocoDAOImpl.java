@@ -4,7 +4,6 @@
  */
 package com.mycompany.deliveryhomerestaurant.DAO.impl;
 import com.mycompany.deliveryhomerestaurant.DAO.ECuocoDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.ECuocoDAO;
 import com.mycompany.deliveryhomerestaurant.Model.ECuoco;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;

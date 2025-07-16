@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.deliveryhomerestaurant.Controller;
-import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
 import com.mycompany.deliveryhomerestaurant.DAO.ECalendarioDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.ECartaCreditoDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EExceptionCalendarioDAO;
@@ -29,6 +28,7 @@ import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
 import com.mycompany.deliveryhomerestaurant.util.OrderTimeCalculator;
+import com.mycompany.deliveryhomerestaurant.util.TemplateRenderer;
 import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import com.mycompany.deliveryhomerestaurant.util.UtilityJSON;
 import freemarker.template.Configuration;
@@ -48,11 +48,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -128,7 +126,12 @@ public class COrdine {
             
         } catch(Exception e){
             
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
             
             
         }
@@ -153,33 +156,33 @@ public class COrdine {
     double totalPrice = 0.0;
 
     try {
-        System.out.println("[DEBUG] Inizio conferma pagamento");
+        //System.out.println("[DEBUG] Inizio conferma pagamento");
 
         EUtente utente = (EUtente) session.getAttribute("utente");
         role = utente.getRuolo();
-        System.out.println("[DEBUG] Utente: " + utente.getId() + " - Ruolo: " + role);
+        //System.out.println("[DEBUG] Utente: " + utente.getId() + " - Ruolo: " + role);
 
         ECliente cliente = (ECliente) utenteDAO.findById(utente.getId());
 
         String cartJson = request.getParameter("cart_data");
-        System.out.println("[DEBUG] JSON carrello: " + cartJson);
+        //System.out.println("[DEBUG] JSON carrello: " + cartJson);
         JSONArray cartArray = new JSONArray(cartJson);
 
         if (cartArray.isEmpty()) {
             throw new IllegalArgumentException("Carrello non valido o vuoto.");
         }
-        System.out.println("[DEBUG] Carrello parsificato: elementi = " + cartArray.length());
+        //System.out.println("[DEBUG] Carrello parsificato: elementi = " + cartArray.length());
 
         String note = request.getParameter("note");
         String dataConsegnaStr = request.getParameter("dataConsegna");
-        System.out.println("[DEBUG] Data consegna raw: " + dataConsegnaStr);
+        //System.out.println("[DEBUG] Data consegna raw: " + dataConsegnaStr);
         String dataConsegnaStrFormatted = dataConsegnaStr.replace(" ", "T");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         LocalDateTime dataConsegna = LocalDateTime.parse(dataConsegnaStrFormatted, formatter);
-        System.out.println("[DEBUG] Data consegna parsificata: " + dataConsegna);
+        //System.out.println("[DEBUG] Data consegna parsificata: " + dataConsegna);
 
         DayOfWeek nomeGiorno = dataConsegna.getDayOfWeek();
-        System.out.println("[DEBUG] Giorno della settimana: " + nomeGiorno);
+        //System.out.println("[DEBUG] Giorno della settimana: " + nomeGiorno);
 
         ECalendario giorno = calendarioDAO.getDayById(nomeGiorno);
         LocalTime orarioApertura = giorno.getOrarioApertura();
@@ -188,7 +191,7 @@ public class COrdine {
         if (orarioApertura == null || orarioChiusura == null) {
             throw new IllegalArgumentException("Il ristorante è chiuso in questo giorno.");
         }
-        System.out.println("[DEBUG] Apertura: " + orarioApertura + " - Chiusura: " + orarioChiusura);
+        //System.out.println("[DEBUG] Apertura: " + orarioApertura + " - Chiusura: " + orarioChiusura);
 
         List<EExceptionCalendario> giorniChiusuraEccezionali = exceptionCalendarioDAO.getGiorniChiusureStraordinarie();
         String dataConsegnaFormatted = dataConsegna.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -209,11 +212,11 @@ public class COrdine {
         }
 
         int indirizzoId = Integer.parseInt(request.getParameter("indirizzo_id"));
-        System.out.println("[DEBUG] Indirizzo ID selezionato: " + indirizzoId);
+        //System.out.println("[DEBUG] Indirizzo ID selezionato: " + indirizzoId);
         EIndirizzo indirizzoConsegna = indirizzoDAO.getAddressById(indirizzoId);
 
         String numeroCarta = request.getParameter("numero_carta");
-        System.out.println("[DEBUG] Numero carta: " + numeroCarta);
+        //System.out.println("[DEBUG] Numero carta: " + numeroCarta);
         ECartaCredito metodoPagamento = cartaCreditoDAO.getCreditCardByCardNumber(numeroCarta);
 
         EOrdine ordine = new EOrdine();
@@ -224,7 +227,7 @@ public class COrdine {
 
             int prodottoId = item.getInt("id");
             int qty = item.getInt("qty");
-            System.out.println("[DEBUG] Prodotto ID: " + prodottoId + ", Quantità: " + qty);
+          //  System.out.println("[DEBUG] Prodotto ID: " + prodottoId + ", Quantità: " + qty);
 
             EProdotto prodotto = prodottoDAO.getProductById(prodottoId);
             if (prodotto == null) {
@@ -233,7 +236,7 @@ public class COrdine {
 
             BigDecimal priceFromCart = item.getBigDecimal("price");
             BigDecimal priceFromDb = prodotto.getCosto();
-            System.out.println("[DEBUG] Prezzo carrello: " + priceFromCart + " - Prezzo DB: " + priceFromDb);
+            //System.out.println("[DEBUG] Prezzo carrello: " + priceFromCart + " - Prezzo DB: " + priceFromDb);
 
             if (priceFromDb.compareTo(priceFromCart) != 0) {
                 throw new IllegalArgumentException("Il prezzo del prodotto " + item.getString("name") + " non è valido.");
@@ -260,20 +263,20 @@ public class COrdine {
         ordine.setIndirizzoConsegna(indirizzoConsegna);
         ordine.setCartaPagamento(metodoPagamento);
 
-        System.out.println("[DEBUG] Inizio transazione");
+        //System.out.println("[DEBUG] Inizio transazione");
         transaction = em.getTransaction();
         transaction.begin();
 
-        System.out.println("[DEBUG] Persisto ordine...");
+        //System.out.println("[DEBUG] Persisto ordine...");
         em.persist(ordine);
         for (EItemOrdine itemOrdine : itemOrdineList) {
-            System.out.println("[DEBUG] Persisto item ordine: prodottoId=" + itemOrdine.getProdotto().getId());
+          //  System.out.println("[DEBUG] Persisto item ordine: prodottoId=" + itemOrdine.getProdotto().getId());
             em.persist(itemOrdine);
         }
 
         em.flush();
         transaction.commit();
-        System.out.println("[DEBUG] Ordine e item persistiti correttamente");
+        //System.out.println("[DEBUG] Ordine e item persistiti correttamente");
 
         Template template = cfg.getTemplate("confirmed_order.ftl");
         Map<String, Object> data = new HashMap<>();
@@ -286,22 +289,25 @@ public class COrdine {
         if (transaction != null && transaction.isActive()) {
             transaction.rollback();
         }
-        System.err.println("[ERROR] Eccezione di validazione: " + e.getMessage());
-        Template template = cfg.getTemplate("generic_error.ftl");
+        //System.err.println("[ERROR] Eccezione di validazione: " + e.getMessage());
         Map<String, Object> data = new HashMap<>();
         data.put("contextPath", request.getContextPath());
         data.put("errorMessage", e.getMessage());
         data.put("role", role);
         data.put("logged", logged);
-        template.process(data, response.getWriter());
+        TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
 
     } catch (Exception e) {
         if (transaction != null && transaction.isActive()) {
             transaction.rollback();
         }
-        System.err.println("[ERROR] Errore generico durante la conferma pagamento: " + e.getMessage());
-        e.printStackTrace(); // mostra la riga esatta dove esplode
-        throw e;
+        //System.err.println("[ERROR] Errore generico durante la conferma pagamento: " + e.getMessage());
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
     }
 }
 

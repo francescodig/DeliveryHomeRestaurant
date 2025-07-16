@@ -12,7 +12,6 @@ import com.mycompany.deliveryhomerestaurant.Model.EUtente;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import jakarta.persistence.TypedQuery;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;

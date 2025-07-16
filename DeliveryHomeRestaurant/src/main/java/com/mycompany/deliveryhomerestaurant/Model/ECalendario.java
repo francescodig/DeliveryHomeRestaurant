@@ -9,7 +9,6 @@ package com.mycompany.deliveryhomerestaurant.Model;
  * @author simone
  */
 import jakarta.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.DayOfWeek;
 

@@ -32,7 +32,7 @@
         <p><strong>Dettagli:</strong> ${exception?string}</p>
       </#if>
 
-      <a class="button" href="${contextPath}/DeliveryHomeRestaurant/User/home">Torna alla Homepage</a>
+      <a class="button" href="${contextPath}/User/home">Torna alla Homepage</a>
     </section>
   </main>
 
