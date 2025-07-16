@@ -18,7 +18,7 @@ import java.util.Random;
 
 /**
  *
- * @author franc
+ * @author simone
  */
 
 
@@ -41,14 +41,36 @@ public class PopolaCategorieFaker {
             emf.close();
             return;
         }
+        
+         em.getTransaction().begin();
+         
+        em.createQuery("DELETE FROM ECategoria").executeUpdate();
+        
+        List<String> nomiCategorie = List.of(
+            "Antipasti",
+            "Primi Piatti",
+            "Secondi Piatti",
+            "Contorni",
+            "Dolci",
+            "Bevande",
+            "Pizze",
+            "Panini",
+            "Insalate",
+            "Piatti Vegani",
+            "Piatti Vegetariani",
+            "Piatti di Mare",
+            "Piatti di Carne",
+            "Dessert",
+            "Bibite Alcoliche"
+        );
 
-        em.getTransaction().begin();
+        
+        int numeroCategorie = Math.min(nomiCategorie.size(), 15);
 
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < numeroCategorie; i++) {
             ECategoria categoria = new ECategoria();
 
-            // Nome categoria generico con faker.food().dish() o faker.commerce().department()
-            categoria.setNome(faker.food().dish());
+            categoria.setNome(nomiCategorie.get(i));
 
             // Associa un elenco prodotti casuale
             categoria.setElencoProdotti(elenchiProdotti.get(random.nextInt(elenchiProdotti.size())));
