@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prezzo Modificato</title>
+  <title>Errore Prezzo</title>
   <link rel="icon" type="image/x-icon" href="${contextPath}/resources/Immagini/favicon.ico">
   <link rel="stylesheet" href="${contextPath}/resources/css/layout.css">
   <link rel="stylesheet" href="${contextPath}/resources/css/error.css">
@@ -22,7 +22,13 @@
       </div>
 
       <h1>Attenzione</h1>
-      <p>Uno o più prodotti nel tuo carrello hanno subito una variazione di prezzo.</p>
+      
+      <#if errorMessage??>
+        <p>${errorMessage}</p>
+      <#else>
+        <p>Uno o più prodotti nel tuo carrello hanno subito una variazione di prezzo.</p>
+      </#if>
+      
       <p>Per favore, controlla i dettagli aggiornati prima di procedere con l'ordine.</p>
       <a class="button" href="${contextPath}/User/order">Torna all'Ordine</a>
     </section>

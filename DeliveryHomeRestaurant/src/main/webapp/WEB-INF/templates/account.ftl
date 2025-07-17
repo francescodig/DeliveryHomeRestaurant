@@ -100,7 +100,7 @@
                                 <li class="card-item">
                                     <span>
                                         <i class="far fa-credit-card"></i>
-                                        ${carta.nomeIntestatario}
+                                        ${carta.nomeCarta}
                                     </span>
                                     <form action="/DeliveryHomeRestaurant/User/removeCreditCard" method="POST" class="remove-card-form">
                                         <input type="hidden" name="numero_carta" value="${carta.numeroCarta}">

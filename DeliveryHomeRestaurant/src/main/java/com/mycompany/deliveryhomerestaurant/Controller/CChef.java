@@ -57,7 +57,6 @@ public class CChef {
             TemplateRenderer.render(request, response, "chef_orders.ftl", data);
 
         } catch(SecurityException e){
-                logged = false;
                 if(session != null && session.getAttribute("utente") != null){
                         EUtente utente =  (EUtente) session.getAttribute("utente");
                         role = utente.getRuolo();
@@ -134,7 +133,6 @@ public class CChef {
         response.sendRedirect(request.getContextPath() + "/Chef/showOrders");
 
     } catch(SecurityException e){
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                     EUtente utente =  (EUtente) session.getAttribute("utente");
                     role = utente.getRuolo();
@@ -172,7 +170,6 @@ public class CChef {
         TemplateRenderer.render(request, response, "waiting_orders.ftl", data);
 
     } catch (SecurityException e) {
-        logged = false;
         TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
     } catch(IllegalArgumentException e){
         TemplateRenderer.mostraErrore(request, response, "chef_error.ftl", e.getMessage(), role, logged);
@@ -250,7 +247,6 @@ public class CChef {
             
             
         } catch (SecurityException e) {
-            logged = false;
             TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         }  catch(IllegalArgumentException e){
             UtilFlashMessages.addMessage(request, "error", e.getMessage());
@@ -333,7 +329,6 @@ public class CChef {
             
             
         } catch (SecurityException e) {
-            logged = false;
             TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         }  catch(IllegalArgumentException e){
             UtilFlashMessages.addMessage(request, "error", e.getMessage());

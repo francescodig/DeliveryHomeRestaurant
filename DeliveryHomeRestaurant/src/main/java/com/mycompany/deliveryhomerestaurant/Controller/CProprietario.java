@@ -91,7 +91,7 @@ public class CProprietario {
 
         try {
             // Controllo ruolo
-            logged = false;
+            
             EUtente utente = AccessControlUtil.getLoggedUser(request);
             EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
             role = proprietario.getRuolo();
@@ -137,7 +137,7 @@ public class CProprietario {
             TemplateRenderer.render(request, response, "admin_panel.ftl", data);
 
         } catch(SecurityException e){
-            logged = false;
+            
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
@@ -146,7 +146,6 @@ public class CProprietario {
             
         }  catch (Exception e) {
             
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
@@ -166,7 +165,7 @@ public class CProprietario {
         boolean logged = true;
 
         try {
-            logged = false;
+            
             EUtente utente = AccessControlUtil.getLoggedUser(request);
             EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
             role = proprietario.getRuolo();
@@ -222,7 +221,6 @@ public class CProprietario {
             TemplateRenderer.render(request, response, "recensioni_admin.ftl", data);
 
         } catch(SecurityException e){
-				logged = false;
 				if(session != null && session.getAttribute("utente") != null){
 					EUtente utente =  (EUtente) session.getAttribute("utente");
 					role = utente.getRuolo();
@@ -231,7 +229,6 @@ public class CProprietario {
 				
         }  catch (Exception e) {
             
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
@@ -252,7 +249,6 @@ public class CProprietario {
 
         try {
            
-            logged = false;
             
             EUtente utente = AccessControlUtil.getLoggedUser(request);
             EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
@@ -311,7 +307,6 @@ public class CProprietario {
             TemplateRenderer.render(request, response, "admin_order.ftl", data);
 
         } catch(SecurityException e){
-	logged = false;
 	if(session != null && session.getAttribute("utente") != null){
 		EUtente utente =  (EUtente) session.getAttribute("utente");
 		role = utente.getRuolo();
@@ -319,7 +314,6 @@ public class CProprietario {
 	TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         } catch (Exception e) {
                         
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
@@ -338,7 +332,6 @@ public class CProprietario {
         String role = "";
 
         try {
-            logged = false;
             
             EUtente utente = AccessControlUtil.getLoggedUser(request);
             EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
@@ -397,7 +390,6 @@ public class CProprietario {
 
 
         } catch(SecurityException e){
-	logged = false;
 	if(session != null && session.getAttribute("utente") != null){
 		EUtente utente =  (EUtente) session.getAttribute("utente");
 		role = utente.getRuolo();
@@ -405,7 +397,6 @@ public class CProprietario {
 	TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         }  catch (Exception e) {
                         
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
@@ -424,7 +415,6 @@ public class CProprietario {
         String role = "";
 
         try {
-            logged = false;
             
             EUtente utente = AccessControlUtil.getLoggedUser(request);
             EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
@@ -544,7 +534,6 @@ public class CProprietario {
             TemplateRenderer.render(request, response, "dashboard.ftl", data);
 
         } catch(SecurityException e){
-	logged = false;
 	if(session != null && session.getAttribute("utente") != null){
 		EUtente utente =  (EUtente) session.getAttribute("utente");
 		role = utente.getRuolo();
@@ -552,7 +541,6 @@ public class CProprietario {
 	TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         } catch (Exception e) {
             
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
@@ -571,7 +559,6 @@ public class CProprietario {
         String role = "";
 
         try {
-            logged = false;
             
             EUtente utente = AccessControlUtil.getLoggedUser(request);
             EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
@@ -615,7 +602,6 @@ public class CProprietario {
             TemplateRenderer.render(request, response, "menu_admin.ftl", data);
 
         } catch(SecurityException e){
-	logged = false;
 	if(session != null && session.getAttribute("utente") != null){
 		EUtente utente =  (EUtente) session.getAttribute("utente");
 		role = utente.getRuolo();
@@ -624,7 +610,6 @@ public class CProprietario {
         } catch (Exception e) {
             
                         
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
@@ -722,7 +707,6 @@ public class CProprietario {
         } catch (Exception e) {
             
                         
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
@@ -820,7 +804,6 @@ public class CProprietario {
             } catch (Exception e) {
                 
                             
-                logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
@@ -897,7 +880,6 @@ public class CProprietario {
             TemplateRenderer.render(request, response, "create_account_admin.ftl", data);
 
         } catch(SecurityException e){
-	logged = false;
 	if(session != null && session.getAttribute("utente") != null){
 		EUtente utente =  (EUtente) session.getAttribute("utente");
 		role = utente.getRuolo();
@@ -906,7 +888,6 @@ public class CProprietario {
         } catch (Exception e) {
             
                         
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
@@ -967,11 +948,10 @@ public class CProprietario {
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
-        boolean logged = false;
+        boolean logged = true;
         String role = "";
 
         try {
-            logged = false;
             
             EUtente utente = AccessControlUtil.getLoggedUser(request);
             EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
@@ -1023,7 +1003,6 @@ public class CProprietario {
 
             TemplateRenderer.render(request, response, "calendar_admin.ftl", data);
         } catch(SecurityException e){
-	logged = false;
 	if(session != null && session.getAttribute("utente") != null){
 		EUtente utente =  (EUtente) session.getAttribute("utente");
 		role = utente.getRuolo();
@@ -1031,7 +1010,6 @@ public class CProprietario {
 	TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         } catch (Exception e) {
                         
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
@@ -1045,7 +1023,7 @@ public class CProprietario {
 
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
-        boolean logged = false;
+        boolean logged = true;
         String role = "";
 
         try {
@@ -1088,7 +1066,6 @@ public class CProprietario {
 
         } catch (Exception e) {
                         
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
@@ -1102,7 +1079,7 @@ public class CProprietario {
 
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
-        boolean logged = false;
+        boolean logged = true;
         String role = "";
 
         try {
@@ -1163,7 +1140,6 @@ public class CProprietario {
         } catch (Exception e) {
             
                         
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();

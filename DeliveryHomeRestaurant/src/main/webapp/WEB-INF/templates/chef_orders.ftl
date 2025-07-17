@@ -65,7 +65,7 @@
                         <input type="hidden" name="ordineId" value="${order.id}">
                         <input type="hidden" name="stato_attuale" value="${order.stato}">
                         <label for="status${order.id}">Modifica stato:</label>
-                        <select name="stato" id="status${order.id}" class="status-select" onchange="this.form.submit()">
+                        <select name="stato" id="status${order.id}" class="status-select">
                             <option value="">-- Seleziona stato --</option>
                             <option value="annullato" <#if statoClasse == "annullato">selected</#if>>Annullato</option>
                             <option value="pronto" <#if statoClasse == "pronto">selected</#if>>Pronto</option>

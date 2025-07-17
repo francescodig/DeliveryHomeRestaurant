@@ -48,9 +48,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -188,6 +190,10 @@ public class COrdine {
         LocalTime orarioApertura = giorno.getOrarioApertura();
         LocalTime orarioChiusura = giorno.getOrarioChiusura();
 
+        if(!calendarioDAO.getDayById(nomeGiorno).isAperto()){
+            throw new IllegalArgumentException("Il ristorante è chiuso in questo giorno.");
+        }
+        
         if (orarioApertura == null || orarioChiusura == null) {
             throw new IllegalArgumentException("Il ristorante è chiuso in questo giorno.");
         }
@@ -210,6 +216,8 @@ public class COrdine {
         if (dataConsegna.isBefore(apertura) || dataConsegna.isAfter(chiusura)) {
             throw new IllegalArgumentException("La fascia oraria selezionata è fuori dall'orario di apertura.");
         }
+        
+
 
         int indirizzoId = Integer.parseInt(request.getParameter("indirizzo_id"));
         //System.out.println("[DEBUG] Indirizzo ID selezionato: " + indirizzoId);
@@ -230,7 +238,7 @@ public class COrdine {
           //  System.out.println("[DEBUG] Prodotto ID: " + prodottoId + ", Quantità: " + qty);
 
             EProdotto prodotto = prodottoDAO.getProductById(prodottoId);
-            if (prodotto == null) {
+            if (prodotto == null || prodotto.getAttivo()==false) {
                 throw new IllegalArgumentException("Prodotto " + item.getString("name") + " non trovato.");
             }
 
@@ -295,7 +303,7 @@ public class COrdine {
         data.put("errorMessage", e.getMessage());
         data.put("role", role);
         data.put("logged", logged);
-        TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
+        TemplateRenderer.mostraErrore(request, response, "order_error.ftl", e.getMessage(), role, logged);
 
     } catch (Exception e) {
         if (transaction != null && transaction.isActive()) {

@@ -59,7 +59,7 @@ public class CRider {
 
 
         } catch(SecurityException e){
-            logged = false;
+            
             if(session != null && session.getAttribute("utente") != null){
                     EUtente utente =  (EUtente) session.getAttribute("utente");
                     role = utente.getRuolo();
@@ -170,7 +170,6 @@ public class CRider {
         response.sendRedirect(request.getContextPath() + "/Rider/showOrders");
 
     } catch(SecurityException e){
-            logged = false;
             if(session != null && session.getAttribute("utente") != null){
                     EUtente utente =  (EUtente) session.getAttribute("utente");
                     role = utente.getRuolo();
