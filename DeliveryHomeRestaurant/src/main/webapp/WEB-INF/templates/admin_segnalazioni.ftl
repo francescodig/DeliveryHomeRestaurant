@@ -66,7 +66,7 @@
                                         <h3>
                                             ${segnalazione.ordine.cliente.nome} ${segnalazione.ordine.cliente.cognome}
                                         </h3>
-                                        <p>Id Ordine: ${segnalazione.ordine.id}</p>
+                                        <p>${segnalazione.getCliente().getEmail()}</p>
                                         <span class="review-date">
                                           <#-- converto la stringa in data -->
                                             <#assign dataObj = segnalazione.data?datetime("yyyy-MM-dd'T'HH:mm")>

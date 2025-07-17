@@ -55,8 +55,8 @@
                         <p><strong>Costo totale:</strong> €${order.costo}</p>
                         <p><strong>Prodotti:</strong></p>
                         <ul>
-                            <#list order.prodotti as prodotto>
-                                <li>${prodotto.nome?html} - ${prodotto.descrizione?html} - €${prodotto.costo}</li>
+                            <#list order.getItemOrdini() as item>
+                                <li>${item.getProdotto().getNome()?html} - ${item.getProdotto().getDescrizione()?html} - €${item.getProdotto().getCosto()}</li>
                             </#list>
                         </ul>
                     </div>

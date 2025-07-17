@@ -179,6 +179,7 @@ public class EOrdine {
     }
     
     public void addItemOrdine(EItemOrdine itemOrdine){
+        itemOrdine.setOrdine(this);
         this.itemOrdini.add(itemOrdine);
     }
     public List<EItemOrdine> getItemOrdini(){

@@ -206,6 +206,8 @@ body[data-theme="dark"] .btn-edit {
     width: 100%;
     border-collapse: collapse;
     margin-top: 15px;
+    table-layout: fixed;
+    word-wrap: break-word;
 }
 
 .collaborators-table th,
@@ -213,6 +215,9 @@ body[data-theme="dark"] .btn-edit {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid var(--colore-bordo-chiaro);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .collaborators-table th {

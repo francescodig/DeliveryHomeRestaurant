@@ -10,6 +10,7 @@ import com.mycompany.deliveryhomerestaurant.Model.ECartaCredito;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.ECliente;
 import com.mycompany.deliveryhomerestaurant.Model.EIndirizzo;
+import com.mycompany.deliveryhomerestaurant.Model.EItemOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
 
 import jakarta.persistence.EntityManager;
@@ -53,7 +54,9 @@ public class PopolaOrdiniFaker {
 
         for (int i = 0; i < 20; i++) {
             EOrdine ordine = new EOrdine();
-
+            // ---- Stato casuale ----
+            ordine.setStato(statiPossibili[random.nextInt(statiPossibili.length)]);
+            
             ECliente cliente = clienti.get(random.nextInt(clienti.size()));
             ordine.setCliente(cliente);
 
@@ -100,25 +103,28 @@ public class PopolaOrdiniFaker {
                     .withMinute(faker.number().numberBetween(0, 59));
             ordine.setDataConsegna(dataConsegna);
 
+            em.persist(ordine);
+
             // ---- Prodotti ----
             int numProdotti = faker.number().numberBetween(1, 6);
-            Set<EProdotto> prodottiOrdine = new HashSet<>();
+            Set<EItemOrdine> itemOrdine = new HashSet<>();
             for (int j = 0; j < numProdotti; j++) {
-                prodottiOrdine.add(prodotti.get(random.nextInt(prodotti.size())));
+                EItemOrdine item = new EItemOrdine();
+                EProdotto prodotto = prodotti.get(random.nextInt(prodotti.size())); 
+                item.setProdotto(prodotto);
+                item.setPrezzoUnitario(prodotto.getCosto());
+                item.setQuantita(random.nextInt(1, 3));
+                itemOrdine.add(item);
+                ordine.addItemOrdine(item);
+                em.persist(item);
             }
-            ordine.setProdotti(prodottiOrdine);
 
             // ---- Costo ----
-            BigDecimal costoTotale = prodottiOrdine.stream()
-                    .map(p -> p.getCosto() != null ? p.getCosto() : BigDecimal.ZERO)
+            BigDecimal costoTotale = itemOrdine.stream()
+                    .map(p -> p.getPrezzoTotale()!= null ? p.getPrezzoTotale(): BigDecimal.ZERO)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             ordine.setCosto(costoTotale);
-
-            // ---- Stato casuale ----
-            ordine.setStato(statiPossibili[random.nextInt(statiPossibili.length)]);
-
-            em.persist(ordine);
         }
 
         em.getTransaction().commit();

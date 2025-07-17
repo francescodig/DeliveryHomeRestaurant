@@ -32,6 +32,7 @@ import com.mycompany.deliveryhomerestaurant.Model.ECalendario;
 import com.mycompany.deliveryhomerestaurant.Model.ECategoria;
 import com.mycompany.deliveryhomerestaurant.Model.ECuoco;
 import com.mycompany.deliveryhomerestaurant.Model.EExceptionCalendario;
+import com.mycompany.deliveryhomerestaurant.Model.EItemOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
 import com.mycompany.deliveryhomerestaurant.Model.EProprietario;
@@ -458,9 +459,9 @@ public class CProprietario {
 
             Map<Integer, Integer> conteggioPiatti = new HashMap<>();
             for (EOrdine ordine : allOrders) {
-                Set<EProdotto> prodottiOrdine = ordine.getProdotti();
-                for (EProdotto p : prodottiOrdine) {
-                    int prodottoId = p.getId();
+                List<EItemOrdine> itemOrdine = ordine.getItemOrdini();
+                for (EItemOrdine i : itemOrdine) {
+                    int prodottoId = i.getProdotto().getId();
                     conteggioPiatti.put(prodottoId, conteggioPiatti.getOrDefault(prodottoId, 0) + 1);
                 }
             }
