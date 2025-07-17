@@ -92,9 +92,8 @@
                     <table class="collaborators-table">
                         <thead>
                             <tr>
-                                <th>Nome</th>
+                                <th>Chef</th>
                                 <th>Email</th>
-                                <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -102,14 +101,6 @@
                                 <tr data-id="${chef.id}">
                                     <td>${chef.nome} ${chef.cognome}</td>
                                     <td>${chef.email}</td>
-                                    <td class="actions">
-                                        <form action="${contextPath}/Proprietario/deleteEmployee" method="POST" onsubmit="return confirm('Sei sicuro di voler eliminare questo collaboratore?');" class="inline-form">
-                                            <input type="hidden" name="employeeId" value="${chef.id}" />
-                                            <button type="submit" class="btn btn-delete">
-                                                <i class="fas fa-trash-alt"></i> Elimina
-                                            </button>
-                                        </form>
-                                    </td>
                                 </tr>
                             </#list>
                         </tbody>
@@ -131,7 +122,6 @@
                             <tr>
                                 <th>Nome</th>
                                 <th>Email</th>
-                                <th>Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -139,14 +129,6 @@
                                 <tr data-id="${rider.id}">
                                     <td>${rider.nome} ${rider.cognome}</td>
                                     <td>${rider.email}</td>
-                                    <td class="actions">
-                                        <form action="${contextPath}/Proprietario/deleteEmployee" method="POST" class="inline-form">
-                                            <input type="hidden" name="employeeId" value="${rider.id}" />
-                                            <button type="submit" class="btn btn-delete">
-                                                <i class="fas fa-trash-alt"></i> Elimina
-                                            </button>
-                                        </form>
-                                    </td>
                                 </tr>
                             </#list>
                         </tbody>
