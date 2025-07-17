@@ -10,7 +10,6 @@ package com.mycompany.deliveryhomerestaurant.JavaFaker;
  */
 
 
-import com.github.javafaker.Faker;
 import com.mycompany.deliveryhomerestaurant.Model.ECalendario;
 
 import jakarta.persistence.EntityManager;

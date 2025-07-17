@@ -5,46 +5,47 @@
 package com.mycompany.deliveryhomerestaurant.Controller;
 
 
+import com.mycompany.deliveryhomerestaurant.DAO.ECalendarioDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.ECategoriaDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EClienteDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.ECuocoDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
-import com.mycompany.deliveryhomerestaurant.DAO.ERecensioneDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.ESegnalazioneDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.EProdottoDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.ERiderDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.ECalendarioDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EExceptionCalendarioDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
+import com.mycompany.deliveryhomerestaurant.DAO.EProdottoDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.ERecensioneDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.ERiderDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.ESegnalazioneDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.ECalendarioDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ECategoriaDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EClienteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.ECuocoDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.EOrdineDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.ERecensioneDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.ESegnalazioneDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.EProdottoDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.ERiderDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.ECalendarioDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EExceptionCalendarioDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EOrdineDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EProdottoDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.ERecensioneDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.ERiderDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.ESegnalazioneDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
 import com.mycompany.deliveryhomerestaurant.Model.ECalendario;
 import com.mycompany.deliveryhomerestaurant.Model.ECategoria;
 import com.mycompany.deliveryhomerestaurant.Model.ECuoco;
 import com.mycompany.deliveryhomerestaurant.Model.EExceptionCalendario;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
-import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
-import com.mycompany.deliveryhomerestaurant.Model.EProprietario;
-import com.mycompany.deliveryhomerestaurant.Model.ESegnalazione;
 import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
+import com.mycompany.deliveryhomerestaurant.Model.EProprietario;
+import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
 import com.mycompany.deliveryhomerestaurant.Model.ERider;
+import com.mycompany.deliveryhomerestaurant.Model.ESegnalazione;
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
-import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
 import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
+import com.mycompany.deliveryhomerestaurant.util.AccessControlUtil;
+import com.mycompany.deliveryhomerestaurant.util.TemplateRenderer;
 import com.mycompany.deliveryhomerestaurant.util.UtilFlashMessages;
+import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -52,24 +53,23 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 
@@ -87,24 +87,15 @@ public class CProprietario {
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
         String role = "";
+        boolean logged = true; 
 
         try {
             // Controllo ruolo
-            EProprietario proprietario = null;
-            boolean logged = false;
-            if (session != null && session.getAttribute("utente") != null) {
-                Object utente = session.getAttribute("utente");
-                if (utente instanceof EProprietario) {
-                    proprietario = (EProprietario) utente;
-                    logged = true;
-                    role = proprietario.getRuolo();
-                }
-            }
+            logged = false;
+            EUtente utente = AccessControlUtil.getLoggedUser(request);
+            EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
+            role = proprietario.getRuolo();
 
-            if (proprietario == null) {
-                response.sendRedirect(request.getContextPath() + "/showLogin");
-                return;
-            }
 
             // ordini
             EOrdineDao ordineDao = new EOrdineDAOImpl(em);
@@ -143,12 +134,24 @@ public class CProprietario {
             data.put("logged", logged);
             data.put("role", role);
 
-            Template template = cfg.getTemplate("admin_panel.ftl");
-            response.setContentType("text/html;charset=UTF-8");
-            template.process(data, response.getWriter());
+            TemplateRenderer.render(request, response, "admin_panel.ftl", data);
 
-        } catch (Exception e) {
-            throw new ServletException("Errore nel caricamento del pannello proprietario", e);
+        } catch(SecurityException e){
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
+            
+        }  catch (Exception e) {
+            
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
     
@@ -160,23 +163,14 @@ public class CProprietario {
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
         String role = "";
+        boolean logged = true;
 
         try {
-            EProprietario proprietario = null;
-            boolean logged = false;
-            if (session != null && session.getAttribute("utente") != null) {
-                Object utente = session.getAttribute("utente");
-                if (utente instanceof EProprietario) {
-                    proprietario = (EProprietario) utente;
-                    logged = true;
-                    role = proprietario.getRuolo();
-                }
-            }
+            logged = false;
+            EUtente utente = AccessControlUtil.getLoggedUser(request);
+            EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
+            role = proprietario.getRuolo();
 
-            if (proprietario == null) {
-                response.sendRedirect(request.getContextPath() + "/showLogin");
-                return;
-            }
 
             // filtro/sort dalla query string
             String sort = request.getParameter("sort") != null ? request.getParameter("sort") : "newest";
@@ -225,12 +219,25 @@ public class CProprietario {
             Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
             data.put("messages", messages);
 
-            Template template = cfg.getTemplate("recensioni_admin.ftl");
-            response.setContentType("text/html;charset=UTF-8");
-            template.process(data, response.getWriter());
+            TemplateRenderer.render(request, response, "recensioni_admin.ftl", data);
 
-        } catch (Exception e) {
-            throw new ServletException("Errore nella visualizzazione delle recensioni", e);
+        } catch(SecurityException e){
+				logged = false;
+				if(session != null && session.getAttribute("utente") != null){
+					EUtente utente =  (EUtente) session.getAttribute("utente");
+					role = utente.getRuolo();
+				}
+				TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
+				
+        }  catch (Exception e) {
+            
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
+            
         }
     }
     
@@ -240,25 +247,19 @@ public class CProprietario {
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
+        boolean logged = true;
+        String role = "";
 
         try {
-            EProprietario proprietario = null;
-            boolean logged = false;
-            String role = "";
+           
+            logged = false;
+            
+            EUtente utente = AccessControlUtil.getLoggedUser(request);
+            EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
+            role = proprietario.getRuolo();
+            
 
-            if (session != null && session.getAttribute("utente") != null) {
-                Object utente = session.getAttribute("utente");
-                if (utente instanceof EProprietario) {
-                    proprietario = (EProprietario) utente;
-                    logged = true;
-                    role = proprietario.getRuolo();
-                }
-            }
-
-            if (proprietario == null) {
-                response.sendRedirect(request.getContextPath() + "/showLogin");
-                return;
-            }
+ 
 
             // ordinazioni
             EOrdineDao ordineDao = new EOrdineDAOImpl(em);
@@ -307,12 +308,23 @@ public class CProprietario {
             Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
             data.put("messages", messages);
 
-            Template template = cfg.getTemplate("admin_order.ftl");  
-            response.setContentType("text/html;charset=UTF-8");
-            template.process(data, response.getWriter());
+            TemplateRenderer.render(request, response, "admin_order.ftl", data);
 
+        } catch(SecurityException e){
+	logged = false;
+	if(session != null && session.getAttribute("utente") != null){
+		EUtente utente =  (EUtente) session.getAttribute("utente");
+		role = utente.getRuolo();
+	}
+	TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         } catch (Exception e) {
-            throw new ServletException("Errore nella visualizzazione degli ordini", e);
+                        
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
     
@@ -322,22 +334,17 @@ public class CProprietario {
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
+        boolean logged = true;
+        String role = "";
 
         try {
-            boolean logged = false;
-            String role = "";
-            EProprietario proprietario = null;
+            logged = false;
+            
+            EUtente utente = AccessControlUtil.getLoggedUser(request);
+            EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
+            role = proprietario.getRuolo();
 
-            if (session != null && session.getAttribute("utente") instanceof EProprietario) {
-                proprietario = (EProprietario) session.getAttribute("utente");
-                logged = true;
-                role = proprietario.getRuolo();
-            }
 
-            if (proprietario == null) {
-                response.sendRedirect(request.getContextPath() + "/showLogin");
-                return;
-            }
 
             // segnalazioni
             ESegnalazioneDAO segnalazioneDao = new ESegnalazioneDAOImpl(em);
@@ -386,12 +393,24 @@ public class CProprietario {
             Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
             data.put("messages", messages);
 
-            Template template = cfg.getTemplate("admin_segnalazioni.ftl");
-            response.setContentType("text/html;charset=UTF-8");
-            template.process(data, response.getWriter());
+            TemplateRenderer.render(request, response, "admin_segnalazioni.ftl", data);
 
-        } catch (Exception e) {
-            throw new ServletException("Errore nella visualizzazione delle segnalazioni", e);
+
+        } catch(SecurityException e){
+	logged = false;
+	if(session != null && session.getAttribute("utente") != null){
+		EUtente utente =  (EUtente) session.getAttribute("utente");
+		role = utente.getRuolo();
+	}
+	TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
+        }  catch (Exception e) {
+                        
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
 
@@ -401,22 +420,17 @@ public class CProprietario {
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
+        boolean logged = true;
+        String role = "";
 
         try {
-            EProprietario proprietario = null;
-            boolean logged = false;
-            String role = "";
+            logged = false;
+            
+            EUtente utente = AccessControlUtil.getLoggedUser(request);
+            EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
+            role = proprietario.getRuolo();
 
-            if (session != null && session.getAttribute("utente") instanceof EProprietario) {
-                proprietario = (EProprietario) session.getAttribute("utente");
-                logged = true;
-                role = proprietario.getRuolo();
-            }
 
-            if (proprietario == null) {
-                response.sendRedirect(request.getContextPath() + "/showLogin");
-                return;
-            }
 
             EOrdineDao ordineDao = new EOrdineDAOImpl(em);
             List<EOrdine> allOrders = ordineDao.getAllOrders();
@@ -527,12 +541,23 @@ public class CProprietario {
             data.put("logged", logged);
             data.put("role", role);
 
-            Template template = cfg.getTemplate("dashboard.ftl");
-            response.setContentType("text/html;charset=UTF-8");
-            template.process(data, response.getWriter());
+            TemplateRenderer.render(request, response, "dashboard.ftl", data);
 
+        } catch(SecurityException e){
+	logged = false;
+	if(session != null && session.getAttribute("utente") != null){
+		EUtente utente =  (EUtente) session.getAttribute("utente");
+		role = utente.getRuolo();
+	}
+	TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         } catch (Exception e) {
-            throw new ServletException("Errore nella visualizzazione della dashboard", e);
+            
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
     
@@ -542,22 +567,15 @@ public class CProprietario {
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
+        boolean logged = true;
+        String role = "";
 
         try {
-            boolean logged = false;
-            String role = "";
-            EProprietario proprietario = null;
-
-            if (session != null && session.getAttribute("utente") instanceof EProprietario) {
-                proprietario = (EProprietario) session.getAttribute("utente");
-                logged = true;
-                role = proprietario.getRuolo();
-            }
-
-            if (proprietario == null) {
-                response.sendRedirect(request.getContextPath() + "/showLogin");
-                return;
-            }
+            logged = false;
+            
+            EUtente utente = AccessControlUtil.getLoggedUser(request);
+            EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
+            role = proprietario.getRuolo();
 
             EProdottoDAO prodottoDao = new EProdottoDAOImpl(em);
             List<EProdotto> prodotti = prodottoDao.getAllActiveProducts();
@@ -594,21 +612,35 @@ public class CProprietario {
             Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
             data.put("messages", messages);
 
-            Template template = cfg.getTemplate("menu_admin.ftl");
-            response.setContentType("text/html;charset=UTF-8");
-            template.process(data, response.getWriter());
+            TemplateRenderer.render(request, response, "menu_admin.ftl", data);
 
+        } catch(SecurityException e){
+	logged = false;
+	if(session != null && session.getAttribute("utente") != null){
+		EUtente utente =  (EUtente) session.getAttribute("utente");
+		role = utente.getRuolo();
+	}
+	TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         } catch (Exception e) {
-            throw new ServletException("Errore nella visualizzazione del menu", e);
+            
+                        
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
     
     public void saveProduct(HttpServletRequest request, HttpServletResponse response, String[] params)
-        throws ServletException, IOException {
+        throws ServletException, IOException, TemplateException {
 
         EntityManager em = (EntityManager) request.getAttribute("em");
         EProdottoDAOImpl prodottoDao = new EProdottoDAOImpl(em);
         HttpSession session = UtilSession.getSession(request);
+        boolean logged = true;
+        String role = "";
 
         try {
             Object utente = session != null ? session.getAttribute("utente") : null;
@@ -688,15 +720,24 @@ public class CProprietario {
             response.sendRedirect(request.getContextPath() + "/Proprietario/showMenu");
 
         } catch (Exception e) {
-            throw new ServletException("Errore durante il salvataggio del prodotto", e);
+            
+                        
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
      
     public void modifyProduct(HttpServletRequest request, HttpServletResponse response, String[] params)
-        throws ServletException, IOException {
+        throws ServletException, IOException, TemplateException {
 
             EntityManager em = (EntityManager) request.getAttribute("em");
             HttpSession session = UtilSession.getSession(request);
+            boolean logged = true;
+            String role = "";
 
             try {
                 Object utente = session != null ? session.getAttribute("utente") : null;
@@ -777,7 +818,14 @@ public class CProprietario {
                 response.sendRedirect(request.getContextPath() + "/Proprietario/showMenu");
 
             } catch (Exception e) {
-                throw new ServletException("Errore durante la modifica del prodotto", e);
+                
+                            
+                logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
             }
         }
     
@@ -820,22 +868,16 @@ public class CProprietario {
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
+        boolean logged = true;
+        String role = "";
 
         try {
-            boolean logged = false;
-            String role = "";
-            EProprietario proprietario = null;
+            
+            EUtente utente = AccessControlUtil.getLoggedUser(request);
+            EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
+            role = proprietario.getRuolo();
 
-            if (session != null && session.getAttribute("utente") instanceof EProprietario) {
-                proprietario = (EProprietario) session.getAttribute("utente");
-                logged = true;
-                role = proprietario.getRuolo();
-            }
 
-            if (proprietario == null || !"proprietario".equalsIgnoreCase(role)) {
-                response.sendRedirect(request.getContextPath() + "/showLogin");
-                return;
-            }
 
             ECuocoDAO chefDao = new ECuocoDAOImpl(em);
             List<ECuoco> chefs = chefDao.getAllChefs();
@@ -852,12 +894,24 @@ public class CProprietario {
             Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
             data.put("messages", messages);
 
-            Template template = cfg.getTemplate("create_account_admin.ftl");
-            response.setContentType("text/html;charset=UTF-8");
-            template.process(data, response.getWriter());
+            TemplateRenderer.render(request, response, "create_account_admin.ftl", data);
 
+        } catch(SecurityException e){
+	logged = false;
+	if(session != null && session.getAttribute("utente") != null){
+		EUtente utente =  (EUtente) session.getAttribute("utente");
+		role = utente.getRuolo();
+	}
+	TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         } catch (Exception e) {
-            throw new ServletException("Errore nella visualizzazione della pagina di creazione account", e);
+            
+                        
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
     
@@ -913,22 +967,15 @@ public class CProprietario {
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
+        boolean logged = false;
+        String role = "";
 
         try {
-            boolean logged = false;
-            String role = "";
-            EProprietario proprietario = null;
-
-            if (session != null && session.getAttribute("utente") instanceof EProprietario) {
-                proprietario = (EProprietario) session.getAttribute("utente");
-                logged = true;
-                role = proprietario.getRuolo();
-            }
-
-            if (proprietario == null || !"proprietario".equalsIgnoreCase(role)) {
-                response.sendRedirect(request.getContextPath() + "/showLogin");
-                return;
-            }
+            logged = false;
+            
+            EUtente utente = AccessControlUtil.getLoggedUser(request);
+            EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
+            role = proprietario.getRuolo();
 
             // recupero dati calendario
             ECalendarioDAO calendarioDAO = new ECalendarioDAOImpl(em);
@@ -974,20 +1021,32 @@ public class CProprietario {
             Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
             data.put("messages", messages);
 
-            Template template = cfg.getTemplate("calendar_admin.ftl");
-            response.setContentType("text/html;charset=UTF-8");
-            template.process(data, response.getWriter());
-
+            TemplateRenderer.render(request, response, "calendar_admin.ftl", data);
+        } catch(SecurityException e){
+	logged = false;
+	if(session != null && session.getAttribute("utente") != null){
+		EUtente utente =  (EUtente) session.getAttribute("utente");
+		role = utente.getRuolo();
+	}
+	TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         } catch (Exception e) {
-            throw new ServletException("Errore nella visualizzazione del calendario", e);
+                        
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
     
     public void addExceptionDay(HttpServletRequest request, HttpServletResponse response, String[] params)
-        throws ServletException, IOException {
+        throws ServletException, IOException, TemplateException {
 
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
+        boolean logged = false;
+        String role = "";
 
         try {
             Object utente = session != null ? session.getAttribute("utente") : null;
@@ -1028,15 +1087,23 @@ public class CProprietario {
             response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
 
         } catch (Exception e) {
-            throw new ServletException("Errore durante l'aggiunta del giorno di chiusura", e);
+                        
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
 
     public void deleteExceptionDay(HttpServletRequest request, HttpServletResponse response, String[] params)
-        throws ServletException, IOException {
+        throws ServletException, IOException, TemplateException {
 
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.getSession(request);
+        boolean logged = false;
+        String role = "";
 
         try {
             Object utente = session != null ? session.getAttribute("utente") : null;
@@ -1094,7 +1161,14 @@ public class CProprietario {
             response.sendRedirect(request.getContextPath() + "/Proprietario/showCalendar");
 
         } catch (Exception e) {
-            throw new ServletException("Errore durante la rimozione del giorno di chiusura eccezionale", e);
+            
+                        
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
     

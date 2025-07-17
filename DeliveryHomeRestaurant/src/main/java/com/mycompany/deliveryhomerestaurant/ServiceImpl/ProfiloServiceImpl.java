@@ -5,7 +5,6 @@
 package com.mycompany.deliveryhomerestaurant.ServiceImpl;
 
 import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
-import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
 import org.mindrot.jbcrypt.BCrypt;
 
 /**

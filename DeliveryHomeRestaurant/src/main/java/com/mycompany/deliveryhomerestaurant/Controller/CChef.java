@@ -5,28 +5,16 @@
 package com.mycompany.deliveryhomerestaurant.Controller;
 
 import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
-import org.apache.commons.text.StringEscapeUtils;
-import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EOrdineDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
-import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
-import com.mycompany.deliveryhomerestaurant.Model.ECartaCredito;
 import com.mycompany.deliveryhomerestaurant.Model.ECliente;
 import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
 import com.mycompany.deliveryhomerestaurant.Model.ECuoco;
-import com.mycompany.deliveryhomerestaurant.Model.EIndirizzo;
-import com.mycompany.deliveryhomerestaurant.Model.EItemOrdine;
-import com.mycompany.deliveryhomerestaurant.Model.EProdotto;
 import com.mycompany.deliveryhomerestaurant.Model.EUtente;
 import com.mycompany.deliveryhomerestaurant.ServiceImpl.MailServiceImpl;
 import com.mycompany.deliveryhomerestaurant.util.AccessControlUtil;
-import com.mycompany.deliveryhomerestaurant.util.Constants;
-import static com.mycompany.deliveryhomerestaurant.util.Constants.email;
 import com.mycompany.deliveryhomerestaurant.util.TemplateRenderer;
 import com.mycompany.deliveryhomerestaurant.util.UtilFlashMessages;
 import com.mycompany.deliveryhomerestaurant.util.UtilSession;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
@@ -36,7 +24,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +39,7 @@ public class CChef {
         EntityManager em = (EntityManager) request.getAttribute("em");
         EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
         String role = "";
+        HttpSession session = UtilSession.getSession(request);
         boolean logged = true;
         try {
             EUtente utente = AccessControlUtil.getLoggedUser(request);
@@ -68,9 +56,13 @@ public class CChef {
 
             TemplateRenderer.render(request, response, "chef_orders.ftl", data);
 
-        } catch (SecurityException e) {
-            logged = false;
-            TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
+        } catch(SecurityException e){
+                logged = false;
+                if(session != null && session.getAttribute("utente") != null){
+                        EUtente utente =  (EUtente) session.getAttribute("utente");
+                        role = utente.getRuolo();
+                }
+                TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
         } catch (Exception e) {
             TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
@@ -80,6 +72,7 @@ public class CChef {
     throws IOException, TemplateException, ServletException, IllegalArgumentException {
         EntityManager em = (EntityManager) request.getAttribute("em");
         EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
+        HttpSession session = UtilSession.getSession(request);
         String role = "";
         boolean logged = true;
         try {
@@ -140,9 +133,13 @@ public class CChef {
         UtilFlashMessages.addMessage(request, "success", "Ordine modificato con successo");
         response.sendRedirect(request.getContextPath() + "/Chef/showOrders");
 
-    } catch (SecurityException e) {
-        logged = false;
-        TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
+    } catch(SecurityException e){
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                    EUtente utente =  (EUtente) session.getAttribute("utente");
+                    role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
     } catch(IllegalArgumentException e){
         UtilFlashMessages.addMessage(request, "error", e.getMessage());
         response.sendRedirect(request.getContextPath() + "/Chef/showOrders/");

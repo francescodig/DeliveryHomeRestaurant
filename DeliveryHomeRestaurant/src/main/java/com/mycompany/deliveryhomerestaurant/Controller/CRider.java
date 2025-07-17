@@ -1,9 +1,7 @@
 package com.mycompany.deliveryhomerestaurant.Controller;
 
-import com.mycompany.deliveryhomerestaurant.DAO.EClienteDAO;
 import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
 import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.EClienteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EOrdineDAOImpl;
 import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
 import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
@@ -13,14 +11,15 @@ import com.mycompany.deliveryhomerestaurant.Model.EUtente;
 import com.mycompany.deliveryhomerestaurant.ServiceImpl.MailServiceImpl;
 import com.mycompany.deliveryhomerestaurant.util.AccessControlUtil;
 import com.mycompany.deliveryhomerestaurant.util.TemplateRenderer;
+import com.mycompany.deliveryhomerestaurant.util.UtilSession;
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -35,6 +34,7 @@ public class CRider {
 
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         EntityManager em = (EntityManager) request.getAttribute("em");
+        HttpSession session = UtilSession.getSession(request);
         EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
         String role = "";
         boolean logged = true;
@@ -58,10 +58,15 @@ public class CRider {
             TemplateRenderer.render(request, response, "rider_orders.ftl", data);
 
 
-        } catch (SecurityException e) {
+        } catch(SecurityException e){
             logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                    EUtente utente =  (EUtente) session.getAttribute("utente");
+                    role = utente.getRuolo();
+            }
             TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
@@ -72,6 +77,7 @@ public class CRider {
     EntityManager em = (EntityManager) request.getAttribute("em");
     EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
     EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
+    HttpSession session = UtilSession.getSession(request);
     String role = "";
     boolean logged = true;
 
@@ -163,10 +169,14 @@ public class CRider {
 
         response.sendRedirect(request.getContextPath() + "/Rider/showOrders");
 
-    } catch (SecurityException e) {
-        logged = false;
-        TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
-    } catch (Exception e) {
+    } catch(SecurityException e){
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                    EUtente utente =  (EUtente) session.getAttribute("utente");
+                    role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
+        }  catch (Exception e) {
         if (em.getTransaction().isActive()) {
             em.getTransaction().rollback();
         }

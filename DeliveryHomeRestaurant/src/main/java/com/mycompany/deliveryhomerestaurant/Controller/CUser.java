@@ -1,49 +1,5 @@
 package com.mycompany.deliveryhomerestaurant.Controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mycompany.deliveryhomerestaurant.DAO.ECartaCreditoDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.EClienteDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.EIndirizzoDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.EMenuDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
-import com.mycompany.deliveryhomerestaurant.DAO.ERecensioneDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.ECartaCreditoDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.EClienteDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.EIndirizzoDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.EMenuDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.EOrdineDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.ERecensioneDAOImpl;
-import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
-import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
-import com.mycompany.deliveryhomerestaurant.Model.ECartaCredito;
-import com.mycompany.deliveryhomerestaurant.Model.ECliente;
-import com.mycompany.deliveryhomerestaurant.Model.EElencoProdotti;
-import com.mycompany.deliveryhomerestaurant.Model.EIndirizzo;
-import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
-import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
-import com.mycompany.deliveryhomerestaurant.Model.EUtente;
-import com.mycompany.deliveryhomerestaurant.Service.MailService;
-import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
-import com.mycompany.deliveryhomerestaurant.ServiceImpl.MailServiceImpl;
-import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
-import com.mycompany.deliveryhomerestaurant.util.Constants;
-import com.mycompany.deliveryhomerestaurant.util.TemplateRenderer;
-import com.mycompany.deliveryhomerestaurant.util.UtilFlashMessages;
-import com.mycompany.deliveryhomerestaurant.util.UtilSession;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import jakarta.mail.MessagingException;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.PersistenceException;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
@@ -54,7 +10,48 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.mindrot.jbcrypt.BCrypt;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mycompany.deliveryhomerestaurant.DAO.ECartaCreditoDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EIndirizzoDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EMenuDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EOrdineDao;
+import com.mycompany.deliveryhomerestaurant.DAO.ERecensioneDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.ECartaCreditoDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EIndirizzoDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EMenuDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EOrdineDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.ERecensioneDAOImpl;
+import com.mycompany.deliveryhomerestaurant.DAO.impl.EUtenteDAOImpl;
+import com.mycompany.deliveryhomerestaurant.FreeMarkerConfig;
+import com.mycompany.deliveryhomerestaurant.Model.ECartaCredito;
+import com.mycompany.deliveryhomerestaurant.Model.ECliente;
+import com.mycompany.deliveryhomerestaurant.Model.EIndirizzo;
+import com.mycompany.deliveryhomerestaurant.Model.EOrdine;
+import com.mycompany.deliveryhomerestaurant.Model.ERecensione;
+import com.mycompany.deliveryhomerestaurant.Model.EUtente;
+import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
+import com.mycompany.deliveryhomerestaurant.ServiceImpl.MailServiceImpl;
+import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
+import com.mycompany.deliveryhomerestaurant.util.AccessControlUtil;
+import com.mycompany.deliveryhomerestaurant.util.InputSanitizer;
+import com.mycompany.deliveryhomerestaurant.util.TemplateRenderer;
+import com.mycompany.deliveryhomerestaurant.util.UtilFlashMessages;
+import com.mycompany.deliveryhomerestaurant.util.UtilSession;
+
+import freemarker.template.Configuration;
+import freemarker.template.TemplateException;
+import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.PersistenceException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 public class CUser{
 
@@ -64,6 +61,8 @@ public class CUser{
         
         EntityManager em = (EntityManager) request.getAttribute("em");
         String role = "";
+        boolean logged = true;
+        HttpSession session = request.getSession();
         
         try {
            
@@ -79,8 +78,7 @@ public class CUser{
             data.put("contextPath", request.getContextPath());
             data.put("reviews", reviews);
             
-            HttpSession session = UtilSession.getSession(request);
-            boolean logged = false;
+            logged = false;
             if (session != null && session.getAttribute("utente") != null) {
                 logged = true;
                 EUtente utente = (EUtente) session.getAttribute("utente");
@@ -92,8 +90,15 @@ public class CUser{
             TemplateRenderer.render(request, response, "home.ftl", data);
 
         } catch (Exception e) {
-            throw new ServletException("Errore nel processing del template", e);
+            
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         } 
+            
     }
 
     public void mostraMenu(HttpServletRequest request, HttpServletResponse response, String[] params)
@@ -106,7 +111,7 @@ public class CUser{
         boolean logged = false;
         
         try {
-            Template template = cfg.getTemplate("menu.ftl");
+            
 
             EMenuDAO menuDAO = new EMenuDAOImpl(em);
             List<Map<String, Object>> menu = menuDAO.getMenu();
@@ -128,10 +133,15 @@ public class CUser{
             data.put("logged", logged);
 
             response.setContentType("text/html;charset=UTF-8");
-            template.process(data, response.getWriter());
+            TemplateRenderer.render(request, response, "menu.ftl", data);
 
         } catch (Exception e) {
-            throw new ServletException("Errore nel processing del template", e);
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
     
@@ -166,10 +176,12 @@ public class CUser{
          EntityManager em = (EntityManager) request.getAttribute("em");
          Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
          String role = "";
+         boolean logged = true; 
+         HttpSession session = UtilSession.getSession(request);
          
         try {
 
-            Template template = cfg.getTemplate("order.ftl");
+          
 
             EMenuDAO menuDAO = new EMenuDAOImpl(em);
             List<Map<String, Object>> menu = menuDAO.getMenu();
@@ -177,22 +189,38 @@ public class CUser{
             Map<String, Object> data = new HashMap<>();
             data.put("contextPath", request.getContextPath());
             data.put("menu", menu);
-
-            HttpSession session = UtilSession.getSession(request);
-            boolean logged = false;
+            
+            logged = false;
             if (session != null && session.getAttribute("utente") != null) {
                 logged = true;
                 EUtente utente = (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
+                if(!role.equals("cliente") && !role.equals(null)){
+                    throw new SecurityException("Accesso negato: ruolo non autorizzato.");
+                }
             }
             data.put("logged", logged);
             data.put("role", role);
 
             response.setContentType("text/html;charset=UTF-8");
-            template.process(data, response.getWriter());
+            
+            TemplateRenderer.render(request, response, "order.ftl", data);
 
-        } catch (Exception e) {
-            throw new ServletException("Errore nel processing del template", e);
+        } catch(SecurityException e){
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
+            
+        }  catch (Exception e) {
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         }
     }
 
@@ -203,26 +231,22 @@ public class CUser{
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         HttpSession session = UtilSession.getSession(request);
         String role = "";
+        boolean logged = true; 
         
         
         try {
-            ECliente utente = null;
-            boolean logged = false;
-            if (session != null && session.getAttribute("utente")!=null) {
-                utente = (ECliente) session.getAttribute("utente");
-                logged = true;
-                role = utente.getRuolo();
-            }
-            if (utente == null) {
-                response.sendRedirect(request.getContextPath() + "/showProfile");
-                return;
-            }
+            
+            EUtente utente = AccessControlUtil.getLoggedUser(request);
+            ECliente cliente = AccessControlUtil.checkUserRole(utente, ECliente.class);
+            role = cliente.getRuolo();
+
+  
 
      
-            Template template = cfg.getTemplate("miei_ordini.ftl");
+
 
             EOrdineDao ordineDAO = new EOrdineDAOImpl(em);
-            List<EOrdine> mieiOrdini = ordineDAO.getOrdersByClient(utente);
+            List<EOrdine> mieiOrdini = ordineDAO.getOrdersByClient(cliente);
 
             Map<String, Object> data = new HashMap<>();
             data.put("contextPath", request.getContextPath());
@@ -231,10 +255,24 @@ public class CUser{
             data.put("role",role);
 
             response.setContentType("text/html;charset=UTF-8");
-            template.process(data, response.getWriter());
+           TemplateRenderer.render(request, response, "miei_ordini.ftl", data);
 
-        } catch (Exception e) {
-            throw new ServletException("Errore nel processing del template", e);
+        } catch(SecurityException e){
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
+            
+        } 
+        catch (Exception e) {
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
         } 
     }
 
@@ -245,6 +283,7 @@ public class CUser{
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         HttpSession session = UtilSession.getSession(request);
         String role = "";
+        boolean logged = true;
 
         
         try {
@@ -252,7 +291,7 @@ public class CUser{
             
             EUtente utente = null;
             EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
-            boolean logged = false;
+            logged = false;
 
             if (session != null && session.getAttribute("utente")!=null) {
                 utente =  (EUtente) session.getAttribute("utente");
@@ -262,7 +301,7 @@ public class CUser{
 
                
 
-                Template template = cfg.getTemplate("account.ftl");
+                
                 Map<String, Object> data = new HashMap<>();
                 data.put("contextPath", request.getContextPath());
                 Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
@@ -284,42 +323,56 @@ public class CUser{
 
 
                 response.setContentType("text/html;charset=UTF-8");
-                template.process(data, response.getWriter());
+                TemplateRenderer.render(request, response, "account.ftl", data);
             } else {
                 logged = false;
-                Template template = cfg.getTemplate("login.ftl");
+                
                 response.setContentType("text/html;charset=UTF-8");
                 Map<String, Object> data = new HashMap<>();
                 data.put("contextPath", request.getContextPath());
                 data.put("role",role);
 
-                template.process(data, response.getWriter());
+                TemplateRenderer.render(request, response, "login.ftl", data);
             }
 
         } catch (Exception e) {
-            throw new ServletException("Errore nel processing del template", e);
-        } 
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
+        }  
     }
     
     
     public void showLoginForm(HttpServletRequest request, HttpServletResponse response, String[] params)
                 throws ServletException, IOException, TemplateException {
         HttpSession session = UtilSession.startSession(request);
+        boolean logged = false;
+        String role = "";
         //Controllo se l'utente è gia loggato
         if(session.getAttribute("utente") != null){
             response.sendRedirect(request.getContextPath() + "/User/home/");
         }
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         try{
-            Template template = cfg.getTemplate("login.ftl");
+            
             Map<String, Object> data = new HashMap<>();
             Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
             data.put("contextPath", request.getContextPath());
             data.put("messages", messages);
             data.put("role", "");
-            template.process(data, response.getWriter());
-        }catch(TemplateException | IOException e){
-            response.sendRedirect(request.getContextPath() + "/User/home/");
+            TemplateRenderer.render(request, response, "login.ftl", data);
+        }catch(Exception e){
+            
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
+            
         }
     }
     
@@ -328,6 +381,8 @@ public class CUser{
         
         EntityManager em = (EntityManager) request.getAttribute("em");
         HttpSession session = UtilSession.startSession(request);
+        boolean logged = false;
+        String role = "";
         try {
             // se l'utente è gia in sessione 
             if(session.getAttribute("utente") != null){
@@ -335,8 +390,8 @@ public class CUser{
             }
             else{
                  // 1. Validazione parametri
-                String email = request.getParameter("username");
-                String password = request.getParameter("password");
+                String email = InputSanitizer.sanitize(request.getParameter("username"));
+                String password = InputSanitizer.sanitize(request.getParameter("password"));
                 EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
                 ProfiloService service = new ProfiloServiceImpl(utenteDAO);
                 EUtente utenteLogin = service.login(email, password, session);
@@ -348,13 +403,10 @@ public class CUser{
                     response.sendRedirect(request.getContextPath() + "/User/showLoginForm/");
                 }
             }
-        }catch (IllegalArgumentException e) {
+        }catch (Exception e) {
             UtilFlashMessages.addMessage(request, "error", e.getMessage());
             response.sendRedirect(request.getContextPath() + "/User/showLoginForm/");
-        }catch (Exception e) {
-            System.err.println("Errore durante il login:");
-            e.printStackTrace();
-        } 
+        }
     }
     
     
@@ -364,13 +416,13 @@ public class CUser{
         EntityManager em = (EntityManager) request.getAttribute("em");
         Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
         try{
-            Template template = cfg.getTemplate("register.ftl");
+            
             Map<String, Object> data = new HashMap<>();
             Map<String, List<String>> messages = UtilFlashMessages.getMessage(request);
             data.put("contextPath", request.getContextPath());
             data.put("messages", messages);
             data.put("role", "");
-            template.process(data, response.getWriter());
+            TemplateRenderer.render(request, response, "register.ftl", data);
         }catch(Exception e){
             response.sendRedirect(request.getContextPath() + "/User/home/");
         }
@@ -381,11 +433,11 @@ public class CUser{
     public void registerUser(HttpServletRequest request, HttpServletResponse response, String[] params)
             throws ServletException, IOException, TemplateException, MessagingException{
         
-        String nome = request.getParameter("nome");
-        String cognome = request.getParameter("cognome");
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        String ruolo = request.getParameter("role");
+        String nome = InputSanitizer.sanitize(request.getParameter("nome"));
+        String cognome = InputSanitizer.sanitize(request.getParameter("cognome"));
+        String email = InputSanitizer.sanitize(request.getParameter("email"));
+        String password = InputSanitizer.sanitize(request.getParameter("password"));
+        String ruolo = InputSanitizer.sanitize(request.getParameter("role"));
         
         EntityManager em = (EntityManager) request.getAttribute("em");
         
@@ -447,6 +499,8 @@ public class CUser{
     public void logoutUser(HttpServletRequest request, HttpServletResponse response, String[] params)
             throws ServletException, IOException, TemplateException{
         
+            
+        
             try {
            // 1. Ottieni la sessione corrente (senza crearne una nuova se non esiste)
            HttpSession session = UtilSession.getSession(request);
@@ -460,9 +514,10 @@ public class CUser{
            response.sendRedirect(request.getContextPath() + "/User/home");
 
        } catch (Exception e) {
-           // 4. Gestione degli errori
-           e.printStackTrace();
-           response.sendRedirect(request.getContextPath() + "/error?message=logout_failed");
+           
+           response.sendRedirect(request.getContextPath() + "/User/showProfile");
+           
+
        }
 
     }
@@ -474,8 +529,8 @@ public class CUser{
     EUtenteDAO utenteDAO = new EUtenteDAOImpl(em);
 
     HttpSession session = UtilSession.getSession(request);
-    String newName = request.getParameter("newName");
-    String newSurname = request.getParameter("newSurname");
+    String newName = InputSanitizer.sanitize(request.getParameter("newName"));
+    String newSurname = InputSanitizer.sanitize(request.getParameter("newSurname"));
 
     if (session != null) {
         EUtente utenteSessione = (EUtente) session.getAttribute("utente");
@@ -505,8 +560,8 @@ public class CUser{
      HttpSession sessione = UtilSession.getSession(request);
      
      try{
-         String oldPassword = request.getParameter("oldPassword");
-         String newPassword = request.getParameter("newPassword");
+         String oldPassword = InputSanitizer.sanitize(request.getParameter("oldPassword"));
+         String newPassword = InputSanitizer.sanitize(request.getParameter("newPassword"));
          if(sessione != null && sessione.getAttribute("utente") != null){
          EUtente sessionUser = (EUtente) sessione.getAttribute("utente");
          EUtente currentUser = utenteDAO.findById(sessionUser.getId());
@@ -523,6 +578,9 @@ public class CUser{
          
         }
      } catch(Exception e){
+         
+                UtilFlashMessages.addMessage(request, "error", "Errore nella modifica della password, riprovare!");
+                response.sendRedirect(request.getContextPath() + "/User/showProfile");
          
      }
  }
@@ -609,13 +667,13 @@ public class CUser{
         ECliente cliente = (ECliente) UtilSession.getSession(request).getAttribute("utente");
         ECartaCreditoDAO creditoDAO = new ECartaCreditoDAOImpl(em);
 
-        try {
-            // Validazione e parsing dei parametri
-            String numeroCarta = request.getParameter("numero_carta");
-            String nomeCarta = request.getParameter("nome_carta");
-            String dataScadenzaStr = request.getParameter("data_scadenza"); // formato atteso: "MM/yy"
-            String cvv = request.getParameter("cvv");
-            String nomeIntestatario = request.getParameter("nome_intestatario");
+    try {
+        // Validazione e parsing dei parametri
+        String numeroCarta = InputSanitizer.sanitize(request.getParameter("numero_carta"));
+        String nomeCarta = InputSanitizer.sanitize(request.getParameter("nome_carta"));
+        String dataScadenzaStr = request.getParameter("data_scadenza"); // formato atteso: "MM/yy"
+        String cvv = InputSanitizer.sanitize(request.getParameter("cvv"));
+        String nomeIntestatario = InputSanitizer.sanitize(request.getParameter("nome_intestatario"));
 
             // Validazione base
             if (numeroCarta == null || numeroCarta.length() != 16 || !numeroCarta.matches("\\d{16}")) {
@@ -667,35 +725,48 @@ public class CUser{
         }
     }
 
-    public void showReviewForm(HttpServletRequest request, HttpServletResponse response, String[] params) throws IOException{
-
-        EntityManager em = (EntityManager) request.getAttribute("em");
-        HttpSession session = UtilSession.getSession(request);
-        String role = "";
-        Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
-
-        try{
-
+public void showReviewForm(HttpServletRequest request, HttpServletResponse response, String[] params) throws IOException, TemplateException{
+    
+    EntityManager em = (EntityManager) request.getAttribute("em");
+    HttpSession session = UtilSession.getSession(request);
+    String role = "";
+    boolean logged = true;
+    Configuration cfg = FreeMarkerConfig.getConfig(request.getServletContext());
+    
+    try{
+        
+        EUtente utente = AccessControlUtil.getLoggedUser(request);
+        ECliente cliente = AccessControlUtil.checkUserRole(utente, ECliente.class);
+        role = cliente.getRuolo();
+        
+        Map<String, Object> data = new HashMap<>();
+        data.put("contextPath", request.getContextPath());
+        data.put("role", role);
+        data.put("logged", logged);
+        
+        
+        response.setContentType("text/html;charset=UTF-8");
+        TemplateRenderer.render(request, response, "review_form.ftl", data);
+        
+        
+    } catch(SecurityException e){
+            logged = false;
             if(session != null && session.getAttribute("utente") != null){
-                EUtente utente = (EUtente) session.getAttribute("utente");
+                EUtente utente =  (EUtente) session.getAttribute("utente");
                 role = utente.getRuolo();
             }
-
-            Map<String, Object> data = new HashMap<>();
-            data.put("contextPath", request.getContextPath());
-            data.put("role", role);
-            Template template = cfg.getTemplate("review_form.ftl");
-
-            response.setContentType("text/html;charset=UTF-8");
-            template.process(data , response.getWriter() );
-
-
-        }catch(Exception e){
-
-        }
-
-
-    }
+            TemplateRenderer.mostraErrore(request, response, "access_denied.ftl", e.getMessage(), role, logged);
+            
+    } catch (Exception e) {
+            logged = false;
+            if(session != null && session.getAttribute("utente") != null){
+                EUtente utente =  (EUtente) session.getAttribute("utente");
+                role = utente.getRuolo();
+            }
+            TemplateRenderer.mostraErrore(request, response, "generic_error.ftl", e.getMessage(), role, logged);
+    } 
+    
+}
 
     public void removeAddress(HttpServletRequest request, HttpServletResponse response, String[] params) throws IOException {
 
