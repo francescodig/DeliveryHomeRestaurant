@@ -693,6 +693,10 @@ public class CUser{
             ECartaCredito cartaEsistente = creditoDAO.getCreditCardByCardNumber(numeroCarta);
             if(cartaEsistente != null) {
                 cartaEsistente.setAttivo(true);
+                cartaEsistente.setNomeCarta(nomeCarta);
+                cartaEsistente.setDataScadenza(dataScadenzaCompleta);
+                cartaEsistente.setCvv(cvv);
+                cartaEsistente.setNomeIntestatario(nomeIntestatario);
                 em.persist(cartaEsistente);
             } else {
                 ECartaCredito cartaCredito = new ECartaCredito();
