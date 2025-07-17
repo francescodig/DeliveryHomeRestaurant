@@ -92,7 +92,7 @@
                     <table class="collaborators-table">
                         <thead>
                             <tr>
-                                <th>Nome</th>
+                                <th>Chef</th>
                                 <th>Email</th>
                             </tr>
                         </thead>
