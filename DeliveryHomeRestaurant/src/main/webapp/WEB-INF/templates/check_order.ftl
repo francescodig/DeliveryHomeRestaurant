@@ -78,7 +78,7 @@
                                             <input type="radio" id="carta_${carta.numeroCarta}" name="numero_carta" value="${carta.numeroCarta}" <#if carta?index == 0>checked</#if>>
                                             <label class="radio-label" for="carta_${carta.numeroCarta}">
                                                 <i class="far fa-credit-card"></i>
-                                                ${carta.nomeIntestatario}
+                                                ${carta.nomeCarta}
                                                 •••• •••• •••• ${carta.numeroCarta?substring(carta.numeroCarta?length - 4)}
                                                 (${carta.dataScadenza})
                                             </label>

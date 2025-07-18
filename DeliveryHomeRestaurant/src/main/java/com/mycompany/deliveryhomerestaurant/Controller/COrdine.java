@@ -203,8 +203,8 @@ public class COrdine {
         String dataConsegnaFormatted = dataConsegna.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         for (EExceptionCalendario giornoChiusura : giorniChiusuraEccezionali) {
-            String giornoChiusuraStr = giornoChiusura.getExceptionDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            if (giornoChiusuraStr.equals(dataConsegnaStrFormatted)) {
+            LocalDate giornoChiusuraDate = giornoChiusura.getExceptionDate();
+            if (giornoChiusuraDate.equals(dataConsegna.toLocalDate())) {
                 throw new IllegalArgumentException("La data selezionata è un giorno di chiusura eccezionale.");
             }
         }
