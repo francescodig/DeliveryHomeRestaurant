@@ -92,11 +92,14 @@ public class CChef {
                 em.getTransaction().rollback();
                 throw new IllegalArgumentException("Ordine già modificato da un altro utente");
             }
-            if(("in_preparazione".equals(nuovoStato) && !"in_attesa".equals(ordine.getStato())) || ("pronto".equals(nuovoStato) && !"in_preparazione".equals(ordine.getStato()))){
-                em.getTransaction().rollback();
-                throw new IllegalArgumentException("Ordine già modificato da un altro utente");
-            }
-
+        if (
+            ("in_preparazione".equals(nuovoStato) && !"in_attesa".equals(ordine.getStato())) ||
+            ("pronto".equals(nuovoStato) && !"in_preparazione".equals(ordine.getStato())) ||
+            ("annullato".equals(nuovoStato) && (!"in_attesa".equals(ordine.getStato()) && !"in_preparazione".equals(ordine.getStato())))
+        ) {
+            em.getTransaction().rollback();
+            throw new IllegalArgumentException("Ordine già modificato da un altro utente");
+        }
 
         
         ordine.setStato(nuovoStato);
