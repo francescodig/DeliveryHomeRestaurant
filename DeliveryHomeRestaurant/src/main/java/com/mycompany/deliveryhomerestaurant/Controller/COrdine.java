@@ -200,7 +200,6 @@ public class COrdine {
         //System.out.println("[DEBUG] Apertura: " + orarioApertura + " - Chiusura: " + orarioChiusura);
 
         List<EExceptionCalendario> giorniChiusuraEccezionali = exceptionCalendarioDAO.getGiorniChiusureStraordinarie();
-        String dataConsegnaFormatted = dataConsegna.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         for (EExceptionCalendario giornoChiusura : giorniChiusuraEccezionali) {
             LocalDate giornoChiusuraDate = giornoChiusura.getExceptionDate();
