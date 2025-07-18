@@ -40,5 +40,11 @@
   <script src="${contextPath}/resources/Js/hamburger.js"></script>
   <script src="${contextPath}/resources/Js/theme.js" defer></script>
 
+  <#if errorMessage??>
+    <script>
+      localStorage.removeItem('cart');
+      localStorage.removeItem('cart_createdAt');
+    </script>
+ </#if>
 </body>
 </html>
