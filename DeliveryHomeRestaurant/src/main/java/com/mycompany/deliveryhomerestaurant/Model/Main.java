@@ -11,6 +11,7 @@ package com.mycompany.deliveryhomerestaurant.Model;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
+//Crea le tabelle nel DB
 public class Main {
     public static void main(String[] args) {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("myPersistenceUnit");

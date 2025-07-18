@@ -26,7 +26,7 @@ public class ProfiloServiceImpl implements ProfiloService{
     public boolean Register(EUtente user){
         String email = user.getEmail();
         if (utenteDAO.findByUsername(email)!=null ){
-            return false; //user is register
+            return false; 
         } else {
             user.setPassword(hashPassword(user.getPassword()));
         utenteDAO.save(user);
@@ -37,7 +37,7 @@ public class ProfiloServiceImpl implements ProfiloService{
     @Override
     public EUtente login(String email, String password, HttpSession session) {
 
-        // 2. Verifica utente dal database
+        
         email = email != null ? email.trim().toLowerCase() : "";
         EUtente utente = utenteDAO.findByUsername(email);
         if (utente != null && verifyPassword(password, utente.getPassword())) {

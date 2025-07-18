@@ -30,7 +30,7 @@ public class PopolaCarteCreditoFaker {
         Faker faker = new Faker();
         Random random = new Random();
 
-        // Recupera tutti i clienti dal DB
+        
         List<ECliente> clienti = em.createQuery("SELECT c FROM ECliente c", ECliente.class).getResultList();
 
         if (clienti.isEmpty()) {

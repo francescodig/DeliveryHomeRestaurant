@@ -72,7 +72,7 @@ public class PopolaCategorieFaker {
 
             categoria.setNome(nomiCategorie.get(i));
 
-            // Associa un elenco prodotti casuale
+            
             categoria.setElencoProdotti(elenchiProdotti.get(random.nextInt(elenchiProdotti.size())));
 
             em.persist(categoria);

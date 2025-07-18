@@ -17,21 +17,26 @@ import java.util.*;
  * @author franc
  */
 
-
+//Servlet che rappresenta l'unico punto di accesso per tutte le richieste HTTP
+//Dopo averle ricevute instrada le chiamate verso il metodo contenuto nel giusto Controller
 public class FrontController extends HttpServlet {
     
     private static final EntityManagerFactory emf = jakarta.persistence.Persistence.createEntityManagerFactory("myPersistenceUnit");
 
-        @Override
+    @Override
+    //Le richieste GET vengono gestite da process 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         process(request, response);
     }
 
     @Override
+    //Le richieste POST vengono gestite da process 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         process(request, response);
     }
 
+    //Questo metodo alla fne instrada la richiesta, risvegliando il metodo del controller che desideriamo 
+    //Crea nche un entity manager e lo chiude ad ogni richiesta ricevuta 
     private void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         EntityManager em = emf.createEntityManager();
         request.setAttribute("em", em);
@@ -68,7 +73,7 @@ public class FrontController extends HttpServlet {
             throw new ServletException("Errore: " + e.getMessage(), e);
         } finally {
             if (em.isOpen()) {
-                em.close(); // 🔒 IMPORTANTE!
+                em.close(); 
             }
         }
     }

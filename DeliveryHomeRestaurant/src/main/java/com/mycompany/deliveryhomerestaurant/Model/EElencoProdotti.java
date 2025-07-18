@@ -26,7 +26,7 @@ public class EElencoProdotti {
     public EElencoProdotti() {
     }
 
-    // Getters and setters
+    // Getters e setters
 
     public Integer getId() {
         return id;

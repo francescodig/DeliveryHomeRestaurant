@@ -91,14 +91,14 @@ public class CProprietario {
         boolean logged = true; 
 
         try {
-            // Controllo ruolo
+
             
             EUtente utente = AccessControlUtil.getLoggedUser(request);
             EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
             role = proprietario.getRuolo();
 
 
-            // ordini
+
             EOrdineDao ordineDao = new EOrdineDAOImpl(em);
             List<EOrdine> allOrders = ordineDao.getAllOrders();
 
@@ -106,7 +106,7 @@ public class CProprietario {
 
             List<EOrdine> recentOrders = allOrders.stream().limit(5).collect(Collectors.toList());
 
-            // settimana corrente
+
             LocalDateTime oggi = LocalDateTime.now();
             LocalDateTime inizioSettimana = oggi.with(DayOfWeek.MONDAY).with(LocalTime.MIN);
             LocalDateTime fineSettimana = inizioSettimana.plusDays(6).with(LocalTime.MAX);
@@ -122,7 +122,7 @@ public class CProprietario {
                 }
             }
 
-            // clienti
+
             EClienteDAO clienteDao = new EClienteDAOImpl(em);
             int numeroClienti = clienteDao.getAllClients().size();
 
@@ -177,11 +177,9 @@ public class CProprietario {
             String stars = request.getParameter("stars") != null ? request.getParameter("stars") : "all";
             String search = request.getParameter("search") != null ? request.getParameter("search") : "";
             
-            // recensioni
             ERecensioneDAO recensioneDao = new ERecensioneDAOImpl(em);
             List<ERecensione> allReviews = recensioneDao.getAllReviews();
 
-            // stelle
             if (!stars.equals("all")) {
                 int starsInt = Integer.parseInt(stars);
                 allReviews = allReviews.stream()
@@ -189,7 +187,7 @@ public class CProprietario {
                     .collect(Collectors.toList());
             }
 
-            // testo
+
             if (!search.isEmpty()) {
                 String searchLower = search.toLowerCase();
                 allReviews = allReviews.stream()
@@ -258,7 +256,7 @@ public class CProprietario {
 
  
 
-            // ordinazioni
+
             EOrdineDao ordineDao = new EOrdineDAOImpl(em);
             List<EOrdine> allOrders = ordineDao.getAllOrders();
 
@@ -266,14 +264,14 @@ public class CProprietario {
             String status = request.getParameter("status") != null ? request.getParameter("status") : "all";
             String sort = request.getParameter("sort") != null ? request.getParameter("sort") : "newest";
 
-            // stato
+
             if (!status.equals("all")) {
                 allOrders = allOrders.stream()
                     .filter(o -> status.equals(o.getStato()))
                     .collect(Collectors.toList());
             }
 
-            // testo 
+
             if (!search.isEmpty()) {
                 String searchLower = search.toLowerCase();
                 allOrders = allOrders.stream()
@@ -287,7 +285,6 @@ public class CProprietario {
                     .collect(Collectors.toList());
             }
 
-            // data esecuzione
             if ("newest".equals(sort)) {
                 allOrders.sort((a, b) -> b.getDataEsecuzione().compareTo(a.getDataEsecuzione()));
             } else {
@@ -340,15 +337,14 @@ public class CProprietario {
 
 
 
-            // segnalazioni
             ESegnalazioneDAO segnalazioneDao = new ESegnalazioneDAOImpl(em);
             List<ESegnalazione> segnalazioni = segnalazioneDao.getAllWarnings(); // o getAllSegnalazioni()
 
-            // Parametri GET
+
             String search = request.getParameter("search") != null ? request.getParameter("search") : "";
             String sort = request.getParameter("sort") != null ? request.getParameter("sort") : "newest";
 
-            // Filtro testo
+
             if (!search.isEmpty()) {
                 String searchLower = search.toLowerCase();
 
@@ -369,14 +365,14 @@ public class CProprietario {
                     .collect(Collectors.toList());
             }
 
-            // Ordinamento
+
             if ("newest".equals(sort)) {
                 segnalazioni.sort((a, b) -> b.getData().compareTo(a.getData()));
             } else if ("oldest".equals(sort)) {
                 segnalazioni.sort((a, b) -> a.getData().compareTo(b.getData()));
             }
 
-            // Output alla view
+
             Map<String, Object> data = new HashMap<>();
             data.put("contextPath", request.getContextPath());
             data.put("segnalazioni", segnalazioni);
@@ -486,12 +482,12 @@ public class CProprietario {
                 quantitaTopPiatti.add(entry.getValue());
             }
 
-            // clienti
+
             EClienteDAO clienteDao = new EClienteDAOImpl(em);
             List<?> clienti = clienteDao.getAllClients();
             int numeroClienti = clienti.size();
 
-            // recensioni
+    
             ERecensioneDAO recensioneDao = new ERecensioneDAOImpl(em);
             List<ERecensione> recensioni = recensioneDao.getAllReviews();
 
@@ -958,7 +954,7 @@ public class CProprietario {
             EProprietario proprietario = AccessControlUtil.checkUserRole(utente, EProprietario.class);
             role = proprietario.getRuolo();
 
-            // recupero dati calendario
+
             ECalendarioDAO calendarioDAO = new ECalendarioDAOImpl(em);
             EExceptionCalendarioDAO exceptioncalendarioDAO = new EExceptionCalendarioDAOImpl(em);
             List<ECalendario> giorniChiusuraSettimanali = calendarioDAO.getCalendario();
@@ -992,7 +988,6 @@ public class CProprietario {
                 eccezioniFormattate.add(map);
             }
 
-            // preparazione dati per la view
             Map<String, Object> data = new HashMap<>();
             data.put("contextPath", request.getContextPath());
             data.put("logged", logged);
@@ -1110,7 +1105,6 @@ public class CProprietario {
                 return;
             }
 
-            // trova nel DB tramite query
             EExceptionCalendario eccezione = null;
             try {
                 eccezione = em.createQuery(
@@ -1124,7 +1118,7 @@ public class CProprietario {
             if (eccezione == null) {
                 UtilFlashMessages.addMessage(request, "error", "Giorno di chiusura eccezionale non trovato");
             } else {
-                // elimina dal DB
+
                 em.getTransaction().begin();
                 EExceptionCalendario toRemove = em.find(EExceptionCalendario.class, eccezione.getId());
                 if (toRemove != null) {
@@ -1179,7 +1173,6 @@ public class CProprietario {
                 return;
             }
 
-            // converto la stringa in DayOfWeek
             DayOfWeek day;
             try {
                 day = DayOfWeek.valueOf(giornoStr.toUpperCase());

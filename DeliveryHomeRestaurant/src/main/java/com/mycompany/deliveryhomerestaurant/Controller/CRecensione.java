@@ -49,7 +49,7 @@ public class CRecensione {
                 }
             }
         } catch (NumberFormatException ex) {
-            // Log dell'errore o gestione alternativa
+            
             System.err.println("Valore 'vote' non valido: " + ex.getMessage());
         }
 
@@ -66,7 +66,7 @@ public class CRecensione {
         response.sendRedirect(request.getContextPath() + "/User/showProfile");
 
     } catch (Exception e) {
-        // Log dell'errore generico
+   
         if(em.getTransaction().isActive()){
             em.getTransaction().rollback();
         }

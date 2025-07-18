@@ -23,7 +23,7 @@ import jakarta.persistence.Persistence;
 public class PopolaUtentiFaker {
 
     public static void popola() {
-        // Crea EntityManager (usa il nome della tua persistence unit)
+        
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("myPersistenceUnit");
         EntityManager em = emf.createEntityManager();
 
@@ -52,7 +52,7 @@ public class PopolaUtentiFaker {
                 .setNome(faker.name().firstName())
                 .setCognome(faker.name().lastName())
                 .setEmail(faker.internet().emailAddress())
-                // Simula una password hashata (ad esempio md5 simulato con faker random alfanumerico)
+                
                 .setPassword(faker.internet().password(8, 16, true, true, true));  
             
             
@@ -70,7 +70,7 @@ public class PopolaUtentiFaker {
                 .setNome(faker.name().firstName())
                 .setCognome(faker.name().lastName())
                 .setEmail(faker.internet().emailAddress())
-                // Simula una password hashata (ad esempio md5 simulato con faker random alfanumerico)
+                
                 .setPassword(faker.internet().password(8, 16, true, true, true));
 
             em.persist(cuoco);

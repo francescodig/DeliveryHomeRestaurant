@@ -12,6 +12,7 @@ import java.util.List;
  * @author franc
  */
 
+//NON IMPLEMENTATA ALLA FINE 
 public interface ESegnalazioneDAO {
     List<ESegnalazione> getAllWarnings();
     List<ESegnalazione> getWarningsByClientId(int clientId);

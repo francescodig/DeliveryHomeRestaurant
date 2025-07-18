@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpSession;
  *
  * @author franc
  */
+//Interfaccia per metodi di registrazione e login 
 public interface ProfiloService {
     
     

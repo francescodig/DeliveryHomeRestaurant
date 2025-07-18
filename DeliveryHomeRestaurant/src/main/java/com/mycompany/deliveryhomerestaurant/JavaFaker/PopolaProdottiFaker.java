@@ -34,7 +34,7 @@ public class PopolaProdottiFaker {
         Faker faker = new Faker();
         Random random = new Random();
 
-        // Recupera le categorie esistenti
+        
         List<ECategoria> categorie = em.createQuery("SELECT c FROM ECategoria c", ECategoria.class).getResultList();
 
         if (categorie.isEmpty()) {
@@ -126,7 +126,7 @@ public class PopolaProdottiFaker {
             prodotto.setDescrizione(descrizioniProdotti[i]);
             prodotto.setCosto(BigDecimal.valueOf(5 + i).setScale(2));
 
-            // Prendo la categoria giusta dalla mappa e poi l'oggetto ECategoria
+            
             String nomeCategoria = prodottoCategoriaMap.get(nomiProdotti[i]);
             ECategoria categoria = categoriaMap.get(nomeCategoria);
             if (categoria == null) {

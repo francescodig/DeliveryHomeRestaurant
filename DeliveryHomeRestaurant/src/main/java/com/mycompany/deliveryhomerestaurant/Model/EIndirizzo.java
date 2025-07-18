@@ -45,7 +45,7 @@ public class EIndirizzo {
         this.attivo = true;
     }
 
-    // Getters and setters
+    // Getters e setters
 
     public Integer getId() {
         return id;

@@ -14,6 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 
+
+//Classe per leggere il contenuto del carrello che viene ricevuto in formato JSON dal client e convertire
+//i dati in oggetti 
 public class UtilityJSON {
     public static List<Map<String, Object>> parseCart(String json) throws Exception {
         ObjectMapper mapper = new ObjectMapper();

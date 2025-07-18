@@ -40,7 +40,7 @@ public class ECliente extends EUtente {
         super();
     }
 
-    // Getters e Setters
+    // Getters E Setters
 
     public List<ECartaCredito> getMetodiPagamento() {
         List<ECartaCredito> cards = metodiPagamento;

@@ -14,15 +14,9 @@ public class InputSanitizer {
     public static String sanitize(String input) {
         if (input == null) return null;
 
-        // Esempio: rimuove tag HTML
         return input.replaceAll("<.*?>", "")
-                    .replaceAll("[\"'<>]", ""); // opzionale: rimuovi altri caratteri pericolosi
+                    .replaceAll("[\"'<>]", ""); // rimuovi altri caratteri pericolosi
     }
 
-    // Per nomi, email, ecc.
-    public static String sanitizeSimpleText(String input) {
-        if (input == null) return null;
-        return input.trim().replaceAll("[<>\"']", "");
-    }
 }
 

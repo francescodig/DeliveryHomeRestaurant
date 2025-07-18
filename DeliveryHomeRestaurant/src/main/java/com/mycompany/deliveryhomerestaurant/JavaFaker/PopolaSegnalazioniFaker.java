@@ -33,10 +33,8 @@ public class PopolaSegnalazioniFaker {
         Faker faker = new Faker();
         Random random = new Random();
 
-        // Recupera tutti i clienti
         List<ECliente> clienti = em.createQuery("SELECT c FROM ECliente c", ECliente.class).getResultList();
 
-        // Recupera tutti gli ordini
         List<EOrdine> ordini = em.createQuery("SELECT o FROM EOrdine o", EOrdine.class).getResultList();
 
         if (clienti.isEmpty() || ordini.isEmpty()) {
@@ -50,7 +48,7 @@ public class PopolaSegnalazioniFaker {
 
         Set<EOrdine> ordiniUsati = new HashSet<>();
 
-        // Creiamo fino a 20 segnalazioni, ma solo su ordini non già segnalati
+        
         for (int i = 0; i < 20 && ordiniUsati.size() < ordini.size(); i++) {
             ESegnalazione segnalazione = new ESegnalazione();
 
@@ -62,7 +60,7 @@ public class PopolaSegnalazioniFaker {
             segnalazione.setDescrizione(faker.lorem().sentence(4, 6));
             segnalazione.setTesto(faker.lorem().paragraph());
 
-            // Associa ordine non ancora usato
+          
             EOrdine ordine;
             do {
                 ordine = ordini.get(random.nextInt(ordini.size()));
@@ -71,7 +69,7 @@ public class PopolaSegnalazioniFaker {
 
             segnalazione.setOrdine(ordine);
 
-            // Associa cliente casuale
+            
             segnalazione.setCliente(clienti.get(random.nextInt(clienti.size())));
 
             em.persist(segnalazione);

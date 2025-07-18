@@ -86,7 +86,7 @@ public class COrdine {
             role = clientAttached.getRuolo();
 
 
-            // Recupero e parsing del carrello JSON
+            // Recupero del carrello JSON
             String cartData = request.getParameter("cart_data");
 
             if (cartData == null || cartData.isEmpty()) {
@@ -96,7 +96,7 @@ public class COrdine {
 
             List<Map<String, Object>> cart;
             try {
-                cart = UtilityJSON.parseCart(cartData); // helper statico per parsing JSON → lista di mappe
+                cart = UtilityJSON.parseCart(cartData); // metodo utilitario per lettura JSON e parsing in oggetti
             } catch (Exception e) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Carrello non valido");
                 return;
@@ -107,7 +107,7 @@ public class COrdine {
                 return;
             }
 
-            // Caricamento indirizzi e carte dell'utente
+
 
             List<EIndirizzo> adresses = clientAttached.getActiveIndirizziConsegna();
             List<ECartaCredito> cards = clientAttached.getMetodiPagamento();
@@ -158,33 +158,33 @@ public class COrdine {
     double totalPrice = 0.0;
 
     try {
-        //System.out.println("[DEBUG] Inizio conferma pagamento");
+
 
         EUtente utente = (EUtente) session.getAttribute("utente");
         role = utente.getRuolo();
-        //System.out.println("[DEBUG] Utente: " + utente.getId() + " - Ruolo: " + role);
+
 
         ECliente cliente = (ECliente) utenteDAO.findById(utente.getId());
 
         String cartJson = request.getParameter("cart_data");
-        //System.out.println("[DEBUG] JSON carrello: " + cartJson);
+
         JSONArray cartArray = new JSONArray(cartJson);
 
         if (cartArray.isEmpty()) {
             throw new IllegalArgumentException("Carrello non valido o vuoto.");
         }
-        //System.out.println("[DEBUG] Carrello parsificato: elementi = " + cartArray.length());
+
 
         String note = request.getParameter("note");
         String dataConsegnaStr = request.getParameter("dataConsegna");
-        //System.out.println("[DEBUG] Data consegna raw: " + dataConsegnaStr);
+
         String dataConsegnaStrFormatted = dataConsegnaStr.replace(" ", "T");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         LocalDateTime dataConsegna = LocalDateTime.parse(dataConsegnaStrFormatted, formatter);
-        //System.out.println("[DEBUG] Data consegna parsificata: " + dataConsegna);
+
 
         DayOfWeek nomeGiorno = dataConsegna.getDayOfWeek();
-        //System.out.println("[DEBUG] Giorno della settimana: " + nomeGiorno);
+
 
         ECalendario giorno = calendarioDAO.getDayById(nomeGiorno);
         LocalTime orarioApertura = giorno.getOrarioApertura();
@@ -197,7 +197,7 @@ public class COrdine {
         if (orarioApertura == null || orarioChiusura == null) {
             throw new IllegalArgumentException("Il ristorante è chiuso in questo giorno.");
         }
-        //System.out.println("[DEBUG] Apertura: " + orarioApertura + " - Chiusura: " + orarioChiusura);
+
 
         List<EExceptionCalendario> giorniChiusuraEccezionali = exceptionCalendarioDAO.getGiorniChiusureStraordinarie();
 
@@ -219,11 +219,11 @@ public class COrdine {
 
 
         int indirizzoId = Integer.parseInt(request.getParameter("indirizzo_id"));
-        //System.out.println("[DEBUG] Indirizzo ID selezionato: " + indirizzoId);
+
         EIndirizzo indirizzoConsegna = indirizzoDAO.getAddressById(indirizzoId);
 
         String numeroCarta = request.getParameter("numero_carta");
-        //System.out.println("[DEBUG] Numero carta: " + numeroCarta);
+
         ECartaCredito metodoPagamento = cartaCreditoDAO.getCreditCardByCardNumber(numeroCarta);
 
         EOrdine ordine = new EOrdine();
@@ -234,7 +234,7 @@ public class COrdine {
 
             int prodottoId = item.getInt("id");
             int qty = item.getInt("qty");
-          //  System.out.println("[DEBUG] Prodotto ID: " + prodottoId + ", Quantità: " + qty);
+
 
             EProdotto prodotto = prodottoDAO.getProductById(prodottoId);
             if (prodotto == null || prodotto.getAttivo()==false) {
@@ -243,7 +243,7 @@ public class COrdine {
 
             BigDecimal priceFromCart = item.getBigDecimal("price");
             BigDecimal priceFromDb = prodotto.getCosto();
-            //System.out.println("[DEBUG] Prezzo carrello: " + priceFromCart + " - Prezzo DB: " + priceFromDb);
+
 
             if (priceFromDb.compareTo(priceFromCart) != 0) {
                 throw new IllegalArgumentException("Il prezzo del prodotto " + item.getString("name") + " non è valido.");
@@ -270,20 +270,20 @@ public class COrdine {
         ordine.setIndirizzoConsegna(indirizzoConsegna);
         ordine.setCartaPagamento(metodoPagamento);
 
-        //System.out.println("[DEBUG] Inizio transazione");
+
         transaction = em.getTransaction();
         transaction.begin();
 
-        //System.out.println("[DEBUG] Persisto ordine...");
+
         em.persist(ordine);
         for (EItemOrdine itemOrdine : itemOrdineList) {
-          //  System.out.println("[DEBUG] Persisto item ordine: prodottoId=" + itemOrdine.getProdotto().getId());
+
             em.persist(itemOrdine);
         }
 
         em.flush();
         transaction.commit();
-        //System.out.println("[DEBUG] Ordine e item persistiti correttamente");
+
 
         Template template = cfg.getTemplate("confirmed_order.ftl");
         Map<String, Object> data = new HashMap<>();
@@ -296,7 +296,7 @@ public class COrdine {
         if (transaction != null && transaction.isActive()) {
             transaction.rollback();
         }
-        //System.err.println("[ERROR] Eccezione di validazione: " + e.getMessage());
+
         Map<String, Object> data = new HashMap<>();
         data.put("contextPath", request.getContextPath());
         data.put("errorMessage", e.getMessage());
@@ -308,7 +308,7 @@ public class COrdine {
         if (transaction != null && transaction.isActive()) {
             transaction.rollback();
         }
-        //System.err.println("[ERROR] Errore generico durante la conferma pagamento: " + e.getMessage());
+
             logged = false;
             if(session != null && session.getAttribute("utente") != null){
                 EUtente utente =  (EUtente) session.getAttribute("utente");

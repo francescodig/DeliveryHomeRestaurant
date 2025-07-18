@@ -32,7 +32,7 @@ public class ECategoria {
     public ECategoria() {
     }
 
-    // Getters and setters
+    // Getters e setters
 
     public Integer getId() {
         return id;

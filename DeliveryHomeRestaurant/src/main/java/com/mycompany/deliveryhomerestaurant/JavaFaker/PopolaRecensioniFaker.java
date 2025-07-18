@@ -33,7 +33,6 @@ public class PopolaRecensioniFaker {
         Faker faker = new Faker();
         Random random = new Random();
 
-        // Recupera tutti gli utenti (o solo clienti se vuoi filtrare)
         List<EUtente> utenti = em.createQuery("SELECT u FROM EUtente u", EUtente.class).getResultList();
 
         if (utenti.isEmpty()) {
@@ -51,12 +50,10 @@ public class PopolaRecensioniFaker {
             recensione.setDescrizione(faker.lorem().sentence(10, 15));
             recensione.setVoto(random.nextInt(5) + 1); // voto da 1 a 5
 
-            // Data e ora casuale recente (negli ultimi 30 giorni)
             LocalDateTime data = LocalDateTime.now().minusDays(random.nextInt(30)).withHour(random.nextInt(24)).withMinute(random.nextInt(60));
             recensione.setData(data);
             recensione.setOrario(LocalTime.of(data.getHour(), data.getMinute()));
 
-            // Associa un utente casuale
             recensione.setCliente(utenti.get(random.nextInt(utenti.size())));
 
             em.persist(recensione);

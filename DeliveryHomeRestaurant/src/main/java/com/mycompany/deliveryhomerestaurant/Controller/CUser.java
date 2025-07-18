@@ -159,7 +159,7 @@ public class CUser{
 
         ObjectMapper mapper = new ObjectMapper();
 
-        // Supponiamo che menu sia già una List<Map<String, Object>>
+        //Converte il menù che è una lista di mappe in una stringa 
         String json = mapper.writeValueAsString(menu);
 
         PrintWriter out = response.getWriter();

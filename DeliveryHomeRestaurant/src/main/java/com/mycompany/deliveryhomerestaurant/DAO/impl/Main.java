@@ -23,7 +23,7 @@ import com.mycompany.deliveryhomerestaurant.DAO.EUtenteDAO;
 import com.mycompany.deliveryhomerestaurant.Service.ProfiloService;
 import com.mycompany.deliveryhomerestaurant.ServiceImpl.ProfiloServiceImpl;
 
-
+// CREATO PER TESTARE I METODI DEL DAO 
 public class Main {
 
     public static void main(String[] args) throws Exception {

@@ -29,7 +29,7 @@ public abstract class EUtente <T extends EUtente<T>>  {
     @Column(nullable = false)
     private String password;
 
-    // Costruttore
+    
     public EUtente() {
     }
 
@@ -73,14 +73,14 @@ public abstract class EUtente <T extends EUtente<T>>  {
     }
 
     public EUtente setPassword(String password) {
-        // In Java, hash della password va fatto esternamente, qui settiamo la stringa già hashata
+     
         this.password = password;
         return this;
     }
 
-    // Metodo per ricavare il ruolo dal nome della sottoclasse
+    
     public String getRuolo() {
-        String className = this.getClass().getSimpleName(); // es: ECliente
+        String className = this.getClass().getSimpleName();
         return className.startsWith("E") ? className.substring(1).toLowerCase() : className.toLowerCase();
     }
 }

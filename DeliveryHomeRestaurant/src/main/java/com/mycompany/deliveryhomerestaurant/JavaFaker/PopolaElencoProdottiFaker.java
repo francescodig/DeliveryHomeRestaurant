@@ -32,14 +32,14 @@
             for (int i = 0; i < 5; i++) {
                 EElencoProdotti elenco = new EElencoProdotti();
 
-                // Per ogni elenco, crea 3 categorie
+                
                 for (int j = 0; j < 3; j++) {
                     ECategoria categoria = new ECategoria();
-                    categoria.setNome(faker.commerce().department()); // esempio: "Bakery"
+                    categoria.setNome(faker.commerce().department()); 
                     elenco.addCategoria(categoria); // associazione bidirezionale
                 }
 
-                em.persist(elenco); // cascade persist su categorie
+                em.persist(elenco); 
             }
 
             em.getTransaction().commit();

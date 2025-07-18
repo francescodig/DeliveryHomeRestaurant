@@ -48,7 +48,7 @@ public class ECartaCredito {
         this.attivo=true;
     }
 
-    // Getters and setters
+    // Getters E setters
 
     public String getNumeroCarta() {
         return numeroCarta;

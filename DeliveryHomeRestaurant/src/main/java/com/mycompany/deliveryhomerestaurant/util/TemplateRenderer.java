@@ -14,8 +14,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+//Classe per modulare il render di un template e di un template di errore 
 public class TemplateRenderer {
     
+    //template normale 
     public static void render(HttpServletRequest request,
                           HttpServletResponse response,
                           String templateName,
@@ -25,13 +27,13 @@ public class TemplateRenderer {
         data = new HashMap<>();
     }
 
-    // Aggiungo contextPath sempre
+   
     data.putIfAbsent("contextPath", request.getContextPath());
 
-    // Recupero sessione (senza crearla se non esiste)
+
     var session = request.getSession(false);
 
-    // Default values
+   
     String role = "";
     boolean logged = false;
 
@@ -40,7 +42,7 @@ public class TemplateRenderer {
         if (userObj != null) {
             logged = true;
 
-            // Provo a ricavare il ruolo da utente (se c'è il metodo getRuolo)
+            // Provo a ricavare il ruolo dell'utente che deve visualizzare il ftl 
             try {
                 var metodoGetRuolo = userObj.getClass().getMethod("getRuolo");
                 if (metodoGetRuolo != null) {
@@ -50,7 +52,7 @@ public class TemplateRenderer {
                     }
                 }
             } catch (Exception e) {
-                // Ignoro, significa che non è presente il metodo getRuolo
+                throw new IllegalArgumentException("non c'è getRuolo");
             }
         }
     }
@@ -66,6 +68,8 @@ public class TemplateRenderer {
 }
 
 
+    
+    //template di errore 
     public static void mostraErrore(HttpServletRequest request,
                                     HttpServletResponse response,
                                     String templateName,
@@ -86,5 +90,4 @@ public class TemplateRenderer {
         template.process(data, response.getWriter());
     }
 
-    // (opzionale) puoi anche aggiungere altri metodi simili per rendering generico
 }

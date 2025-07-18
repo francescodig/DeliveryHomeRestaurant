@@ -109,7 +109,7 @@ public class CRider {
         }
 
         ordine.setStato(nuovoStato);
-        // Se non ha rider, lo assegna
+     
         ordine.setRiderConsegna(rider);
         
         if("in_consegna".equalsIgnoreCase(nuovoStato)){
@@ -137,7 +137,7 @@ public class CRider {
 
         
 
-        // Se è stato consegnato, salva anche data e ora
+        // Se è stato consegnato, salva anche data e ora di consegna
         if ("consegnato".equalsIgnoreCase(nuovoStato)) {
             ordine.setDataConsegna(LocalDateTime.now());
             

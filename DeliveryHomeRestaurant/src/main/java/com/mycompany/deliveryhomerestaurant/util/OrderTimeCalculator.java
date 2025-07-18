@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class OrderTimeCalculator {
 
+    //Mappa che assegna ad ogni categoria dei tempi predefiniti
     private final Map<String, Integer> tempiPerCategoria = Map.of(
             "Antipasti", 5,
             "Primi", 10,
@@ -39,6 +40,9 @@ public class OrderTimeCalculator {
         this.em = em;
     }
 
+    
+    //Metodo che calcola il tempo di preparazione necessario per preparare un ordine
+    //considerando la categoria di appartenenza, la quantità e gli ordini che sono in preparazione in cucina
     public int timeCalculator(List<EItemOrdine> itemOrderList, int ordiniInPreparazione, String indirizzoCliente) throws Exception {
         int tempo = 0;
 
@@ -62,6 +66,8 @@ public class OrderTimeCalculator {
         return tempo;
     }
 
+    //Metodo che calcola il tempo di trasporto necessario a portare l'ordine verso l'indirizzo di consegna selezionato
+    //Attraverso un'api maps 
     private int tempoTrasportoCalculator(String indirizzoDestinazione) throws Exception {
         String origine = java.net.URLEncoder.encode(indirizzoRistorante, "UTF-8");
         String destinazione = java.net.URLEncoder.encode(indirizzoDestinazione, "UTF-8");
@@ -97,19 +103,27 @@ public class OrderTimeCalculator {
         }
     }
 
+    //Metodo che verifica se l'orario calcolato fino ad ora può essere compatibile 
+    //con il calendario del ristorante chiamando il metodo trovaPrimoOrarioAperto()
     public LocalDateTime orarioConsegnaCalculator(List<EItemOrdine> itemOrderList, int ordiniInPreparazione, String indirizzoCliente) throws Exception {
         int minuti = timeCalculator(itemOrderList, ordiniInPreparazione, indirizzoCliente);
         LocalDateTime orarioPrevisto = LocalDateTime.now().plusMinutes(minuti);
 
         return trovaPrimoOrarioAperto(orarioPrevisto, minuti);
     }
-
+    
+    //Metodo che cerca il primo giorno aperto del ristorante da proporre come data di consegna 
     private LocalDateTime trovaPrimoOrarioAperto(LocalDateTime orario, int timePT) throws Exception {
         while (true) {
-            String giornoSettimanaIT = getNomeGiornoItaliano(orario);
+            
+            
+            //Verifica se per quel giorno c'è una chiusura straordinaria prevista
             EExceptionCalendario eccezione = getEccezionePerData(orario.toLocalDate());
+            //Recupera il giorno settimanale e l'orario di chiusura per quel giorno nel calendario
+            String giornoSettimanaIT = getNomeGiornoItaliano(orario);
             ECalendario orarioSettimana = getOrarioSettimanalePerGiorno(giornoSettimanaIT);
 
+            //Se in quel giorno il ristorante è chiuso, passa alla mezzanotte del giorno successivo 
             if (orarioSettimana == null || !orarioSettimana.isAperto() || (eccezione != null && !eccezione.isAperto())) {
                 orario = orario.plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
                 continue;
@@ -118,11 +132,13 @@ public class OrderTimeCalculator {
             LocalTime apertura = orarioSettimana.getOrarioApertura();
             LocalTime chiusura = orarioSettimana.getOrarioChiusura();
 
+            //Se l'orario è precedente all'apertura si aggiunge semplicemente timePT a partire dall'apertura
+            //Ovvero il tempo PREPARAZIONE e TRASPORTO
             if (orario.toLocalTime().isBefore(apertura)) {
                 orario = orario.withHour(apertura.getHour()).withMinute(apertura.getMinute());
                 orario = orario.plusMinutes(timePT);
                 break;
-            } else if (orario.toLocalTime().isAfter(chiusura)) {
+            } else if (orario.toLocalTime().isAfter(chiusura)) { //se l'orario è successivo alla chiusura si passa al giorno successivo 
                 orario = orario.plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
                 continue;
             } else {
@@ -130,7 +146,7 @@ public class OrderTimeCalculator {
                 break;
             }
         }
-        return orario;
+        return orario; //Qui restituiamo l'orario che verrà proposto al cliente
     }
 
     private String getNomeGiornoItaliano(LocalDateTime dateTime) {
@@ -145,6 +161,7 @@ public class OrderTimeCalculator {
         };
     }
 
+    //Verifica se una certa data fa parte dei giorni di chiusura eccezzionale
     private EExceptionCalendario getEccezionePerData(LocalDate date) throws Exception {
         EExceptionCalendarioDAO calendarioDAO = new EExceptionCalendarioDAOImpl(em);
         List<EExceptionCalendario> exceptionClosedDays =  calendarioDAO.getGiorniChiusureStraordinarie();
@@ -178,12 +195,15 @@ public class OrderTimeCalculator {
     String giornoEnglishUpper = giornoItalianoToEnglishUpper(giornoIT);
     DayOfWeek dayOfWeek = DayOfWeek.valueOf(giornoEnglishUpper);
 
+    //Se il giorno fa parte dei weeklyCloseDays restituiamo null
     for (ECalendario closedDay : weeklyClosedDays) {
         if (closedDay.getData() == dayOfWeek) {
             return null;
         }
     }
 
+    //Se il giorno fa parte dei weeklyOpenDays restituiamo il giorno, che al suo interno contiene orario
+    //di apertura e orario di chiusura, necessari per fare i controlli della data di consegna
     for (ECalendario openDay : weeklyOpenDays) {
         if (openDay.getData() == dayOfWeek) {
             return openDay;

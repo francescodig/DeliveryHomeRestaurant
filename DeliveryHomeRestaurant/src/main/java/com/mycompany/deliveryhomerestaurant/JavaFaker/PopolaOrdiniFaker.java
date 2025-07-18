@@ -37,7 +37,7 @@ public class PopolaOrdiniFaker {
         Faker faker = new Faker();
         Random random = new Random();
 
-        // Recupera clienti e prodotti già presenti
+     
         List<ECliente> clienti = em.createQuery("SELECT c FROM ECliente c", ECliente.class).getResultList();
         List<EProdotto> prodotti = em.createQuery("SELECT p FROM EProdotto p", EProdotto.class).getResultList();
 
@@ -54,18 +54,18 @@ public class PopolaOrdiniFaker {
 
         for (int i = 0; i < 20; i++) {
             EOrdine ordine = new EOrdine();
-            // ---- Stato casuale ----
+           
             ordine.setStato(statiPossibili[random.nextInt(statiPossibili.length)]);
             
             ECliente cliente = clienti.get(random.nextInt(clienti.size()));
             ordine.setCliente(cliente);
 
-            // Note casuali (o null)
+            
             if (random.nextBoolean()) {
                 ordine.setNote(faker.lorem().sentence(3, 5));
             }
 
-            // Date casuali
+      
             LocalDateTime dataEsecuzione = LocalDateTime.now().minusDays(random.nextInt(10))
                     .withHour(faker.number().numberBetween(10, 22))
                     .withMinute(faker.number().numberBetween(0, 59));
@@ -73,13 +73,13 @@ public class PopolaOrdiniFaker {
 
             ordine.setDataRicezione(dataEsecuzione.plusHours(random.nextInt(4)));
             
-            // ---- Assegna indirizzo del cliente (ManyToMany) ----
+           
             List<EIndirizzo> indirizzi = em.createQuery(
                     "SELECT i FROM EIndirizzo i JOIN i.clienti c WHERE c.id = :id", EIndirizzo.class)
                     .setParameter("id", cliente.getId())
                     .getResultList();
                 if (indirizzi.isEmpty()) {
-                    // Salta l’ordine se il cliente non ha indirizzi associati
+      
                     continue;
                 }
 
@@ -97,7 +97,7 @@ public class PopolaOrdiniFaker {
 
         ECartaCredito carta = carte.get(random.nextInt(carte.size()));
         ordine.setCartaPagamento(carta);
-            // ---- Data di consegna scelta dall'utente: tra 1 e 3 giorni dopo l'esecuzione ----
+           
             LocalDateTime dataConsegna = dataEsecuzione.plusDays(faker.number().numberBetween(1, 4))
                     .withHour(faker.number().numberBetween(11, 21))
                     .withMinute(faker.number().numberBetween(0, 59));
@@ -105,7 +105,7 @@ public class PopolaOrdiniFaker {
 
             em.persist(ordine);
 
-            // ---- Prodotti ----
+            
             int numProdotti = faker.number().numberBetween(1, 6);
             Set<EItemOrdine> itemOrdine = new HashSet<>();
             for (int j = 0; j < numProdotti; j++) {
@@ -119,7 +119,7 @@ public class PopolaOrdiniFaker {
                 em.persist(item);
             }
 
-            // ---- Costo ----
+           
             BigDecimal costoTotale = itemOrdine.stream()
                     .map(p -> p.getPrezzoTotale()!= null ? p.getPrezzoTotale(): BigDecimal.ZERO)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);

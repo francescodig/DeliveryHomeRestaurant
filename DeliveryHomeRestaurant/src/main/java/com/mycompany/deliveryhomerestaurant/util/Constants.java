@@ -14,6 +14,7 @@ public class Constants {
 
     static {
         Properties prop = new Properties();
+        //Recupera da config.properties l'api.key e la passwordApp
         try (InputStream input = Constants.class.getClassLoader().getResourceAsStream("config.properties")) {
             prop.load(input);
             API_KEY = prop.getProperty("api.key");

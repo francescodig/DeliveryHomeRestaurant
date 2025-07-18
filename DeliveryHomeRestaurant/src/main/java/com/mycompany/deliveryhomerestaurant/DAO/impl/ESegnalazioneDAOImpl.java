@@ -15,6 +15,8 @@ import java.util.List;
  * @author franc
  */
 
+
+//NON IMPLEMENTATA ALLA FINE 
 public class ESegnalazioneDAOImpl implements ESegnalazioneDAO {
 
     private EntityManager em;
@@ -32,8 +34,8 @@ public class ESegnalazioneDAOImpl implements ESegnalazioneDAO {
     public List<ESegnalazione> getWarningsByClientId(int clientId) {
         ECliente cliente = em.find(ECliente.class, clientId);
         if (cliente != null) {
-            return cliente.getSegnalazioni(); // Assumendo che ritorni una List e non un Set
+            return cliente.getSegnalazioni(); 
         }
-        return List.of(); // Ritorna lista vuota se il cliente non esiste
+        return List.of(); 
     }
 }
